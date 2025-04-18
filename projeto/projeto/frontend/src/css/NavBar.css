@@ -1,0 +1,50 @@
+body {
+    margin: 0;
+}
+.navbar {
+    top: 0;
+    background-color: #f0f0f0;
+    padding: 0% 5% 0% 3%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.logo img {
+    height: 150px; /* Altura do logotipo */
+}
+
+.navbar-links {
+    display: flex;
+    gap: 2rem;
+}
+
+.nav-link {
+    font-size: 1rem;
+    padding: 0.5% 1%;
+    border-radius: 4px;
+    transition: background-color 0.2s;
+}
+
+.nav-link:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+@media (max-width: 768px) {
+.navbar {
+        padding: 1rem;
+    }
+
+.navbar-brand {
+        font-size: 1.2rem;
+    }
+
+.navbar-links {
+        gap: 1rem;
+    }
+
+.nav-link {
+        padding: 0.5rem;
+    }
+}
