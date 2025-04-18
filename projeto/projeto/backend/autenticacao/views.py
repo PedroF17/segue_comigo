@@ -19,7 +19,6 @@ class RegistroContaView(APIView):
         if serializer.is_valid():
             utilizador = serializer.save()
 
-            # Re-serializa para esconder senha e mostrar dados limpos
             response_data = UtilizadorRegistroSerializer(utilizador).data
 
             return Response({
@@ -46,7 +45,7 @@ class AlterarSenhaView(APIView):
     permission_classes = [IsAuthenticated]
 
     def post(self, request):
-        usuario = request.user  # Usuário autenticado
+        usuario = request.user  
         serializer = AlterarSenhaSerializer(usuario, data=request.data)
         
         if serializer.is_valid():
@@ -57,67 +56,56 @@ class AlterarSenhaView(APIView):
 
 # Função Verificar se e ADMIN
 class VerificarAdminView(APIView):
-    permission_classes = [IsAuthenticated]  # Garantir que o usuário esteja autenticado
+    permission_classes = [IsAuthenticated]  
 
     def get(self, request, *args, **kwargs):
-        usuario = request.user  # Recupera o usuário autenticado da requisição
+        usuario = request.user  
 
         try:
-            # Verifica se o usuário está registrado na tabela Administrador
             administrador = Administrador.objects.get(utilizadorid_utilizador=usuario)
-            # Retorna 'true' (ou 'sim') se o usuário for administrador
             return Response({'is_admin': True}, status=200)
         except ObjectDoesNotExist:
-            # Retorna 'false' (ou 'não') se o usuário não for administrador
             return Response({'is_admin': False}, status=200)
 
 
 # Função Verificar se e CONDUTOR
 class VerificarCondutorView(APIView):
-    permission_classes = [IsAuthenticated]  # Garantir que o usuário esteja autenticado
+    permission_classes = [IsAuthenticated]  
 
     def get(self, request, *args, **kwargs):
-        usuario = request.user  # Recupera o usuário autenticado da requisição
+        usuario = request.user  
 
         try:
-            # Verifica se o usuário está registrado na tabela Administrador
             condutor = Condutor.objects.get(utilizadorid_utilizador=usuario)
-            # Retorna 'true' (ou 'sim') se o usuário for administrador
             return Response({'is_admin': True}, status=200)
         except ObjectDoesNotExist:
-            # Retorna 'false' (ou 'não') se o usuário não for administrador
             return Response({'is_admin': False}, status=200)
 
 
 # Função Verificar se e PASSAGEIRO
 class VerificarPassageiroView(APIView):
-    permission_classes = [IsAuthenticated]  # Garantir que o usuário esteja autenticado
+    permission_classes = [IsAuthenticated]  
 
     def get(self, request, *args, **kwargs):
-        usuario = request.user  # Recupera o usuário autenticado da requisição
+        usuario = request.user  
 
         try:
-            # Verifica se o usuário está registrado na tabela Administrador
             passageiro = Passageiro.objects.get(utilizadorid_utilizador=usuario)
-            # Retorna 'true' (ou 'sim') se o usuário for administrador
             return Response({'is_admin': True}, status=200)
         except ObjectDoesNotExist:
-            # Retorna 'false' (ou 'não') se o usuário não for administrador
             return Response({'is_admin': False}, status=200)
 
 
 # Função Atualizar dados pessoais do Utilizador
 class AtualizarDadosPessoaisView(APIView):
-    permission_classes = [IsAuthenticated]  # Permitir acesso apenas a usuários autenticados
+    permission_classes = [IsAuthenticated]  
 
     def put(self, request, *args, **kwargs):
-        usuario = request.user  # O usuário autenticado
+        usuario = request.user  
 
-        # Cria o serializer com os dados enviados na requisição
         serializer = AtualizarDadosPessoaisSerializer(usuario, data=request.data, partial=True)
         
         if serializer.is_valid():
-            # Atualiza os dados do usuário com base no serializer
             serializer.save()
             return Response({"message": "Dados pessoais atualizados com sucesso."}, status=status.HTTP_200_OK)
         else:
