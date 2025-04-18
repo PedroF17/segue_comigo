@@ -1,6 +1,6 @@
 .admin-page {
   font-family: sans-serif;
-  padding: 20px;
+  padding: 2%;
   max-width: 1000px;
   margin: 0 auto;
 }
@@ -21,7 +21,7 @@ h1 {
 
 .tab-buttons button:hover{
   background-color: #ccc;
-  border-style: hidden;
+  border-style: ridge;
 }
 
 .tab-buttons button {
@@ -33,14 +33,14 @@ h1 {
 }
 
 .tab-buttons button.active {
-  background-color: #4CAF50;
+  background-color: #07689F;
   color: white;
   font-weight: bold;
 }
 
 .table-container {
   background-color: #fafafa;
-  padding: 20px;
+  padding: 2%;
   border-radius: 10px;
   box-shadow: 0 2px 6px rgba(0,0,0,0.05);
 }
@@ -79,13 +79,22 @@ h1 {
 .admin-table td button {
   margin-right: 5px;
   padding: 5px 8px;
-  background-color: #4CAF50;
+  background-color: #07689F;
   border: none;
   border-radius: 3px;
+  font-weight: bold;
   color: #fff;
   cursor: pointer;
 }
 
 .admin-table td button:hover {
-  background-color: #45a049;
+  background-color: #02489F;
+}
+
+.admin-table td button:last-child  {
+  background-color: red;
+}
+
+.admin-table td button:last-child:hover {
+  background-color: darkred;
 }
