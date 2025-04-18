@@ -69,31 +69,9 @@ class VerificarAdminView(APIView):
 
 
 # Função Verificar se e CONDUTOR
-class VerificarCondutorView(APIView):
-    permission_classes = [IsAuthenticated]  
-
-    def get(self, request, *args, **kwargs):
-        usuario = request.user  
-
-        try:
-            condutor = Condutor.objects.get(utilizadorid_utilizador=usuario)
-            return Response({'is_admin': True}, status=200)
-        except ObjectDoesNotExist:
-            return Response({'is_admin': False}, status=200)
 
 
 # Função Verificar se e PASSAGEIRO
-class VerificarPassageiroView(APIView):
-    permission_classes = [IsAuthenticated]  
-
-    def get(self, request, *args, **kwargs):
-        usuario = request.user  
-
-        try:
-            passageiro = Passageiro.objects.get(utilizadorid_utilizador=usuario)
-            return Response({'is_admin': True}, status=200)
-        except ObjectDoesNotExist:
-            return Response({'is_admin': False}, status=200)
 
 
 # Função Atualizar dados pessoais do Utilizador
