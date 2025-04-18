@@ -1,5 +1,6 @@
 body {
-    margin: 0;
+    margin: 0 0 0 0;
+    padding: 0;
 }
 .navbar {
     top: 0;
@@ -9,10 +10,11 @@ body {
     justify-content: space-between;
     align-items: center;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+
 }
 
 .logo img {
-    height: 150px; /* Altura do logotipo */
+    height: 140px; /* Altura do logotipo */
 }
 
 .navbar-links {

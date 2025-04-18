@@ -1,0 +1,91 @@
+.admin-page {
+  font-family: sans-serif;
+  padding: 20px;
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+h1 {
+  text-align: center;
+  margin-bottom: 20px;
+  color: #333;
+}
+
+.tab-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+.tab-buttons button:hover{
+  background-color: #ccc;
+  border-style: hidden;
+}
+
+.tab-buttons button {
+  padding: 10px 15px;
+  background-color: #eee;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.tab-buttons button.active {
+  background-color: #4CAF50;
+  color: white;
+  font-weight: bold;
+}
+
+.table-container {
+  background-color: #fafafa;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+}
+
+.search-input {
+  margin-bottom: 15px;
+  padding: 8px;
+  width: 100%;
+  max-width: 400px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+}
+
+.admin-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.admin-table th, .admin-table td {
+  border: 1px solid #333;
+  padding: 10px;
+  text-align: left;
+}
+
+.admin-table th {
+  background-color: #333;
+}
+
+.admin-table td{
+  padding: 1%;
+  background-color: #ddd;
+  cursor: text;
+  color: black;
+}
+
+.admin-table td button {
+  margin-right: 5px;
+  padding: 5px 8px;
+  background-color: #4CAF50;
+  border: none;
+  border-radius: 3px;
+  color: #fff;
+  cursor: pointer;
+}
+
+.admin-table td button:hover {
+  background-color: #45a049;
+}

@@ -1,0 +1,88 @@
+/*Home.css*/
+body{
+    margin: 0;
+}
+.home {
+    width: 100%;
+    box-sizing: border-box;
+    margin-top: 0%;
+    margin-left: auto;
+    margin-right: auto;
+    margin-bottom: 0%;
+}
+
+.search-form {
+    background-color: #fff;
+    border-radius: 16px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    margin-top: 10%;
+    margin-bottom: 50%;
+    display: flex;
+    max-width: 90%;
+    width: 100%;
+    overflow: hidden;
+}
+
+.search-input {
+    flex: 1;
+    padding: 0.75rem 1rem;
+    border: none;
+    border-radius: 4px;
+    background-color: #333;
+    color: white;
+    font-size: 1rem;
+}
+
+.search-input:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px #666;
+}
+
+.search-button {
+    padding: 0.75rem 1.5rem;
+    background: #07689F;
+    color: white;
+    border: 2px solid  #07689F;
+    border-radius: 10px;
+    font-weight: 500;
+    transition: background-color 0.2s;
+    white-space: nowrap;
+}
+
+.search-button:hover {
+    background-color: #07689F;
+}
+
+.hero {
+    background-image: url('src/assets/images/Home_images/passenger-back-seat-modern-businessman-trying-his-new-car-automobile-salon.jpg'); /* Replace with your actual image path */
+    background-size: cover; /* Scale the image to cover the entire container */
+    background-position: center; /* Center the image within the container */
+    background-repeat: no-repeat; /* Prevent the image from repeating */
+    color: #fff;
+    padding: 0; /* Remove default padding that might cause extra space */
+    margin: 0; /* Remove default margin that might cause extra space */
+    height: 100vh; /* Set the height of the hero section to 100% of the viewport height */
+    width: 100vw; /* Set the width of the hero section to 100% of the viewport width */
+    text-align: center; /* Keep text centering if needed */
+    display: flex; /* Use flexbox for centering content within .hero if needed */
+    flex-direction: column; /* Stack items vertically if using flexbox */
+    justify-content: center; /* Center content vertically if using flexbox */
+    align-items: center; /* Center content horizontally if using flexbox */
+}
+
+.hero-content {
+    width: 40%;
+    margin-top: 0%;
+    margin-left: auto;
+    margin-right: auto;
+    margin-bottom: 0%;
+    padding: 1% 1% 0% 1%;
+    background-color: #f0f0f0;
+    border-radius: 24px;
+}
+
+.hero h1 {
+    font-size: 2.5em;
+    margin-bottom: 15px;
+    margin-top: 0;
+}

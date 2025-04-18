@@ -1,73 +1,25 @@
-import Rides from '../components/rides/Rides.jsx'
-import {useState} from 'react'
+import NeighborRideSearch from '../components/rides/NeighborRideSearch.jsx';
+import '../css/NavBar.css';
+import '../css/Home.css'
 
 function Home() {
-    const [searchQuery, setSearchQuery] = useState('');
 
-    const rides = [
-        {
-            id: 1,
-            title: "Mario",
-            origin: "Barcelos",
-            destiny: "Braga",
-            departure: '12:00',
-            arrive: "13:00",
-            description: "Por Martim"
-        },
-        {
-            id: 2,
-            title: "Maria",
-            origin: "Barcelos",
-            destiny: "Famalicão",
-            departure: '11:00',
-            arrive: "12:00",
-            description: "Por Nine"
-        },
-        {
-            id: 3,
-            title: "Paulo",
-            origin: "Famalicão",
-            destiny: "Barcelos",
-            departure: '16:00',
-            arrive: "17:00",
-            description: "Por Via Todos"
-        },
-        {
-            id: 4,
-            title: "Paula",
-            origin: "Braga",
-            destiny: "Barcelos",
-            departure: '14:00',
-            arrive: "15:00",
-            description: "Por Prado"
-        },
-    ];
-
-    const handleSearch = (e) => {
-        e.preventDefault();
-        alert(searchQuery);
-        setSearchQuery("");
-    }
+    const handleSearchRide = (searchParams) => {
+        console.log('Parâmetros de busca de boleia:', searchParams);
+        // Aqui você implementaria a lógica para buscar as boleias com base nos parâmetros
+    };
 
     return (
         <div className="home">
-            <form onSubmit={handleSearch} className="search_form">
-                <input type="text"
-                       placeholder = "Procura por boleias"
-                       className="search_input"
-                       value = {searchQuery}
-                       onChange={(e) => setSearchQuery(e.target.value)}
-                />
-                <button type="submit" className="search_button"> Pesquisar </button>
-            </form>
-            <div className="ride_grid">
-                    {rides.map((ride) => (
-                        ride.title.toLowerCase().startsWith(searchQuery) && (
-                            <Rides ride={ride} key={ride.id} />
-                        )
-                    ))}
-            </div>
+            <section className="hero">
+                <div className="hero-content">
+                    <h1>Onde é que precisa de ir?</h1>
+                    <NeighborRideSearch onSearch={handleSearchRide} />
+                    <p className="subtitle">Consiga boleias onde quer que a sua viagem o leve.</p>
+                </div>
+            </section>
         </div>
     );
+    // tentar colocar uma grid com algumas boleias
 }
 export default Home;

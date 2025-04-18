@@ -4,6 +4,7 @@ import Home from './pages/Home.jsx';
 import Login from './pages/Login.jsx';
 import Favorites from "./pages/Favorites.jsx";
 import Register from "./pages/Register.jsx";
+import Admin from "./pages/Admin.jsx"
 import NavBar from "./components/NavBar";
 
 function App() {
@@ -17,6 +18,7 @@ function App() {
                     <Route path="/login" element={<Login/>}/>
                     <Route path="/register" element={<Register/>}/>
                     <Route path="/favorites" element={<Favorites/>}/>
+                    <Route path="/admin" element={<Admin/>}/>
                 </Routes>
             </main>
         </div>
