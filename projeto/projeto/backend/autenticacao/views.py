@@ -5,144 +5,442 @@ from rest_framework.views import APIView
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
 from django.contrib.auth.hashers import check_password, make_password
+from django.contrib.auth import get_user_model
+from django.utils import timezone
 
 from projeto.models import *
 from .serializers import *
 
 
-# Função Registo de conta
-class RegistroContaView(APIView):
+"""
+UTILIZADOR - Criar Utilizador
+    
+    [POST] "First"
+        Body:
+        group_name (input)
+        nome_primeiro (input)
+        nome_ultimo (input)
+        data_nasc (input)
+        genero (input)
+        numero_cc (input)
+        estado_civilid_estado_civil (input) (estado_civil)
+        nacionalidadeid_nacionalidade (input) (nacionalidade)
+        password (input)
+        email (input)
+
+    [GET]
+
+    [POST]
+        Body:
+        nome_primeiro (input)
+        nome_ultimo (input)
+        data_nasc (input)
+        genero (input)
+        numero_cc (input)
+        grupoid_grupo (input) 
+        estado_civilid_estado_civil (input) (estado_civil)
+        nacionalidadeid_nacionalidade (input) (nacionalidade)
+        password (input)
+        email (input)
+
+    [DELETE]
+"""
+# Primeira conta criada
+class FirstCreateAccountView(APIView):
 
     def post(self, request):
-        serializer = UtilizadorRegistroSerializer(data=request.data)
+        grupo_nome = request.data.get("grupo_nome")
+
+        if not grupo_nome:
+            return Response(
+                {"erro": "O campo 'grupo_nome' é obrigatório."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        novo_grupo = Grupo.objects.create(
+            nome=grupo_nome,
+            data_criacao=timezone.now().date()
+        )
+
+        dados_utilizador = request.data.copy()
+        dados_utilizador["grupoid_grupo"] = novo_grupo.id_grupo
+
+        serializer = PrimeiroUtilizadorRegistroSerializer(data=dados_utilizador)
 
         if serializer.is_valid():
             utilizador = serializer.save()
-
-            response_data = UtilizadorRegistroSerializer(utilizador).data
-
             return Response({
-                "mensagem": "Conta criada com sucesso.",
-                "utilizador": response_data
+                "mensagem": "Grupo e conta criados com sucesso.",
+                "utilizador": PrimeiroUtilizadorRegistroSerializer(utilizador).data
             }, status=status.HTTP_201_CREATED)
+
+        novo_grupo.delete()
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class CreateAccountView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        grupo = request.user.grupoid_grupo
+        utilizadores = Utilizador.objects.filter(grupoid_grupo=grupo)
+
+        resultado = [
+            {
+                "nome_primeiro": u.nome_primeiro,
+                "nome_ultimo": u.nome_ultimo,
+                "email": u.email
+            }
+            for u in utilizadores
+        ]
+
+        return Response(resultado, status=status.HTTP_200_OK)
+
+    def post(self, request):
+        grupo = request.user.grupoid_grupo
+
+        dados_utilizador = request.data.copy()
+        dados_utilizador["grupoid_grupo"] = grupo.id_grupo
+
+        serializer = PrimeiroUtilizadorRegistroSerializer(data=dados_utilizador)
+
+        if serializer.is_valid():
+            utilizador = serializer.save()
+            return Response({
+                "mensagem": "Utilizador criado com sucesso no grupo do utilizador autenticado.",
+                "utilizador": PrimeiroUtilizadorRegistroSerializer(utilizador).data
+            }, status=status.HTTP_201_CREATED)
+    
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def delete(self, request):
+        utilizador = request.user
+        grupo = request.user.grupoid_grupo
+
+        # Verifica quantos utilizadores estão no grupo
+        total_utilizadores = Utilizador.objects.filter(grupoid_grupo=grupo).count()
+
+        # Deleta o utilizador
+        utilizador.delete()
+
+        # Se era o único, deleta também o grupo
+        if total_utilizadores == 1:
+            grupo.delete()
+            return Response({"mensagem": "Utilizador e grupo associados foram removidos."}, status=status.HTTP_200_OK)
+
+        return Response({"mensagem": "Utilizador removido com sucesso."}, status=status.HTTP_200_OK)
+
+
+"""
+UTILIZADOR - Alterar Senha
+
+    [POST]
+        Headers:
+        Authorization Bearer (access token)
+
+        Body:
+        old_password (input)
+        new_password (input)
+        confirm_new_password (input)
+"""
+class ChangePasswordView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        user = request.user
+        
+        old_password = request.data.get("old_password")
+        new_password = request.data.get("new_password")
+        confirm_new_password = request.data.get("confirm_new_password")
+        
+        if not old_password:
+            return Response({"erro": "Senha antiga não fornecida."}, status=status.HTTP_400_BAD_REQUEST)
+        if not new_password:
+            return Response({"erro": "Nova senha não fornecida."}, status=status.HTTP_400_BAD_REQUEST)
+        if new_password != confirm_new_password:
+            return Response({"erro": "A nova senha e a confirmação não coincidem."}, status=status.HTTP_400_BAD_REQUEST)
+        if not user.check_password(old_password):
+            return Response({"erro": "Senha antiga incorreta."}, status=status.HTTP_400_BAD_REQUEST)
+
+        user.set_password(new_password)
+        user.save()
+
+        return Response({"mensagem": "Senha alterada com sucesso."}, status=status.HTTP_200_OK)
+
+
+"""
+UTILIZADOR - Dados de um Utilizador
+
+    [GET]
+        Headers:
+        Authorization Bearer (access token) 
+
+    [PUT]
+        Headers:
+        Authorization Bearer (access token) 
+
+        Body:
+        id_utilizador (input)
+        nome_primeiro (input)
+        nome_ultimo (input)
+        data_nasc (input)
+        genero (input)
+        numero_cc (input)
+        data_criacao (input)
+        grupoid_grupo (input) (grupo)
+        estado_civilid_estado_civil (input)(estado_civil)
+        nacionalidadeid_nacionalidade (input)(nacionalidade)
+        password (input)
+        email (input)
+"""
+class AccountView(APIView):
+    permission_classes = [IsAuthenticated]  
+
+    def get(self, request):
+        user = request.user
+
+        try:
+            utilizador = Utilizador.objects.get(id_utilizador=user.id_utilizador)
+        except Utilizador.DoesNotExist:
+            return Response({"erro": "Utilizador não encontrado."}, status=status.HTTP_404_NOT_FOUND)
+
+        serializer = UtilizadorRegistroSerializer(utilizador)
+        
+        return Response({
+            "mensagem": "Dados do utilizador recuperados com sucesso.",
+            "utilizador": serializer.data
+        }, status=status.HTTP_200_OK)
+
+    def put(self, request):
+        user = request.user
+
+        try:
+            utilizador = Utilizador.objects.get(id_utilizador=user.id_utilizador)
+        except Utilizador.DoesNotExist:
+            return Response({"erro": "Utilizador não encontrado."}, status=status.HTTP_404_NOT_FOUND)
+
+        serializer = UtilizadorRegistroSerializer(utilizador, data=request.data, partial=True)
+
+        if serializer.is_valid():
+            serializer.save()
+            return Response({
+                "mensagem": "Dados atualizados com sucesso.",
+                "utilizador": serializer.data
+            }, status=status.HTTP_200_OK)
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-# Função Login pela tokenização JWT 
-class TokenLoginView(APIView):
+"""
+GRUPO - Alterar Dados do Grupo
+ 
+    [PUT]
+        Headers: 
+        Authorization Bearer (access token) 
 
-    def post(self, request):
-        serializer = CustomTokenSerializer(data=request.data)
-        
-        if serializer.is_valid():
-            return Response(serializer.validated_data, status=status.HTTP_200_OK)
-        return Response(serializer.errors, status=status.HTTP_401_UNAUTHORIZED)
+        Body:
+        id_utilizador (input)
+        nome_primeiro (input)
+        nome_ultimo (input)
+        data_nasc (input)
+        genero (input)
+        numero_cc (input)
+        data_criacao (input)
+        grupoid_grupo (input) (grupo)
+        estado_civilid_estado_civil (input)(estado_civil)
+        nacionalidadeid_nacionalidade (input)(nacionalidade)
+        password (input)
+        email (input)
 
-
-# Função Alterar senha do Utilizador
-class AlterarSenhaView(APIView):
-    permission_classes = [IsAuthenticated]
-
-    def post(self, request):
-        usuario = request.user  
-        serializer = AlterarSenhaSerializer(usuario, data=request.data)
-        
-        if serializer.is_valid():
-            serializer.save()
-            return Response({"message": "Senha alterada com sucesso!"}, status=200)
-        return Response(serializer.errors, status=400)
-
-
-# Função Verificar se e ADMIN
-class VerificarAdminView(APIView):
+"""
+class GrupoView(APIView):
     permission_classes = [IsAuthenticated]  
 
-    def get(self, request, *args, **kwargs):
-        usuario = request.user  
+    def put(self, request):
+        user = request.user
 
         try:
-            administrador = Administrador.objects.get(utilizadorid_utilizador=usuario)
-            return Response({'is_admin': True}, status=200)
-        except ObjectDoesNotExist:
-            return Response({'is_admin': False}, status=200)
+            utilizador = Utilizador.objects.get(id_utilizador=user.id_utilizador)
+
+            grupo = utilizador.grupoid_grupo
+        except Utilizador.DoesNotExist:
+            return Response({"erro": "Utilizador não encontrado."}, status=status.HTTP_404_NOT_FOUND)
+        except Grupo.DoesNotExist:
+            return Response({"erro": "Grupo associado não encontrado."}, status=status.HTTP_404_NOT_FOUND)
+
+        novo_nome = request.data.get("nome")
+
+        if not novo_nome:
+            return Response({"erro": "O campo 'nome' é obrigatório."}, status=status.HTTP_400_BAD_REQUEST)
+
+        grupo.nome = novo_nome
+        grupo.save()
+
+        serializer = GrupoSerializer(grupo)
+        return Response({
+            "mensagem": "Nome do grupo atualizado com sucesso.",
+            "grupo": serializer.data
+        }, status=status.HTTP_200_OK)
 
 
-# Função Verificar se e CONDUTOR
+"""
+CONTACTO - CRUD do Contacto
+ 
+    [POST]
+        Headers: 
+        Authorization Bearer (access token)
 
+        Body:
+        descricao (input)
+        tipocontactoid_tipo_contacto (input) (tipo_contacto)
 
-# Função Verificar se e PASSAGEIRO
+    [GET]
+        Headers: 
+        Authorization Bearer (access token)
 
+    [PUT]
+        Headers: 
+        Authorization Bearer (access token) 
 
-# Função Atualizar dados pessoais do Utilizador
-class AtualizarDadosPessoaisView(APIView):
-    permission_classes = [IsAuthenticated]  
+        Body:
+        descricao (input)
+        tipocontactoid_tipo_contacto (input) (tipo_contacto)
 
-    def put(self, request, *args, **kwargs):
-        usuario = request.user  
-
-        serializer = AtualizarDadosPessoaisSerializer(usuario, data=request.data, partial=True)
-        
-        if serializer.is_valid():
-            serializer.save()
-            return Response({"message": "Dados pessoais atualizados com sucesso."}, status=status.HTTP_200_OK)
-        else:
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-
-# CRUD Contactos
+"""
 class ContactoView(APIView):
     permission_classes = [IsAuthenticated]
 
     def post(self, request):
-        data = request.data
-        serializer = ContactoSerializer(data=data)
+        user = request.user
+        serializer = ContactoSerializer(data=request.data)
 
         if serializer.is_valid():
-            serializer.save()
-            return JsonResponse("Contacto adicionado com successo", safe=False)
-        return JsonResponse("Falha ao adicionar contacto", safe=False)
+            serializer.save(utilizadorid_utilizador=user)
+            return JsonResponse("Contacto adicionado com sucesso.", safe=False)
+        return JsonResponse(serializer.errors, safe=False, status=400)
 
-    def get_contacto(self, pk):
+    def get_contact(self, user, pk):
         try:
-            student = Contacto.objects.get(id_contacto=pk)
-            return student
+            return Contacto.objects.get(id_contacto=pk, utilizadorid_utilizador=user)
         except Contacto.DoesNotExist:
-            raise Http404
+            raise Http404("Contacto não encontrado.")
 
     def get(self, request, pk=None):
+        user = request.user
         if pk:
-            data = self.get_contacto(pk)
-            serializer = ContactoSerializer(data)
+            contacto = self.get_contact(user, pk)
+            serializer = ContactoSerializer(contacto)
         else:
-            data = Contacto.objects.all()
-            serializer = ContactoSerializer(data, many=True)
+            contactos = Contacto.objects.filter(utilizadorid_utilizador=user)
+            serializer = ContactoSerializer(contactos, many=True)
         return Response(serializer.data)
 
     def put(self, request, pk=None):
-        contacto_to_update = Contacto.objects.get(id_contacto=pk)
-        serializer = ContactoSerializer(
-            instance=contacto_to_update, data=request.data, partial=True
-        )
+        user = request.user
+        contacto = self.get_contact(user, pk)
+        serializer = ContactoSerializer(contacto, data=request.data, partial=True)
 
         if serializer.is_valid():
             serializer.save()
-            return JsonResponse("Contacto atualizado com Sucesso", safe=False)
-        return JsonResponse("Falha ao atualizar Contacto")
+            return JsonResponse("Contacto atualizado com sucesso.", safe=False)
+        return JsonResponse(serializer.errors, safe=False, status=400)
 
     def delete(self, request, pk):
-        contacto_to_delete = Contacto.objects.get(id_contacto=pk)
-        contacto_to_delete.delete()
-        return JsonResponse("Contacto deletado com sucesso", safe=False)
+        user = request.user
+        contacto = self.get_contact(user, pk)
+        contacto.delete()
+        return JsonResponse("Contacto deletado com sucesso.", safe=False)
 
+"""
+MORADA - CRUD da Morada
+ 
+    [DELETE]
+        Headers: 
+        Authorization Bearer (access token)
 
-# CRUD Tipo Contactos
-class TipoContactoView(APIView):
+    [POST]
+        Headers: 
+        Authorization Bearer (access token)
+
+        Body:
+        descricao (input)
+        utilizadorid_utilizador (input)
+        freguesiaid_freguesia (input) (freguesia)
+
+    [GET]
+        Headers: 
+        Authorization Bearer (access token)
+
+    [PUT]
+        Headers: 
+        Authorization Bearer (access token) 
+
+        Body:
+        descricao (input)
+        utilizadorid_utilizador (input)
+        freguesiaid_freguesia (input) (freguesia)
+
+    [DELETE]
+        Headers: 
+        Authorization Bearer (access token)
+
+"""
+class MoradaView(APIView):
     permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        user = request.user
+        serializer = MoradaSerializer(data=request.data)
+
+        if serializer.is_valid():
+            serializer.save(utilizadorid_utilizador=user)
+            return JsonResponse("Morada adicionada com sucesso.", safe=False)
+        return JsonResponse(serializer.errors, safe=False, status=400)
+
+    def get_morada(self, user, pk):
+        try:
+            return Morada.objects.get(id_morada=pk, utilizadorid_utilizador=user)
+        except Morada.DoesNotExist:
+            raise Http404("Morada não encontrada.")
+
+    def get(self, request, pk=None):
+        user = request.user
+        if pk:
+            morada = self.get_morada(user, pk)
+            serializer = MoradaSerializer(contacto)
+        else:
+            moradas = Morada.objects.filter(utilizadorid_utilizador=user)
+            serializer = MoradaSerializer(moradas, many=True)
+        return Response(serializer.data)
+
+    def put(self, request, pk=None):
+        user = request.user
+        morada = self.get_morada(user, pk)
+        serializer = MoradaSerializer(morada, data=request.data, partial=True)
+
+        if serializer.is_valid():
+            serializer.save()
+            return JsonResponse("Morada atualizada com sucesso.", safe=False)
+        return JsonResponse(serializer.errors, safe=False, status=400)
+
+    def delete(self, request, pk):
+        user = request.user
+        morada = self.get_morada(user, pk)
+        morada.delete()
+        return JsonResponse("Morada deletada com sucesso.", safe=False)
+
+
+"""
+TIPO_CONTACTO - Listar Tipos de Contactos
+ 
+    [GET]
+
+"""
+class TipoContactoView(APIView):
 
     def get_tipo_contacto(self, pk):
         try:
-            tipo_contacto = TipoContacto.objects.get(id_contacto=pk)
+            tipo_contacto = TipoContacto.objects.get(id_tipo_contacto=pk)
             return tipo_contacto
         except TipoContacto.DoesNotExist:
             raise Http404
@@ -157,158 +455,63 @@ class TipoContactoView(APIView):
         return Response(serializer.data)
 
 
-# CRUD Grupos
-class GrupoView(APIView):
-    permission_classes = [IsAuthenticated]
+"""
+ESTADO_CIVIL - Listar Tipos de Estados Civis
+ 
+    [GET]
 
-    def post(self, request):
-        data = request.data
-        serializer = GrupoSerializer(data=data)
+"""
+class EstadoCivilView(APIView):
 
-        if serializer.is_valid():
-            serializer.save()
-            return JsonResponse("Grupo adicionado com successo", safe=False)
-        return JsonResponse("Falha ao adicionar grupo", safe=False)
-
-    def get_grupo(self, pk):
+    def get_estado_civil(self, pk):
         try:
-            grupo = Grupo.objects.get(id_grupo=pk)
-            return grupo
-        except Grupo.DoesNotExist:
+            estado_civil = EstadoCivil.objects.get(id_estado_civil=pk)
+            return estado_civil
+        except EstadoCivil.DoesNotExist:
             raise Http404
 
     def get(self, request, pk=None):
         if pk:
-            data = self.get_grupo(pk)
-            serializer = GrupoSerializer(data)
+            data = self.get_estado_civil(pk)
+            serializer = EstadoCivilSerializer(data)
         else:
-            data = Grupo.objects.all()
-            serializer = GrupoSerializer(data, many=True)
+            data = EstadoCivil.objects.all()
+            serializer = EstadoCivilSerializer(data, many=True)
         return Response(serializer.data)
 
-    def delete(self, request, pk):
-        grupo_to_delete = Grupo.objects.get(id_grupo=pk)
-        grupo_to_delete.delete()
-        return JsonResponse("Grupo deletado com sucesso", safe=False)
 
+"""
+PAIS - Listar Paises
+ 
+    [GET]
 
-# CRUD Morada
-class MoradaView(APIView):
-    permission_classes = [IsAuthenticated]
+"""
+class PaisView(APIView):
 
-    def post(self, request):
-        data = request.data
-        serializer = MoradaSerializer(data=data)
-
-        if serializer.is_valid():
-            serializer.save()
-            return JsonResponse("Morada adicionada com successo", safe=False)
-        return JsonResponse("Falha ao adicionar Morada", safe=False)
-
-    def get_morada(self, pk):
+    def get_pais(self, pk):
         try:
-            morada = Morada.objects.get(id_morada=pk)
-            return grupo
-        except Morada.DoesNotExist:
+            pais = Pais.objects.get(id_pais=pk)
+            return pais
+        except Pais.DoesNotExist:
             raise Http404
 
     def get(self, request, pk=None):
         if pk:
-            data = self.get_morada(pk)
-            serializer = MoradaSerializer(data)
+            data = self.get_pais(pk)
+            serializer = PaisSerializer(data)
         else:
-            data = Morada.objects.all()
-            serializer = MoradaSerializer(data, many=True)
+            data = Pais.objects.all()
+            serializer = PaisSerializer(data, many=True)
         return Response(serializer.data)
 
-    def delete(self, request, pk):
-        morada_to_delete = Morada.objects.get(id_morada=pk)
-        morada_to_delete.delete()
-        return JsonResponse("Morada deletada com sucesso", safe=False)
 
+"""
+DISTRITO - Listar Distritos
+ 
+    [GET]
 
-# CRUD Freguesia
-class FreguesiaView(APIView):
-    permission_classes = [IsAuthenticated]
-
-    def post(self, request):
-        data = request.data
-        serializer = FreguesiaSerializer(data=data)
-
-        if serializer.is_valid():
-            serializer.save()
-            return JsonResponse("Freguesia adicionada com successo", safe=False)
-        return JsonResponse("Falha ao adicionar Freguesia", safe=False)
-
-    def get_freguesia(self, pk):
-        try:
-            grupo = Freguesia.objects.get(id_freguesia=pk)
-            return freguesia
-        except Freguesia.DoesNotExist:
-            raise Http404
-
-    def get(self, request, pk=None):
-        if pk:
-            data = self.get_freguesia(pk)
-            serializer = FreguesiaSerializer(data)
-        else:
-            data = Freguesia.objects.all()
-            serializer = FreguesiaSerializer(data, many=True)
-        return Response(serializer.data)
-
-    def delete(self, request, pk):
-        freguesia_to_delete = Freguesia.objects.get(id_freguesia=pk)
-        freguesia_to_delete.delete()
-        return JsonResponse("Grupo deletado com sucesso", safe=False)
-
-
-# CRUD Conselho
-class ConselhoView(APIView):
-    permission_classes = [IsAuthenticated]
-
-    def post(self, request):
-        data = request.data
-        serializer = ConselhoSerializer(data=data)
-
-        if serializer.is_valid():
-            serializer.save()
-            return JsonResponse("Conselho adicionado com successo", safe=False)
-        return JsonResponse("Falha ao adicionar Conselho", safe=False)
-
-    def get_conselho(self, pk):
-        try:
-            conselho = Conselho.objects.get(id_conselho=pk)
-            return conselho
-        except Conselho.DoesNotExist:
-            raise Http404
-
-    def get(self, request, pk=None):
-        if pk:
-            data = self.get_conselho(pk)
-            serializer = ConselhoSerializer(data)
-        else:
-            data = Conselho.objects.all()
-            serializer = ConselhoSerializer(data, many=True)
-        return Response(serializer.data)
-
-    def delete(self, request, pk):
-        conselho_to_delete = Conselho.objects.get(id_grupo=pk)
-        conselho_to_delete.delete()
-        return JsonResponse("Conselho deletado com sucesso", safe=False)
-
-
-# CRUD Distrito
+"""
 class DistritoView(APIView):
-    permission_classes = [IsAuthenticated]
-
-    def post(self, request):
-        data = request.data
-        serializer = DistritoSerializer(data=data)
-
-        if serializer.is_valid():
-            serializer.save()
-            return JsonResponse("Distrito adicionado com successo", safe=False)
-        return JsonResponse("Falha ao adicionar distrito", safe=False)
 
     def get_distrito(self, pk):
         try:
@@ -326,51 +529,127 @@ class DistritoView(APIView):
             serializer = DistritoSerializer(data, many=True)
         return Response(serializer.data)
 
-    def delete(self, request, pk):
-        distrito_to_delete = Distrito.objects.get(id_distrito=pk)
-        distrito_to_delete.delete()
-        return JsonResponse("Distrito deletado com sucesso", safe=False)
 
+"""
+CONSELHO - Listar Conselhos
+ 
+    [GET]
 
-# CRUD Pais
-class PaisView(APIView):
-    permission_classes = [IsAuthenticated]
+"""
+class ConselhoView(APIView):
 
-    def get_pais(self, pk):
+    def get_conselho(self, pk):
         try:
-            pais = Pais.objects.get(id_pais=pk)
-            return pais
-        except Pais.DoesNotExist:
+            conselho = Conselho.objects.get(id_conselho=pk)
+            return conselho
+        except Conselho.DoesNotExist:
             raise Http404
 
     def get(self, request, pk=None):
         if pk:
-            data = self.get_pais(pk)
-            serializer = GrupoPais(data)
+            data = self.get_conselho(pk)
+            serializer = ConselhoSerializer(data)
         else:
-            data = Pais.objects.all()
-            serializer = GrupoSerializer(data, many=True)
+            data = Conselho.objects.all()
+            serializer = ConselhoSerializer(data, many=True)
         return Response(serializer.data)
 
 
-# CRUD Nacionalidade
-class NacionalidadeView(APIView):
-    permission_classes = [IsAuthenticated]
+"""
+FREGUESIA - Listar Freguesias
+ 
+    [GET]
 
-    def get_nacionalidade(self, pk):
+"""
+class FreguesiaView(APIView):
+
+    def get_freguesia(self, pk):
         try:
-            nacionalidade = Nacionalidade.objects.get(id_nacionalidade=pk)
-            return grupo
-        except Nacionalidade.DoesNotExist:
+            freguesia = Freguesia.objects.get(id_freguesia=pk)
+            return freguesia
+        except Freguesia.DoesNotExist:
             raise Http404
 
     def get(self, request, pk=None):
         if pk:
-            data = self.get_nacionalidade(pk)
-            serializer = NacionalidadeSerializer(data)
+            data = self.get_freguesia(pk)
+            serializer = FreguesiaSerializer(data)
         else:
-            data = Nacionalidade.objects.all()
-            serializer = NacionalidadeSerializer(data, many=True)
+            data = Freguesia.objects.all()
+            serializer = FreguesiaSerializer(data, many=True)
         return Response(serializer.data)
 
 
+"""
+ADMINISTRADOR - Verificar se é Admin
+ 
+    [GET]
+        Headers: 
+        Authorization Bearer (access token) 
+
+"""
+class CheckAdminView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        utilizador = request.user
+
+        eh_admin = Administrador.objects.filter(utilizadorid_utilizador=utilizador).exists()
+
+        return Response(
+            {"administrador": eh_admin},
+            status=status.HTTP_200_OK
+        )
+
+    def check_admin(user):
+        return Administrador.objects.filter(utilizadorid_utilizador=user).exists()
+
+
+"""
+CONDUTOR - Verificar se é Condutor
+ 
+    [GET]
+        Headers: 
+        Authorization Bearer (access token) 
+
+"""
+class CheckCondutorView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        utilizador = request.user
+
+        eh_condutor = Condutor.objects.filter(utilizadorid_utilizador=utilizador).exists()
+
+        return Response(
+            {"condutor": eh_condutor},
+            status=status.HTTP_200_OK
+        )
+
+    def check_condutor(user):
+        return Condutor.objects.filter(utilizadorid_utilizador=user).exists()
+
+
+"""
+PASSAGEIRO - Verificar se é Passageiro
+ 
+    [GET]
+        Headers: 
+        Authorization Bearer (access token) 
+
+"""
+class CheckPassageiroView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        utilizador = request.user
+
+        eh_passageiro = Passageiro.objects.filter(utilizadorid_utilizador=utilizador).exists()
+
+        return Response(
+            {"passageiro": eh_passageiro},
+            status=status.HTTP_200_OK
+        )
+
+    def check_passageiro(user):
+        return Passageiro.objects.filter(utilizadorid_utilizador=user).exists()

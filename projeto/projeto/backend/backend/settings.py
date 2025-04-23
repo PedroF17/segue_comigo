@@ -41,13 +41,15 @@ INSTALLED_APPS = [
     
     "corsheaders",
     "rest_framework",
+    #'rest_framework_simplejwt.token_blacklist',
     
     "projeto.apps.ProjetoConfig",
     "autenticacao.apps.AutenticacaoConfig",
     #"comunicacao.apps.ComunicacaoConfig",
-    #"condutor.apps.CondutorConfig",
+    "condutor.apps.CondutorConfig",
     #"pagamento.apps.PagamentoConfig",
     #"viagem.apps.ViagemConfig",
+    #api_auth.apps.ApiAuthConfig",
 ]
 
 MIDDLEWARE = [
@@ -149,3 +151,9 @@ SIMPLE_JWT = {
     "ACCESS_TOKEN_LIFETIME": timedelta(minutes=20),
 }
 
+AUTH_USER_MODEL = 'projeto.Utilizador'
+
+import os
+
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')

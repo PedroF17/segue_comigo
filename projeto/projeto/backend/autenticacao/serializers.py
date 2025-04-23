@@ -54,16 +54,46 @@ class UtilizadorRegistroSerializer(WritableNestedModelSerializer):
             "grupoid_grupo",
             "estado_civilid_estado_civil",
             "nacionalidadeid_nacionalidade",
-            "senha",
+            "password",
             "email",
         ]
         extra_kwargs = {
-            "senha" : {"write_only": True}
+            "password" : {"write_only": True}
         }
 
     def create(self, validated_data):
-        senha = validated_data.pop("senha")
-        validated_data["senha"] = make_password(senha)
+        password = validated_data.pop("password")
+        validated_data["password"] = make_password(password)
+        return super().create(validated_data)
+
+
+class PrimeiroUtilizadorRegistroSerializer(WritableNestedModelSerializer):
+    estado_civilid_estado_civil = EstadoCivilSerializer()
+    nacionalidadeid_nacionalidade = NacionalidadeSerializer()
+
+    class Meta:
+        model = Utilizador
+        fields = [
+            "id_utilizador",
+            "nome_primeiro",
+            "nome_ultimo",
+            "data_nasc",
+            "genero",
+            "numero_cc",
+            "data_criacao",
+            "grupoid_grupo",
+            "estado_civilid_estado_civil",
+            "nacionalidadeid_nacionalidade",
+            "password",
+            "email",
+        ]
+        extra_kwargs = {
+            "password" : {"write_only": True}
+        }
+
+    def create(self, validated_data):
+        password = validated_data.pop("password")
+        validated_data["password"] = make_password(password)
         return super().create(validated_data)
 
 
@@ -92,7 +122,6 @@ class FreguesiaSerializer(WritableNestedModelSerializer):
 
 
 class MoradaSerializer(WritableNestedModelSerializer):
-    utilizadorid_utilizador = UtilizadorRegistroSerializer()
     freguesiaid_freguesia = FreguesiaSerializer()
 
     class Meta:
@@ -104,6 +133,21 @@ class MoradaSerializer(WritableNestedModelSerializer):
             "freguesiaid_freguesia",
         ]
 
+"""
+class MoradaSerializer(WritableNestedModelSerializer):
+    utilizadorid_utilizador = UtilizadorRegistroSerializer()
+    freguesiaid_freguesia = FreguesiaSerializer()
+
+    class Meta:
+        model = Morada
+        fields = [
+            "id_morada",
+            "descricao",
+            "utilizadorid_utilizador",
+            "freguesiaid_freguesia",
+        ]
+"""
+
 class TipoContactoSerializer(WritableNestedModelSerializer):
 
     class Meta:
@@ -111,8 +155,15 @@ class TipoContactoSerializer(WritableNestedModelSerializer):
         fields = ["id_tipo_contacto", "descricao"]
 
 
+class ContactoSerializer(serializers.ModelSerializer):
+    tipo_contactoid_tipo_contacto = TipoContactoSerializer()
+
+    class Meta:
+        model = Contacto
+        fields = ["id_contacto", "descricao", "tipo_contactoid_tipo_contacto"]
+
+"""
 class ContactoSerializer(WritableNestedModelSerializer):
-    utilizadorid_utilizador = UtilizadorRegistroSerializer()
     tipo_contactoid_tipo_contacto = TipoContactoSerializer()
 
     class Meta:
@@ -123,6 +174,7 @@ class ContactoSerializer(WritableNestedModelSerializer):
             "utilizadorid_utilizador",
             "tipo_contactoid_tipo_contacto",
         ]
+"""
 
 
 class AdministradorSerializer(WritableNestedModelSerializer):
@@ -135,13 +187,15 @@ class AdministradorSerializer(WritableNestedModelSerializer):
 
 class CondutorSerializer(WritableNestedModelSerializer):
     utilizadorid_utilizador = UtilizadorRegistroSerializer()
+    doc_reg_criminal = serializers.FileField(required=False, allow_null=True)
+    doc_comprov_residencia = serializers.FileField(required=False, allow_null=True)
 
     class Meta:
         model = Condutor
         fields = [
             "id_condutor",
-            "documento_reg_criminal",
-            "documento_comprov_residencia",
+            "doc_reg_criminal",
+            "doc_comprov_residencia",
             "reputacao",
             "data_criacao",
             "utilizadorid_utilizador",
@@ -168,16 +222,13 @@ class CustomTokenSerializer(serializers.Serializer):
         senha = attrs.get("senha")
 
         try:
-            # Busca pelo utilizador utilizando o email fornecido
             user = Utilizador.objects.get(email=email)
         except Utilizador.DoesNotExist:
             raise serializers.ValidationError(_("Email ou senha inválidos"))
 
-        # Verifica a senha fornecida com a senha criptografada
         if not check_password(senha, user.senha):
             raise serializers.ValidationError(_("Email ou senha inválidos"))
 
-        # Gera os tokens de acesso e refresh para o usuário
         refresh = RefreshToken.for_user(user)
 
         return {
@@ -185,10 +236,9 @@ class CustomTokenSerializer(serializers.Serializer):
             "access": str(refresh.access_token),
         }
 
-# Serializer do Utilizador Tokenizado para Alterar Senha
 class AlterarSenhaSerializer(serializers.Serializer):
-    senha_atual = serializers.CharField(write_only=True)  # Para verificar a senha atual
-    nova_senha = serializers.CharField(write_only=True)  # Para a nova senha
+    senha_atual = serializers.CharField(write_only=True)  
+    nova_senha = serializers.CharField(write_only=True)  
 
     def validate_nova_senha(self, value):
         # Validando a nova senha
@@ -212,3 +262,17 @@ class AlterarSenhaSerializer(serializers.Serializer):
         instance.senha = make_password(nova_senha)
         instance.save()
         return instance
+
+class ChangePasswordSerializer(serializers.Serializer):
+    old_password = serializers.CharField(write_only=True)
+    new_password = serializers.CharField(write_only=True)
+    confirm_new_password = serializers.CharField(write_only=True)
+    
+    def validate(self, data):
+        if data['new_password'] != data['confirm_new_password']:
+            raise ValidationError(_('As senhas novas não coincidem.'))
+        return data
+    
+    def save(self, user):
+        user.set_password(self.validated_data['new_password'])
+        user.save()

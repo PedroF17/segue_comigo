@@ -4,28 +4,6 @@ from rest_framework import serializers
 from projeto.models import *
 
 
-class PaisSerializer(WritableNestedModelSerializer):
-
-    class Meta:
-        model = Pais
-        fields = ["id_pais", "nome"]
-
-
-class NacionalidadeSerializer(WritableNestedModelSerializer):
-    paisid_pais = PaisSerializer()
-
-    class Meta:
-        model = Nacionalidade
-        fields = ["id_nacionalidade", "paisid_pais"]
-
-
-class EstadoCivilSerializer(WritableNestedModelSerializer):
-
-    class Meta:
-        model = EstadoCivil
-        fields = ["id_estado_civil", "descricao"]
-
-
 class GrupoSerializer(WritableNestedModelSerializer):
 
     class Meta:
@@ -33,10 +11,9 @@ class GrupoSerializer(WritableNestedModelSerializer):
         fields = ["id_grupo", "nome", "data_criacao"]
 
 
-class UtilizadorSerializer(WritableNestedModelSerializer):
+# Serializer do Utilizador para Registo
+class UtilizadorRegistroSerializer(WritableNestedModelSerializer):
     grupoid_grupo = GrupoSerializer()
-    estado_civilid_estado_civil = EstadoCivilSerializer()
-    nacionalidadeid_nacionalidade = NacionalidadeSerializer()
 
     class Meta:
         model = Utilizador
@@ -51,90 +28,90 @@ class UtilizadorSerializer(WritableNestedModelSerializer):
             "grupoid_grupo",
             "estado_civilid_estado_civil",
             "nacionalidadeid_nacionalidade",
-            "senha",
+            "password",
+            "email",
         ]
+        extra_kwargs = {
+            "password" : {"write_only": True}
+        }
 
-
-class AdministradorSerializer(WritableNestedModelSerializer):
-    utilizadorid_utilizador = UtilizadorSerializer()
-
-    class Meta:
-        model = Administrador
-        fields = ["id_administrador", "utilizadorid_utilizador"]
-
-
-class TipoAlertaSerializer(WritableNestedModelSerializer):
-
-    class Meta:
-        model = TipoAlerta
-        fields = ["id_tipo_alerta", "descricao"]
-
-
-class AlertaSerializer(WritableNestedModelSerializer):
-    utilizadorid_utilizador = UtilizadorSerializer()
-    administradorid_administrador = AdministradorSerializer()
-    tipo_alertaid_tipo_alerta = TipoAlertaSerializer()
-
-    class Meta:
-        model = Alerta
-        fields = [
-            "id_alerta",
-            "descricao",
-            "utilizadorid_utilizador",
-            "administradorid_administrador",
-            "tipo_alertaid_tipo_alerta",
-        ]
-
+    def create(self, validated_data):
+        password = validated_data.pop("password")
+        validated_data["password"] = make_password(password)
+        return super().create(validated_data)
 
 class CondutorSerializer(WritableNestedModelSerializer):
-    utilizadorid_utilizador = UtilizadorSerializer()
+    #utilizadorid_utilizador = UtilizadorSerializer()
+    doc_reg_criminal = serializers.FileField(required=False, allow_null=True)
+    doc_comprov_residencia = serializers.FileField(required=False, allow_null=True)
 
     class Meta:
         model = Condutor
         fields = [
             "id_condutor",
-            "documento_reg_criminal",
-            "documento_comprov_residencia",
+            "doc_reg_criminal",
+            "doc_comprov_residencia",
             "reputacao",
             "data_criacao",
             "utilizadorid_utilizador",
         ]
 
+class CondutorCreateSerializer(WritableNestedModelSerializer):
+    #doc_reg_criminal = serializers.FileField(required=False, allow_null=True)
+    #doc_comprov_residencia = serializers.FileField(required=False, allow_null=True)
 
-class StatusViagemSerializer(WritableNestedModelSerializer):
+    def validate_doc_reg_criminal(self, file):
+        return self._validate_pdf(file, "doc_reg_criminal")
+
+    def validate_doc_comprov_residencia(self, file):
+        return self._validate_pdf(file, "doc_comprov_residencia")
+
+    def _validate_pdf(self, file, field_name):
+        if not file.name.lower().endswith('.pdf'):
+            raise serializers.ValidationError(f"O arquivo '{field_name}' deve estar no formato PDF.")
+
+        if file.size > 300000 * 1024:  # 200 KB
+            raise serializers.ValidationError(f"O arquivo '{field_name}' não pode exceder 200KB.")
+
+        return file
 
     class Meta:
-        model = StatusViagem
-        fields = ["id_status_viagem", "descricao"]
-
-
-class ViagemSerializer(WritableNestedModelSerializer):
-    status_viagemid_status_viagem = StatusViagemSerializer()
-
-    class Meta:
-        model = Viagem
+        model = Condutor
         fields = [
-            "id_viagem",
-            "data_viagem",
-            "distancia_percorrida",
-            "status_viagemid_status_viagem",
+            "id_condutor",
+            "doc_reg_criminal",
+            "doc_comprov_residencia",
+            "reputacao",
+            "data_criacao",
         ]
 
 
-class AvaliacaoSerializer(WritableNestedModelSerializer):
-    viagemid_viagem = ViagemSerializer()
-    condutorid_condutor = CondutorSerializer()
+class CondutorEditSerializer(WritableNestedModelSerializer):
+    #doc_reg_criminal = serializers.FileField(required=False, allow_null=True)
+    #doc_comprov_residencia = serializers.FileField(required=False, allow_null=True)
+
+    def validate_doc_reg_criminal(self, file):
+        return self._validate_pdf(file, "doc_reg_criminal")
+
+    def validate_doc_comprov_residencia(self, file):
+        return self._validate_pdf(file, "doc_comprov_residencia")
+
+    def _validate_pdf(self, file, field_name):
+        if not file.name.lower().endswith('.pdf'):
+            raise serializers.ValidationError(f"O arquivo '{field_name}' deve estar no formato PDF.")
+
+        if file.size > 300000 * 1024:  # 200 KB
+            raise serializers.ValidationError(f"O arquivo '{field_name}' não pode exceder 200KB.")
+
+        return file
 
     class Meta:
-        model = Avaliacao
-        fields = ["id_avaliacao", "nota", "viagemid_viagem", "condutorid_condutor"]
-
-
-class BandeiraCartaoSerializer(WritableNestedModelSerializer):
-
-    class Meta:
-        model = BandeiraCartao
-        fields = ["id_bandeira_cartao", "descricao"]
+        model = Condutor
+        fields = [
+            "id_condutor",
+            "doc_reg_criminal",
+            "doc_comprov_residencia",
+        ]
 
 
 class TipoCategoriaSerializer(WritableNestedModelSerializer):
@@ -160,37 +137,6 @@ class CartaConducaoSerializer(WritableNestedModelSerializer):
             "condutorid_condutor",
             "tipo_categoriaid_tipo_categoria",
         ]
-
-
-class CartaoSerializer(WritableNestedModelSerializer):
-    bandeira_cartaoid_bandeira_cartao = BandeiraCartaoSerializer()
-
-    class Meta:
-        model = Cartao
-        fields = [
-            "id_cc",
-            "digito_seguranca",
-            "data_validade",
-            "token",
-            "bandeira_cartaoid_bandeira_cartao",
-        ]
-
-
-class CartaoUtilizadorSerializer(WritableNestedModelSerializer):
-    utilizadorid_utilizador = UtilizadorSerializer()
-    cartaoid_cc = CartaoSerializer()
-
-    class Meta:
-        model = CartaoUtilizador
-        fields = ["id", "utilizadorid_utilizador", "cartaoid_cc"]
-
-
-class ChatViagemSerializer(WritableNestedModelSerializer):
-    viagemid_viagem = ViagemSerializer()
-
-    class Meta:
-        model = ChatViagem
-        fields = ["id_chat_viagem", "viagemid_viagem"]
 
 
 class TipoVeiculoSerializer(WritableNestedModelSerializer):
@@ -240,6 +186,21 @@ class VeiculoSerializer(WritableNestedModelSerializer):
         ]
 
 
+class CreateVeiculoSerializer(WritableNestedModelSerializer):
+
+    class Meta:
+        model = Veiculo
+        fields = [
+            "id_veiculo",
+            "matricula",
+            "data_fabricacao",
+            "ativo",
+            "tipo_veiculoid_tipo_veiculo",
+            "cor_veiculoid_cor_veiculo",
+            "modelo_veiculoid_modelo_veiculo",
+        ]
+
+
 class CondutorVeiculoSerializer(WritableNestedModelSerializer):
     condutorid_condutor = CondutorSerializer()
     veiculoid_veiculo = VeiculoSerializer()
@@ -256,327 +217,41 @@ class CondutorVeiculoSerializer(WritableNestedModelSerializer):
         ]
 
 
-class DistritoSerializer(WritableNestedModelSerializer):
-    paisid_pais = PaisSerializer()
+class CreateCondutorVeiculoSerializer(WritableNestedModelSerializer):
+
+    def validate_documento_arquivo(self, file):
+        return self._validate_pdf(file, "documento_arquivo")
+
+    def _validate_pdf(self, file, field_name):
+        if not file.name.lower().endswith('.pdf'):
+            raise serializers.ValidationError(f"O arquivo '{field_name}' deve estar no formato PDF.")
+
+        if file.size > 300000 * 1024:  # 200 KB
+            raise serializers.ValidationError(f"O arquivo '{field_name}' não pode exceder 200KB.")
+
+        return file
 
     class Meta:
-        model = Distrito
-        fields = ["id_distrito", "descricao", "paisid_pais"]
-
-
-class ConselhoSerializer(WritableNestedModelSerializer):
-    distritoid_distrito = DistritoSerializer()
-
-    class Meta:
-        model = Conselho
-        fields = ["id_conselho", "descricao", "distritoid_distrito"]
-
-
-class TipoContactoSerializer(WritableNestedModelSerializer):
-
-    class Meta:
-        model = TipoContacto
-        fields = ["id_tipo_contacto", "descricao"]
-
-
-class ContactoSerializer(WritableNestedModelSerializer):
-    utilizadorid_utilizador = UtilizadorSerializer()
-    tipo_contactoid_tipo_contacto = TipoContactoSerializer()
-
-    class Meta:
-        model = Contacto
+        model = CondutorVeiculo
         fields = [
-            "id_contacto",
-            "descricao",
-            "utilizadorid_utilizador",
-            "tipo_contactoid_tipo_contacto",
-        ]
-
-
-class DadosMbSerializer(WritableNestedModelSerializer):
-
-    class Meta:
-        model = DadosMb
-        fields = ["id_mb", "referencia", "entidade", "data_limite"]
-
-
-class StatusDesvioSerializer(WritableNestedModelSerializer):
-
-    class Meta:
-        model = StatusDesvio
-        fields = ["id_status_desvio", "descricao"]
-
-
-class DesvioSerializer(WritableNestedModelSerializer):
-    status_desvioid_status_desvio = StatusDesvioSerializer()
-    viagemid_viagem = ViagemSerializer()
-
-    class Meta:
-        model = Desvio
-        fields = [
-            "id_desvio",
+            "id_condutor_veiculo",
+            "documento_arquivo",
             "data_emissao",
-            "status_desvioid_status_desvio",
-            "viagemid_viagem",
-        ]
-
-
-class FreguesiaSerializer(WritableNestedModelSerializer):
-    conselhoid_conselho = ConselhoSerializer()
-
-    class Meta:
-        model = Freguesia
-        fields = ["id_freguesia", "descricao", "conselhoid_conselho"]
-
-
-class MensagemSerializer(WritableNestedModelSerializer):
-    chat_viagemid_chat_viagem = ChatViagemSerializer()
-    utilizadorid_utilizador = UtilizadorSerializer()
-
-    class Meta:
-        model = Mensagem
-        fields = [
-            "id_mensagem",
-            "valor",
-            "data_envio",
-            "lida",
-            "chat_viagemid_chat_viagem",
-            "utilizadorid_utilizador",
-        ]
-
-
-class MoradaSerializer(WritableNestedModelSerializer):
-    utilizadorid_utilizador = UtilizadorSerializer()
-    freguesiaid_freguesia = FreguesiaSerializer()
-
-    class Meta:
-        model = Morada
-        fields = [
-            "id_morada",
-            "descricao",
-            "utilizadorid_utilizador",
-            "freguesiaid_freguesia",
-        ]
-
-
-class TipoOcorrenciaSerializer(WritableNestedModelSerializer):
-
-    class Meta:
-        model = TipoOcorrencia
-        fields = ["id_tipo_ocorrencia", "descricao"]
-
-
-class OcorrenciaSerializer(WritableNestedModelSerializer):
-    viagemid_viagem = ViagemSerializer()
-    utilizadorid_utilizador = UtilizadorSerializer()
-    administradorid_administrador = AdministradorSerializer()
-    tipo_ocorrenciaid_tipo_ocorrencia = TipoOcorrenciaSerializer()
-
-    class Meta:
-        model = Ocorrencia
-        fields = [
-            "id_ocorrencia",
-            "descricao",
-            "data_envio",
-            "data_lida",
-            "viagemid_viagem",
-            "utilizadorid_utilizador",
-            "administradorid_administrador",
-            "tipo_ocorrenciaid_tipo_ocorrencia",
-        ]
-
-
-class TipoPagamentoSerializer(WritableNestedModelSerializer):
-    dados_mbid_mb = DadosMbSerializer()
-    cartaoid_cc = CartaoSerializer()
-
-    class Meta:
-        model = TipoPagamento
-        fields = ["id_tipo_pagamento", "descricao", "dados_mbid_mb", "cartaoid_cc"]
-
-
-class PassageiroSerializer(WritableNestedModelSerializer):
-    utilizadorid_utilizador = UtilizadorSerializer()
-
-    class Meta:
-        model = Passageiro
-        fields = ["id_passageiro", "data_criacao", "utilizadorid_utilizador"]
-
-
-class ReservaSerializer(WritableNestedModelSerializer):
-    utilizadorid_utilizador = UtilizadorSerializer()
-    condutorid_condutor = CondutorSerializer()
-    passageiroid_passageiro = PassageiroSerializer()
-
-    class Meta:
-        model = Reserva
-        fields = [
-            "id_reserva",
-            "data_emissao",
-            "valor",
-            "utilizadorid_utilizador",
+            "data_validade",
             "condutorid_condutor",
-            "passageiroid_passageiro",
+            "veiculoid_veiculo",
         ]
 
 
-class PagamentoSerializer(WritableNestedModelSerializer):
-    tipo_pagamentoid_tipo_pagamento = TipoPagamentoSerializer()
-    reservaid_reserva = ReservaSerializer()
+class EditCondutorVeiculoSerializer(WritableNestedModelSerializer):
 
     class Meta:
-        model = Pagamento
+        model = CondutorVeiculo
         fields = [
-            "id_pagamento",
-            "valor",
-            "data_pagamento",
-            "tipo_pagamentoid_tipo_pagamento",
-            "reservaid_reserva",
+            "id_condutor_veiculo",
+            "documento_arquivo",
+            "data_emissao",
+            "data_validade",
+            "condutorid_condutor",
+            "veiculoid_veiculo",
         ]
-
-
-class PassageiroViagemSerializer(WritableNestedModelSerializer):
-    passageiroid_passageiro = PassageiroSerializer()
-    viagemid_viagem = ViagemSerializer()
-    reservaid_reserva = ReservaSerializer()
-
-    class Meta:
-        model = PassageiroViagem
-        fields = [
-            "id_passageiro_viagem",
-            "passageiroid_passageiro",
-            "viagemid_viagem",
-            "reservaid_reserva",
-        ]
-
-
-class PontoSerializer(WritableNestedModelSerializer):
-
-    class Meta:
-        model = Ponto
-        fields = ["id_ponto", "descricao"]
-
-
-class PontoViagemSerializer(WritableNestedModelSerializer):
-    viagemid_viagem = ViagemSerializer()
-    pontoid_ponto = PontoSerializer()
-
-    class Meta:
-        model = PontoViagem
-        fields = ["id_ponto_viagem", "destino", "viagemid_viagem", "pontoid_ponto"]
-
-
-class SuspensaoSerializer(WritableNestedModelSerializer):
-    administradorid_administrador = AdministradorSerializer()
-    utilizadorid_utilizador = UtilizadorSerializer()
-
-    class Meta:
-        model = Suspensao
-        fields = [
-            "id_suspensao",
-            "descricao",
-            "data_inicio",
-            "data_fim",
-            "administradorid_administrador",
-            "utilizadorid_utilizador",
-        ]
-
-
-class AuthGroupSerializer(WritableNestedModelSerializer):
-
-    class Meta:
-        model = AuthGroup
-        fields = ["id", "name"]
-
-
-class DjangoContentTypeSerializer(WritableNestedModelSerializer):
-
-    class Meta:
-        model = DjangoContentType
-        fields = ["id", "app_label", "model"]
-
-
-class AuthPermissionSerializer(WritableNestedModelSerializer):
-    content_type = DjangoContentTypeSerializer()
-
-    class Meta:
-        model = AuthPermission
-        fields = ["id", "name", "content_type", "codename"]
-
-
-class AuthGroupPermissionsSerializer(WritableNestedModelSerializer):
-    group = AuthGroupSerializer()
-    permission = AuthPermissionSerializer()
-
-    class Meta:
-        model = AuthGroupPermissions
-        fields = ["id", "group", "permission"]
-
-
-class AuthUserSerializer(WritableNestedModelSerializer):
-
-    class Meta:
-        model = AuthUser
-        fields = [
-            "id",
-            "password",
-            "last_login",
-            "is_superuser",
-            "username",
-            "first_name",
-            "last_name",
-            "email",
-            "is_staff",
-            "is_active",
-            "date_joined",
-        ]
-
-
-class AuthUserGroupsSerializer(WritableNestedModelSerializer):
-    user = AuthUserSerializer()
-    group = AuthGroupSerializer()
-
-    class Meta:
-        model = AuthUserGroups
-        fields = ["id", "user", "group"]
-
-
-class AuthUserUserPermissionsSerializer(WritableNestedModelSerializer):
-    user = AuthUserSerializer()
-    permission = AuthPermissionSerializer()
-
-    class Meta:
-        model = AuthUserUserPermissions
-        fields = ["id", "user", "permission"]
-
-
-class DjangoAdminLogSerializer(WritableNestedModelSerializer):
-    content_type = DjangoContentTypeSerializer()
-    user = AuthUserSerializer()
-
-    class Meta:
-        model = DjangoAdminLog
-        fields = [
-            "id",
-            "action_time",
-            "object_id",
-            "object_repr",
-            "action_flag",
-            "change_message",
-            "content_type",
-            "user",
-        ]
-
-
-class DjangoMigrationsSerializer(WritableNestedModelSerializer):
-
-    class Meta:
-        model = DjangoMigrations
-        fields = ["id", "app", "name", "applied"]
-
-
-class DjangoSessionSerializer(WritableNestedModelSerializer):
-
-    class Meta:
-        model = DjangoSession
-        fields = ["session_key", "session_data", "expire_date"]
