@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import '../../css/NeighborRideSearch.css'; // Import CSS for styling
 
-function NeighborRideSearch({ onSearch }) {
+function NeighborRideSearch() {
     const [origin, setOrigin] = useState('');
     const [destination, setDestination] = useState('');
     const [date, setDate] = useState('');
+    const navigate = useNavigate();
 
     const handleOriginChange = (event) => {
         setOrigin(event.target.value);
@@ -20,12 +22,12 @@ function NeighborRideSearch({ onSearch }) {
 
     const handleSubmit = (event) => {
         event.preventDefault();
-        if (onSearch) {
-            onSearch({ origin, destination, date });
-        } else {
-            console.log('Pesquisa de boleia:', { origin, destination, date });
-            // Aqui você chamaria a função para buscar as boleias
-        }
+        const queryParams = new URLSearchParams();
+        if (origin) queryParams.append('origin', origin);
+        if (destination) queryParams.append('destination', destination);
+        if (date) queryParams.append('date', date);
+
+        navigate(`/resultados?${queryParams.toString()}`);
     };
 
     return (
