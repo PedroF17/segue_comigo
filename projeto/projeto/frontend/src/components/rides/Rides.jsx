@@ -1,23 +1,30 @@
+import React from 'react';
+import '../../css/Rides.css';
 
-function Rides({ride}) {
-
-    function onFavoriteClick() {
-        alert("Favorite clicked!")
-    }
-
-    return  <div className = "ride">
-                <div className = "ride_img">
-                    <img src = {ride.url} alt = {ride.title}/>
-                    <div className = "ride_overlay">
-                        <button className = "favorite_btn" onClick={onFavoriteClick}> ♥ </button>
-                    </div>
-                </div>
-                <div className = "ride_info">
-                    <h3>{ride.title}</h3>
-                    <p><b>{ride.origin}</b><t><b>{ride.destiny}</b></t></p>
-                    <p>{ride.departure}<t>{ride.arrive}</t></p>
-                    <p>{ride.description}</p>
-                </div>
+function Rides({ ride }) {
+    return (
+        <div className="ride-card">
+            <div className="ride-image">
+                <img src={ride.imageUrl} alt={`Boleia de ${ride.driver}`} />
             </div>
+            <div className="ride-details">
+                <h3>{ride.driver} {ride.agency && `(${ride.agency})`}</h3>
+                <p>De: {ride.origin} para: {ride.destination}</p>
+                <p>Data: {ride.date}, Hora: {ride.time}</p>
+                <p>Lugares Disponíveis: {ride.seatsAvailable}</p>
+            </div>
+            <div className="ride-pricing">
+                <span className="price">${ride.price}</span>
+                <button className="buy-button">Comprar</button>
+                <button className="view-details-button">Ver Detalhes</button>
+            </div>
+            {ride.rating && (
+                <div className="ride-rating">
+                    Avaliação: {ride.rating} <span className="star">★</span>
+                </div>
+            )}
+        </div>
+    );
 }
-export default Rides
+
+export default Rides;
