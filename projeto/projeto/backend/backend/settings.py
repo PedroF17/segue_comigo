@@ -45,14 +45,17 @@ INSTALLED_APPS = [
     
     "projeto.apps.ProjetoConfig",
     "autenticacao.apps.AutenticacaoConfig",
-    #"comunicacao.apps.ComunicacaoConfig",
+    "comunicacao.apps.ComunicacaoConfig",
     "condutor.apps.CondutorConfig",
     #"pagamento.apps.PagamentoConfig",
-    #"viagem.apps.ViagemConfig",
+    "viagem.apps.ViagemConfig",
     #api_auth.apps.ApiAuthConfig",
 ]
 
+CORS_ORIGIN_ALLOW_ALL = True
+
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",

@@ -41,7 +41,7 @@ function Login() {
     }
 
     // --- ADJUST THE URL HERE ---
-    const loginUrl = 'http://localhost:8000/api/auth/login/'; // Replace with your actual Django login URL
+    const loginUrl = 'http://127.0.0.1:8000/utilizador/login/'; // Replace with your actual Django login URL
 
     try {
       const response = await fetch(loginUrl, {
