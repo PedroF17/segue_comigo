@@ -6,6 +6,8 @@ import {Link} from "react-router-dom";
 function Login() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [error, setError] = useState('');
+    const [loginSuccess, setLoginSuccess] = useState(false);
     const [rememberMe, setRememberMe] = useState(false);
 
     const handleEmailChange = (event) => {
@@ -20,10 +22,52 @@ function Login() {
         setRememberMe(event.target.checked);
     };
 
-    const handleSubmit = (event) => {
-        event.preventDefault();
-        // Handle login logic here
-        console.log('Login submitted:', { email, password, rememberMe });
+    const handleSubmit = async (event) => {
+    event.preventDefault();
+    setError('');
+    setLoginSuccess(false);
+
+    if (!email.trim()) {
+      setError('Email is required.');
+      return;
+    } else if (!/\S+@\S+\.\S+/.test(email)) {
+      setError('Invalid email format.');
+      return;
+    }
+
+    if (!password) {
+      setError('Password is required.');
+      return;
+    }
+
+    // --- ADJUST THE URL HERE ---
+    const loginUrl = 'http://localhost:8000/api/auth/login/'; // Replace with your actual Django login URL
+
+    try {
+      const response = await fetch(loginUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email, password }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        setLoginSuccess(true);
+        // Handle successful login (e.g., store token, redirect)
+        console.log('Login successful:', data.message);
+        // Example: Store a token in local storage
+        // localStorage.setItem('authToken', data.token);
+        // Example: Redirect to a dashboard page
+        // window.location.href = '/dashboard';
+      } else {
+        setError(data.error || 'Login failed.');
+      }
+    } catch (error) {
+      setError('Network error. Please try again.');
+    }
     };
 
     return (
@@ -34,6 +78,8 @@ function Login() {
                 </div>
                 <div className="login-form">
                     <h2 className="login-title">Login</h2>
+                    {error && <p className="error-message">{error}</p>}
+                    {loginSuccess && <p className="success-message">Login successful!</p>}
                     <p className="login-subtitle">Faça Login para aceder à sua conta Segue Comigo</p>
                     <form onSubmit={handleSubmit}>
                         <div className="form-group">

@@ -10,6 +10,8 @@ function RegisterForm() {
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
     const [agreeTerms, setAgreeTerms] = useState(false);
+    const [error, setError] = useState('');
+    const [successMessage, setSuccessMessage] = useState('');
 
     const handleFirstNameChange = (event) => {
         setFirstName(event.target.value);
@@ -35,19 +37,76 @@ function RegisterForm() {
         setAgreeTerms(event.target.checked);
     };
 
-    const handleSubmit = (event) => {
-        event.preventDefault();
-        // Handle registration logic here
-        console.log('Registration submitted:', {
-            firstName,
-            lastName,
-            email,
-            password,
-            confirmPassword,
-            agreeTerms,
-        });
-        // You would typically send this data to your backend
-    };
+const handleSubmit = async (event) => {
+    event.preventDefault();
+    setError('');
+    setSuccessMessage('');
+
+    if (!firstName.trim()) {
+      setError('First name is required.');
+      return;
+    }
+
+    if (!lastName.trim()) {
+      setError('Last name is required.');
+      return;
+    }
+
+    if (!email.trim()) {
+      setError('Email is required.');
+      return;
+    } else if (!/\S+@\S+\.\S+/.test(email)) {
+      setError('Invalid email format.');
+      return;
+    }
+
+    if (!password) {
+      setError('Password is required.');
+      return;
+    } else if (password.length < 6) {
+      setError('Password must be at least 6 characters long.');
+      return;
+    }
+
+    if (password !== confirmPassword) {
+      setError('Passwords do not match.');
+      return;
+    }
+
+    if (!agreeTerms) {
+      setError('You must agree to the terms and conditions.');
+      return;
+    }
+
+    const registrationUrl = 'http://localhost:8000/api/auth/register/'; // Replace with our actual Django registration URL
+    try {
+      const response = await fetch(registrationUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ firstName, lastName, email, password }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        setSuccessMessage(data.message);
+        // Optionally reset the form
+        setFirstName('');
+        setLastName('');
+        setEmail('');
+        setPassword('');
+        setConfirmPassword('');
+        setAgreeTerms(false);
+      } else {
+        setError(data.error || 'Registration failed.');
+      }
+    } catch (error) {
+      setError('Network error. Please try again.');
+    }
+
+};
 
     return (
         <div className="register-container">
@@ -60,6 +119,8 @@ function RegisterForm() {
                     <div className="name-fields">
                         <div className="form-group">
                             <h2 className="register-title">Registo</h2>
+                            {error && <p className="error-message">{error}</p>}
+                            {successMessage && <p className="success-message">{successMessage}</p>}
                             <label htmlFor="firstName">Primeiro Nome</label>
                             <input
                                 type="text"
