@@ -14,6 +14,8 @@ function NavBar() {
                 <Link to ="/favorites" className="navbar-link">Favoritos</Link>
                 <Link to ="/login" className="navbar-link">Login</Link>
                 <Link to ="/admin" className="navbar-link">Admin</Link>
+                <Link to ="/os-meus-tickets" className="navbar-link">Meus Tickets</Link>
+                <Link to ="/feedback-boleias" className="navbar-link">Feedback Boleias</Link>
             </div>
         </nav>
     )

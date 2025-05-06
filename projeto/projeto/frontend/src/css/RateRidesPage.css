@@ -1,0 +1,45 @@
+.rate-rides-page {
+  font-family: sans-serif;
+  padding: 20px;
+  max-width: 960px;
+  margin: 20px auto;
+  background-color: #f9f9f9;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.rate-rides-page h1 {
+  color: #333;
+  margin-bottom: 20px;
+}
+
+.terms-and-conditions {
+  margin-top: 30px;
+  padding: 15px;
+  border: 1px solid #eee;
+  border-radius: 6px;
+  background-color: #fff;
+}
+
+.terms-and-conditions h2 {
+  color: #333;
+  margin-top: 0;
+  margin-bottom: 15px;
+}
+
+.terms-and-conditions p {
+  margin-bottom: 10px;
+  color: #555;
+  font-size: 0.9em;
+}
+
+.terms-and-conditions ul {
+  padding-left: 20px;
+  margin-bottom: 10px;
+}
+
+.terms-and-conditions li {
+  color: #555;
+  font-size: 0.9em;
+  margin-bottom: 5px;
+}

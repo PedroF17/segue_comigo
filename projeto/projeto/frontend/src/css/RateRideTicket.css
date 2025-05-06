@@ -1,0 +1,154 @@
+.rate-ride-ticket {
+  background-color: #fff;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  margin-bottom: 15px;
+  padding: 15px;
+  display: flex;
+  flex-direction: column;
+}
+
+.ticket-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.ride-icon {
+  font-size: 1.2em;
+  margin-right: 10px;
+  color: #555;
+}
+
+.airline {
+  font-weight: bold;
+  color: #333;
+  margin-right: 15px;
+}
+
+.remaining-places {
+  font-size: 0.9em;
+  color: #777;
+}
+
+.ticket-details {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr auto; /* Adicionamos uma coluna para os botões */
+  gap: 10px;
+  align-items: center; /* Alinhar verticalmente os itens */
+}
+
+.ticket-details .label {
+  font-size: 0.8em;
+  color: #777;
+  margin-bottom: 5px;
+}
+
+.ticket-details .location {
+  font-weight: bold;
+  color: #333;
+}
+
+.ticket-details .airport {
+  font-size: 0.9em;
+  color: #555;
+}
+
+.ticket-details .date-time {
+  font-size: 0.9em;
+  color: #555;
+}
+
+.status-section {
+  text-align: center;
+}
+
+.status-section .status {
+  padding: 8px 12px;
+  border-radius: 4px;
+  color: white;
+  font-weight: bold;
+  display: inline-block;
+}
+
+.actions-section {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end; /* Alinhar os botões à direita */
+}
+
+.feedback-button,
+.cancel-button {
+  padding: 8px 12px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.9em;
+}
+
+.feedback-button {
+  background-color: #4CAF50; /* Cor verde para feedback */
+  color: white;
+}
+
+.cancel-button {
+  background-color: #f44336; /* Cor vermelha para cancelar */
+  color: white;
+}
+
+.feedback-button:hover,
+.cancel-button:hover {
+  opacity: 0.8;
+}
+
+.feedback-section {
+  margin-top: 20px;
+  padding-top: 15px;
+  border-top: 1px solid #eee;
+}
+
+.feedback-section h3 {
+  margin-top: 0;
+  margin-bottom: 10px;
+  color: #333;
+}
+
+.feedback-input,
+.anomaly-input {
+  margin-bottom: 15px;
+}
+
+.feedback-input label,
+.anomaly-input label {
+  display: block;
+  margin-bottom: 5px;
+  color: #555;
+  font-weight: bold;
+}
+
+.feedback-input textarea,
+.anomaly-input textarea {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  margin-bottom: 10px;
+  resize: vertical; /* Permite redimensionar verticalmente */
+}
+
+.feedback-input button,
+.anomaly-input button {
+  background-color: #007bff; /* Cor primária para os botões */
+  color: white;
+  border: none;
+  padding: 10px 15px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.9em;
+  transition: background-color 0.3s ease;
+}
+
+.feedback-input button:hover,
+.anomaly-input button:hover {
+  background-color: #0056b3;
+}
