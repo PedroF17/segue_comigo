@@ -1,0 +1,123 @@
+.ride-tickets-page {
+  font-family: sans-serif;
+  padding: 20px;
+  max-width: 960px;
+  margin: 20px auto;
+  background-color: #f9f9f9;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.ride-tickets-page h1 {
+  color: #333;
+  margin-bottom: 10px;
+}
+
+.ride-tickets-page .important-note {
+  color: #777;
+  font-size: 0.9em;
+  margin-bottom: 20px;
+}
+
+.ride-ticket {
+  background-color: #fff;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  margin-bottom: 15px;
+  padding: 15px;
+  display: flex;
+  flex-direction: column;
+}
+
+.ticket-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.ride-icon {
+  font-size: 1.2em;
+  margin-right: 10px;
+  color: #555;
+}
+
+.airline {
+  font-weight: bold;
+  color: #333;
+  margin-right: 15px;
+}
+
+.remaining-places {
+  font-size: 0.9em;
+  color: #777;
+}
+
+.ticket-details {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr;
+  gap: 10px;
+}
+
+.ticket-details .label {
+  font-size: 0.8em;
+  color: #777;
+  margin-bottom: 5px;
+}
+
+.ticket-details .location {
+  font-weight: bold;
+  color: #333;
+}
+
+.ticket-details .airport {
+  font-size: 0.9em;
+  color: #555;
+}
+
+.ticket-details .date-time {
+  font-size: 0.9em;
+  color: #555;
+}
+
+.status-section {
+  text-align: center;
+}
+
+.status-section .status {
+  padding: 8px 12px;
+  border-radius: 4px;
+  color: white;
+  font-weight: bold;
+  display: inline-block;
+}
+
+.terms-and-conditions {
+  margin-top: 30px;
+  padding: 15px;
+  border: 1px solid #eee;
+  border-radius: 6px;
+  background-color: #fff;
+}
+
+.terms-and-conditions h2 {
+  color: #333;
+  margin-top: 0;
+  margin-bottom: 15px;
+}
+
+.terms-and-conditions p {
+  margin-bottom: 10px;
+  color: #555;
+  font-size: 0.9em;
+}
+
+.terms-and-conditions ul {
+  padding-left: 20px;
+  margin-bottom: 10px;
+}
+
+.terms-and-conditions li {
+  color: #555;
+  font-size: 0.9em;
+  margin-bottom: 5px;
+}

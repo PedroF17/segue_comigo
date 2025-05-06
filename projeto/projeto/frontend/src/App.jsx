@@ -7,6 +7,7 @@ import Register from "./pages/Register.jsx";
 import Admin from "./pages/Admin.jsx"
 import NavBar from "./components/NavBar";
 import RidesSearchResult from './pages/RidesSearchResult.jsx';
+import RideTicketsPage from "./pages/RideTicketsPage.jsx";
 
 function App() {
 
@@ -21,6 +22,7 @@ function App() {
                     <Route path="/favorites" element={<Favorites/>}/>
                     <Route path="/admin" element={<Admin/>}/>
                     <Route path="/resultados" element={<RidesSearchResult />} />
+                    <Route path="/os-meus-tickets" element={<RideTicketsPage />} />
                 </Routes>
             </main>
         </div>
