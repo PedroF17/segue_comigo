@@ -443,8 +443,67 @@ class FinalizarReservaView(APIView):
             if reserva.status_reservaid_status_reserva.id_status_reserva != 2:
                 return Response({'error': 'Reserva não está em estado válido para conversão (status diferente de 2).'}, status=status.HTTP_400_BAD_REQUEST)
 
-            if not Pagamento.objects.filter(reservaid_reserva=reserva).exists():
-                return Response({'error': 'Não existe pagamento associado a esta reserva.'}, status=status.HTTP_400_BAD_REQUEST)
+            # Atualizar status da reserva para 3
+            reserva.status_reservaid_status_reserva_id = 3  # ID 3 = novo status
+            reserva.save()
+
+            viagem = Viagem.objects.create(
+                data_viagem=reserva.data_viagem,
+                distancia_percorrida=0,
+                status_viagemid_status_viagem_id=1, 
+                condutorid_condutor=reserva.condutorid_condutor
+            )
+
+            PassageiroViagem.objects.create(
+                passageiroid_passageiro=reserva.passageiroid_passageiro,
+                viagemid_viagem=viagem,
+                reservaid_reserva=reserva
+            )
+
+            pontos_reserva = PontoReserva.objects.filter(reservaid_reserva=reserva)
+
+            for ponto_reserva in pontos_reserva:
+                PontoViagem.objects.create(
+                    destino=ponto_reserva.destino,
+                    viagemid_viagem=viagem,
+                    pontoid_ponto=ponto_reserva.pontoid_ponto
+                )
+
+            if reserva.condutorid_condutor:
+                condutor_destino = Condutor.objects.get(id_condutor=reserva.condutorid_condutor.id_condutor)
+                utilizador_destino = Utilizador.objects.get(id_utilizador=condutor_destino.utilizadorid_utilizador.id_utilizador)
+                descricao = f"Viagem confirmada ({reserva.id_reserva})."
+
+                AlertaView.alerta_interno(descricao, utilizador_destino.id_utilizador, 1)
+
+            return Response({'success': 'Reserva convertida em Viagem com sucesso.'}, status=status.HTTP_200_OK)
+
+        except Exception as e:
+            return Response({'error': f'Erro ao atualizar reserva: {str(e)}'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+# Finalizar reserva aprovada (apenas para Passageiros) (VERSAO SEM PAGAMENTO)
+class FinalizarReserva2View(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def put(self, request, pk):
+        user = request.user
+        if not CheckPassageiroView.check_passageiro(request.user):
+            return Response(
+                {"detail": "Permissão Negada."},
+                status=status.HTTP_403_FORBIDDEN
+            )
+
+        try:
+            reserva = get_object_or_404(Reserva, id_reserva=pk)
+
+            # Verificar se a reserva pertence ao utilizador logado
+            if reserva.utilizadorid_utilizador.id_utilizador != request.user.id_utilizador:
+                return Response({'error': 'Não autorizado para alterar esta reserva.'}, status=status.HTTP_403_FORBIDDEN)
+
+            # Verificar se status da reserva é 2
+            if reserva.status_reservaid_status_reserva.id_status_reserva != 2:
+                return Response({'error': 'Reserva não está em estado válido para conversão (status diferente de 2).'}, status=status.HTTP_400_BAD_REQUEST)
 
             # Atualizar status da reserva para 3
             reserva.status_reservaid_status_reserva_id = 3  # ID 3 = novo status
@@ -1110,3 +1169,28 @@ class FinalizarViagemView(APIView):
         viagem.save()
 
         return Response({'message': 'Viagem finalizada com sucesso.'}, status=status.HTTP_200_OK)
+
+
+"""
+PONTO - Listar Pontos
+ 
+    [GET]
+
+"""
+class PontoView(APIView):
+
+    def get_ponto(self, pk):
+        try:
+            pontos = Ponto.objects.get(id_ponto=pk)
+            return pontos
+        except Ponto.DoesNotExist:
+            raise Http404
+
+    def get(self, request, pk=None):
+        if pk:
+            data = self.get_ponto(pk)
+            serializer = PontoSerializer(data)
+        else:
+            data = Ponto.objects.all()
+            serializer = PontoSerializer(data, many=True)
+        return Response(serializer.data)

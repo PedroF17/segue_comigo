@@ -1,11 +1,5 @@
-# This is an auto-generated Django model module.
-# You'll have to do the following manually to clean this up:
-#   * Rearrange models' order
-#   * Make sure each model has one field with primary_key=True
-#   * Make sure each ForeignKey and OneToOneField has `on_delete` set to the desired behavior
-#   * Remove `managed = False` lines if you wish to allow Django to create, modify, and delete the table
-# Feel free to rename the models, but don't rename db_table values or field names.
 from django.db import models
+from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin, BaseUserManager
 
 
 class Administrador(models.Model):
@@ -93,11 +87,13 @@ class ChatViagem(models.Model):
         managed = False
         db_table = 'Chat_Viagem'
 
-
+"""
 class Condutor(models.Model):
-    id_condutor = models.AutoField(db_column='ID_condutor', primary_key=True)  # Field name made lowercase.
-    documento_reg_criminal = models.CharField(db_column='Documento_reg_criminal', max_length=255, blank=True, null=True)  # Field name made lowercase.
-    documento_comprov_residencia = models.CharField(db_column='Documento_comprov_residencia', max_length=255, blank=True, null=True)  # Field name made lowercase.
+    id_condutor = models.AutoField(db_column='ID_condutor', primary_key=True)  # Field name made lowercase. 
+    doc_reg_criminal = models.CharField(db_column='Doc_reg_criminal', max_length=255, blank=True, null=True)
+    doc_comprov_residencia = models.CharField(db_column='Doc_comprov_residencia', max_length=255, blank=True, null=True)
+    #documento_reg_criminal = models.CharField(db_column='Documento_reg_criminal', max_length=255, blank=True, null=True)  # Field name made lowercase.
+    #documento_comprov_residencia = models.CharField(db_column='Documento_comprov_residencia', max_length=255, blank=True, null=True)  # Field name made lowercase.
     reputacao = models.IntegerField(db_column='Reputacao', blank=True, null=True)  # Field name made lowercase.
     data_criacao = models.DateField(db_column='Data_criacao', blank=True, null=True)  # Field name made lowercase.
     utilizadorid_utilizador = models.ForeignKey('Utilizador', models.DO_NOTHING, db_column='UtilizadorID_utilizador')  # Field name made lowercase.
@@ -105,11 +101,23 @@ class Condutor(models.Model):
     class Meta:
         managed = False
         db_table = 'Condutor'
+"""
+class Condutor(models.Model):
+    id_condutor = models.AutoField(db_column='ID_condutor', primary_key=True)
+    doc_reg_criminal = models.FileField(upload_to='docs/condutores/', db_column='Doc_reg_criminal', blank=True, null=True)
+    doc_comprov_residencia = models.FileField(upload_to='docs/condutores/', db_column='Doc_comprov_residencia', blank=True, null=True)
+    reputacao = models.IntegerField(db_column='Reputacao', blank=True, null=True)
+    data_criacao = models.DateField(db_column='Data_criacao', blank=True, null=True)
+    utilizadorid_utilizador = models.ForeignKey('Utilizador', models.DO_NOTHING, db_column='UtilizadorID_utilizador')
 
+    class Meta:
+        managed = False
+        db_table = 'Condutor'
 
 class CondutorVeiculo(models.Model):
     id_condutor_veiculo = models.AutoField(db_column='ID_condutor_veiculo', primary_key=True)  # Field name made lowercase.
-    documento_arquivo = models.CharField(db_column='Documento_arquivo', max_length=255, blank=True, null=True)  # Field name made lowercase.
+    #documento_arquivo = models.CharField(db_column='Documento_arquivo', max_length=255, blank=True, null=True)  # Field name made lowercase.
+    documento_arquivo = models.FileField(upload_to='docs/condutores/', db_column='Documento_arquivo', blank=True, null=True)
     data_emissao = models.DateField(db_column='Data_emissao', blank=True, null=True)  # Field name made lowercase.
     data_validade = models.DateField(db_column='Data_validade', blank=True, null=True)  # Field name made lowercase.
     condutorid_condutor = models.ForeignKey(Condutor, models.DO_NOTHING, db_column='CondutorID_condutor')  # Field name made lowercase.
@@ -187,7 +195,7 @@ class EstadoCivil(models.Model):
     descricao = models.CharField(db_column='Descricao', max_length=20, blank=True, null=True)  # Field name made lowercase.
 
     class Meta:
-        managed = False
+        managed = True
         db_table = 'Estado_Civil'
 
 
@@ -207,7 +215,7 @@ class Grupo(models.Model):
     data_criacao = models.DateField(db_column='Data_criacao', blank=True, null=True)  # Field name made lowercase.
 
     class Meta:
-        managed = False
+        managed = True
         db_table = 'Grupo'
 
 
@@ -259,7 +267,7 @@ class Nacionalidade(models.Model):
     paisid_pais = models.ForeignKey('Pais', models.DO_NOTHING, db_column='PaisID_pais')  # Field name made lowercase.
 
     class Meta:
-        managed = False
+        managed = True
         db_table = 'Nacionalidade'
 
 
@@ -295,7 +303,7 @@ class Pais(models.Model):
     nome = models.CharField(db_column='Nome', max_length=20, blank=True, null=True)  # Field name made lowercase.
 
     class Meta:
-        managed = False
+        managed = True
         db_table = 'Pais'
 
 
@@ -340,6 +348,38 @@ class PontoViagem(models.Model):
         db_table = 'Ponto_Viagem'
 
 
+class PontoReserva(models.Model):
+    id_ponto_reserva = models.AutoField(db_column='ID_ponto_reserva', primary_key=True)  # Field name made lowercase.
+    destino = models.IntegerField(db_column='destino', blank=True, null=True)  # Field name made lowercase.
+    reservaid_reserva = models.ForeignKey('Reserva', models.DO_NOTHING, db_column='ReservaID_reserva')  # Field name made lowercase.
+    pontoid_ponto = models.ForeignKey(Ponto, models.DO_NOTHING, db_column='PontoID_ponto')  # Field name made lowercase.
+
+    class Meta:
+        managed = False
+        db_table = 'Ponto_Reserva'
+
+
+class PontoDesvio(models.Model):
+    id_ponto_desvio = models.AutoField(db_column='ID_ponto_desvio', primary_key=True)  # Field name made lowercase.
+    destino = models.IntegerField(db_column='destino', blank=True, null=True)  # Field name made lowercase.
+    desvioid_desvio = models.ForeignKey('Desvio', models.DO_NOTHING, db_column='desvioid_desvio')  # Field name made lowercase.
+    pontoid_ponto = models.ForeignKey(Ponto, models.DO_NOTHING, db_column='pontoid_ponto')  # Field name made lowercase.
+    original = models.IntegerField(db_column='original', blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'Ponto_Desvio'
+
+
+class StatusReserva(models.Model):
+    id_status_reserva = models.AutoField(db_column='ID_status_reserva', primary_key=True)  # Field name made lowercase.
+    descricao = models.CharField(db_column='Descricao', max_length=20, blank=True, null=True)  # Field name made lowercase.
+
+    class Meta:
+        managed = False
+        db_table = 'Status_Reserva'
+
+
 class Reserva(models.Model):
     id_reserva = models.AutoField(db_column='ID_reserva', primary_key=True)  # Field name made lowercase.
     data_emissao = models.DateField(db_column='Data_emissao', blank=True, null=True)  # Field name made lowercase.
@@ -347,6 +387,9 @@ class Reserva(models.Model):
     utilizadorid_utilizador = models.ForeignKey('Utilizador', models.DO_NOTHING, db_column='UtilizadorID_utilizador')  # Field name made lowercase.
     condutorid_condutor = models.ForeignKey(Condutor, models.DO_NOTHING, db_column='CondutorID_condutor')  # Field name made lowercase.
     passageiroid_passageiro = models.ForeignKey(Passageiro, models.DO_NOTHING, db_column='PassageiroID_passageiro')  # Field name made lowercase.
+    status_reservaid_status_reserva = models.ForeignKey(StatusReserva, models.DO_NOTHING, db_column='Status_reservaID_status_reserva')
+    # data_viagem = models.DateField(db_column='Data_viagem', blank=True, null=True)  # Field name made lowercase.
+    data_viagem = models.DateTimeField(db_column='Data_viagem', blank=True, null=True)
 
     class Meta:
         managed = False
@@ -440,21 +483,53 @@ class TipoVeiculo(models.Model):
         db_table = 'Tipo_Veiculo'
 
 
-class Utilizador(models.Model):
-    id_utilizador = models.AutoField(db_column='ID_utilizador', primary_key=True)  # Field name made lowercase.
-    nome_primeiro = models.CharField(db_column='Nome_Primeiro', max_length=30, blank=True, null=True)  # Field name made lowercase.
-    nome_ultimo = models.CharField(db_column='Nome_Ultimo', max_length=30, blank=True, null=True)  # Field name made lowercase.
-    data_nasc = models.DateField(db_column='Data_nasc', blank=True, null=True)  # Field name made lowercase.
-    genero = models.CharField(db_column='Genero', max_length=1, blank=True, null=True)  # Field name made lowercase.
-    numero_cc = models.IntegerField(db_column='Numero_CC', blank=True, null=True)  # Field name made lowercase.
-    data_criacao = models.DateField(db_column='Data_criacao', blank=True, null=True)  # Field name made lowercase.
+class UtilizadorManager(BaseUserManager):
+    def create_user(self, email, senha=None, **extra_fields):
+        if not email:
+            raise ValueError("O utilizador deve ter um email.")
+        email = self.normalize_email(email)
+        user = self.model(email=email, **extra_fields)
+        user.set_password(senha)
+        user.save(using=self._db)
+        return user
+
+    def create_superuser(self, email, senha=None, **extra_fields):
+        extra_fields.setdefault('is_staff', True)
+        extra_fields.setdefault('is_superuser', True)
+        return self.create_user(email, senha, **extra_fields)
+
+
+class Utilizador(AbstractBaseUser):
+    id_utilizador = models.AutoField(primary_key=True)
+    nome_primeiro = models.CharField(max_length=30, blank=True, null=True)
+    nome_ultimo = models.CharField(max_length=30, blank=True, null=True)
+    data_nasc = models.DateField(blank=True, null=True)
+    genero = models.CharField(max_length=1, blank=True, null=True)
+    numero_cc = models.IntegerField(blank=True, null=True)
+    data_criacao = models.DateField(auto_now_add=True, blank=True, null=True)
+
+    # Associações externas
     grupoid_grupo = models.ForeignKey(Grupo, models.DO_NOTHING, db_column='GrupoID_grupo')  # Field name made lowercase.
     estado_civilid_estado_civil = models.ForeignKey(EstadoCivil, models.DO_NOTHING, db_column='Estado_CivilID_estado_civil')  # Field name made lowercase.
-    nacionalidadeid_nacionalidade = models.ForeignKey(Nacionalidade, models.DO_NOTHING, db_column='NacionalidadeID_nacionalidade')  # Field name made lowercase.
-    senha = models.CharField(db_column='Senha', max_length=128, blank=True, null=True)  # Field name made lowercase.
+    nacionalidadeid_nacionalidade = models.ForeignKey(Nacionalidade, models.DO_NOTHING, db_column='NacionalidadeID_nacionalidade') 
+
+    # Dados do Utilizador Padrão do Django
+    email = models.EmailField(unique=True)
+    password = models.CharField(max_length=128, db_column='Senha')  
+    last_login = models.DateTimeField(blank=True, null=True)   
+    is_superuser = models.BooleanField(default=False)
+    is_active = models.BooleanField(default=True)
+    is_staff = models.BooleanField(default=False)
+
+    objects = UtilizadorManager()
+
+    USERNAME_FIELD = 'email'
+    REQUIRED_FIELDS = ['nome_primeiro', 'nome_ultimo']
+
+    def __str__(self):
+        return self.email
 
     class Meta:
-        managed = False
         db_table = 'Utilizador'
 
 
@@ -474,9 +549,11 @@ class Veiculo(models.Model):
 
 class Viagem(models.Model):
     id_viagem = models.AutoField(db_column='ID_viagem', primary_key=True)  # Field name made lowercase.
-    data_viagem = models.DateField(db_column='Data_viagem', blank=True, null=True)  # Field name made lowercase.
+    # data_viagem = models.DateField(db_column='Data_viagem', blank=True, null=True)  # Field name made lowercase.
+    data_viagem = models.DateTimeField(db_column='Data_viagem', blank=True, null=True)
     distancia_percorrida = models.IntegerField(db_column='Distancia_percorrida', blank=True, null=True)  # Field name made lowercase.
     status_viagemid_status_viagem = models.ForeignKey(StatusViagem, models.DO_NOTHING, db_column='Status_ViagemID_status_viagem')  # Field name made lowercase.
+    condutorid_condutor = models.ForeignKey(Condutor, models.DO_NOTHING, db_column='CondutorID_condutor')  # Field name made lowercase.
 
     class Meta:
         managed = False

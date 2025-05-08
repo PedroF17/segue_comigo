@@ -17,14 +17,14 @@ UTILIZADOR - Criar Utilizador
     
     [POST] "First"
         Body:
-        group_name (input)
+        grupo_nome (input)
         nome_primeiro (input)
         nome_ultimo (input)
         data_nasc (input)
         genero (input)
         numero_cc (input)
-        estado_civilid_estado_civil (input) (estado_civil)
-        nacionalidadeid_nacionalidade (input) (nacionalidade)
+        estado_civilid_estado_civil (input)
+        nacionalidadeid_nacionalidade (input)
         password (input)
         email (input)
 
@@ -38,8 +38,8 @@ UTILIZADOR - Criar Utilizador
         genero (input)
         numero_cc (input)
         grupoid_grupo (input) 
-        estado_civilid_estado_civil (input) (estado_civil)
-        nacionalidadeid_nacionalidade (input) (nacionalidade)
+        estado_civilid_estado_civil (input)
+        nacionalidadeid_nacionalidade (input) 
         password (input)
         email (input)
 
@@ -188,8 +188,8 @@ UTILIZADOR - Dados de um Utilizador
         numero_cc (input)
         data_criacao (input)
         grupoid_grupo (input) (grupo)
-        estado_civilid_estado_civil (input)(estado_civil)
-        nacionalidadeid_nacionalidade (input)(nacionalidade)
+        estado_civilid_estado_civil (input)
+        nacionalidadeid_nacionalidade (input)
         password (input)
         email (input)
 """
@@ -247,8 +247,8 @@ GRUPO - Alterar Dados do Grupo
         numero_cc (input)
         data_criacao (input)
         grupoid_grupo (input) (grupo)
-        estado_civilid_estado_civil (input)(estado_civil)
-        nacionalidadeid_nacionalidade (input)(nacionalidade)
+        estado_civilid_estado_civil (input)
+        nacionalidadeid_nacionalidade (input)
         password (input)
         email (input)
 
@@ -292,7 +292,7 @@ CONTACTO - CRUD do Contacto
 
         Body:
         descricao (input)
-        tipocontactoid_tipo_contacto (input) (tipo_contacto)
+        tipocontactoid_tipo_contacto (input)
 
     [GET]
         Headers: 
@@ -304,7 +304,7 @@ CONTACTO - CRUD do Contacto
 
         Body:
         descricao (input)
-        tipocontactoid_tipo_contacto (input) (tipo_contacto)
+        tipocontactoid_tipo_contacto (input)
 
 """
 class ContactoView(APIView):
@@ -329,10 +329,10 @@ class ContactoView(APIView):
         user = request.user
         if pk:
             contacto = self.get_contact(user, pk)
-            serializer = ContactoSerializer(contacto)
+            serializer = ContactoShowSerializer(contacto)
         else:
             contactos = Contacto.objects.filter(utilizadorid_utilizador=user)
-            serializer = ContactoSerializer(contactos, many=True)
+            serializer = ContactoShowSerializer(contactos, many=True)
         return Response(serializer.data)
 
     def put(self, request, pk=None):
@@ -365,7 +365,7 @@ MORADA - CRUD da Morada
         Body:
         descricao (input)
         utilizadorid_utilizador (input)
-        freguesiaid_freguesia (input) (freguesia)
+        freguesiaid_freguesia (input)
 
     [GET]
         Headers: 
@@ -378,7 +378,7 @@ MORADA - CRUD da Morada
         Body:
         descricao (input)
         utilizadorid_utilizador (input)
-        freguesiaid_freguesia (input) (freguesia)
+        freguesiaid_freguesia (input)
 
     [DELETE]
         Headers: 
@@ -407,10 +407,10 @@ class MoradaView(APIView):
         user = request.user
         if pk:
             morada = self.get_morada(user, pk)
-            serializer = MoradaSerializer(contacto)
+            serializer = MoradaShowSerializer(contacto)
         else:
             moradas = Morada.objects.filter(utilizadorid_utilizador=user)
-            serializer = MoradaSerializer(moradas, many=True)
+            serializer = MoradaShowSerializer(moradas, many=True)
         return Response(serializer.data)
 
     def put(self, request, pk=None):
@@ -477,6 +477,31 @@ class EstadoCivilView(APIView):
         else:
             data = EstadoCivil.objects.all()
             serializer = EstadoCivilSerializer(data, many=True)
+        return Response(serializer.data)
+
+
+"""
+NACIONALIDADE - Listar Nacionalidades
+ 
+    [GET]
+
+"""
+class NacionalidadeView(APIView):
+
+    def get_nacionalidade(self, pk):
+        try:
+            pais = Nacionalidade.objects.get(id_nacionalidade=pk)
+            return pais
+        except Nacionalidade.DoesNotExist:
+            raise Http404
+
+    def get(self, request, pk=None):
+        if pk:
+            data = self.get_pais(pk)
+            serializer = NacionalidadeSerializer(data)
+        else:
+            data = Nacionalidade.objects.all()
+            serializer = NacionalidadeSerializer(data, many=True)
         return Response(serializer.data)
 
 
