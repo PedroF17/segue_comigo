@@ -1,73 +1,59 @@
-import React, { useState } from 'react';
-import '../css/Login.css'; // Import the CSS file
+// src/pages/Login.jsx
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { loginUser } from '../services/auth';
 import '../css/NavBar.css';
-import {Link} from "react-router-dom";
+
+import '../css/Login.css';
 
 function Login() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
-    const [loginSuccess, setLoginSuccess] = useState(false);
     const [rememberMe, setRememberMe] = useState(false);
+    const navigate = useNavigate();
 
-    const handleEmailChange = (event) => {
-        setEmail(event.target.value);
-    };
-
-    const handlePasswordChange = (event) => {
-        setPassword(event.target.value);
-    };
-
-    const handleRememberMeChange = (event) => {
-        setRememberMe(event.target.checked);
-    };
+    // Se o usuário já estiver autenticado, redireciona e faz refresh
+    useEffect(() => {
+        const token = localStorage.getItem('accessToken');
+        if (token) {
+            navigate('/');
+            window.location.reload(); // força recarregamento para refletir o estado autenticado
+        }
+    }, [navigate]);
 
     const handleSubmit = async (event) => {
-    event.preventDefault();
-    setError('');
-    setLoginSuccess(false);
+        event.preventDefault();
+        setError('');
 
-    if (!email.trim()) {
-      setError('Email is required.');
-      return;
-    } else if (!/\S+@\S+\.\S+/.test(email)) {
-      setError('Invalid email format.');
-      return;
-    }
+        if (!email.trim()) {
+            setError('Email é obrigatório.');
+            return;
+        } else if (!/\S+@\S+\.\S+/.test(email)) {
+            setError('Formato de email inválido.');
+            return;
+        }
 
-    if (!password) {
-      setError('Password is required.');
-      return;
-    }
+        if (!password) {
+            setError('Senha é obrigatória.');
+            return;
+        }
 
-    // --- ADJUST THE URL HERE ---
-    const loginUrl = 'http://127.0.0.1:8000/utilizador/login/'; // Replace with your actual Django login URL
+        try {
+            const response = await loginUser(email, password);
 
-    try {
-      const response = await fetch(loginUrl, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ email, password }),
-      });
+            if (response.access && response.refresh) {
+                localStorage.setItem('accessToken', response.access);
+                localStorage.setItem('refreshToken', response.refresh);
 
-      const data = await response.json();
-
-      if (response.ok) {
-        setLoginSuccess(true);
-        // Handle successful login (e.g., store token, redirect)
-        console.log('Login successful:', data.message);
-        // Example: Store a token in local storage
-        // localStorage.setItem('authToken', data.token);
-        // Example: Redirect to a dashboard page
-        // window.location.href = '/dashboard';
-      } else {
-        setError(data.error || 'Login failed.');
-      }
-    } catch (error) {
-      setError('Network error. Please try again.');
-    }
+                navigate('/');
+                window.location.reload(); // força recarregamento após login
+            } else {
+                setError('Login inválido. Verifique as credenciais.');
+            }
+        } catch (err) {
+            setError(err.message || 'Erro na conexão. Tente novamente.');
+        }
     };
 
     return (
@@ -79,8 +65,7 @@ function Login() {
                 <div className="login-form">
                     <h2 className="login-title">Login</h2>
                     {error && <p className="error-message">{error}</p>}
-                    {loginSuccess && <p className="success-message">Login successful!</p>}
-                    <p className="login-subtitle">Faça Login para aceder à sua conta Segue Comigo</p>
+                    <p className="login-subtitle">Faça login para aceder à sua conta Segue Comigo</p>
                     <form onSubmit={handleSubmit}>
                         <div className="form-group">
                             <label htmlFor="email">Email</label>
@@ -89,40 +74,33 @@ function Login() {
                                 id="email"
                                 className="form-control"
                                 value={email}
-                                onChange={handleEmailChange}
+                                onChange={(e) => setEmail(e.target.value)}
                                 required
                             />
                         </div>
                         <div className="form-group">
                             <label htmlFor="password">Palavra-passe</label>
-                            <div className="password-input-wrapper">
-                                <input
-                                    type="password"
-                                    id="password"
-                                    className="form-control"
-                                    value={password}
-                                    onChange={handlePasswordChange}
-                                    required
-                                />
-                                {/* You might add a show/hide password icon here */}
-                            </div>
+                            <input
+                                type="password"
+                                id="password"
+                                className="form-control"
+                                value={password}
+                                onChange={(e) => setPassword(e.target.value)}
+                                required
+                            />
                         </div>
                         <div className="form-group remember-forgot">
                             <label className="remember-me">
                                 <input
                                     type="checkbox"
                                     checked={rememberMe}
-                                    onChange={handleRememberMeChange}
+                                    onChange={(e) => setRememberMe(e.target.checked)}
                                 />
                                 Relembrar-me
                             </label>
-                            <a href="#" className="forgot-password">
-                                Esqueceu-se da Palavra-passe?
-                            </a>
+                            <a href="#" className="forgot-password">Esqueceu-se da Palavra-passe?</a>
                         </div>
-                        <button type="submit" className="login-button">
-                            Login
-                        </button>
+                        <button type="submit" className="login-button">Login</button>
                         <div className="login-separator">
                             <span>ou</span>
                         </div>
@@ -138,7 +116,7 @@ function Login() {
                             </button>
                         </div>
                         <p className="register-link">
-                            Não tem conta na Segue Comigo? <Link to ="/register" ><a href="#">Registe-se!</a></Link>
+                            Não tem conta na Segue Comigo? <a href="/register">Registe-se!</a>
                         </p>
                     </form>
                 </div>

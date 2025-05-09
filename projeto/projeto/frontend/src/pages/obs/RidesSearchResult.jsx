@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import Rides from '../components/rides/Rides'; // Component to display individual ride results
-import '../css/RideResultsPage.css'; // CSS for the results page
-import FilterSidebar from '../components/FilterSidebar'; // Component for filters (optional)
+import Rides from '../../components/rides/Rides.jsx'; // Component to display individual ride results
+import '../../css/RideResultsPage.css'; // CSS for the results page
+import FilterSidebar from '../../components/FilterSidebar.jsx'; // Component for filters (optional)
 
 function RideResultsPage() {
     const [searchParams] = useSearchParams();
