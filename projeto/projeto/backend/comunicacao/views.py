@@ -399,7 +399,6 @@ class UtilizadorAlertaView(APIView):
                 return Response({'error': 'Alerta não encontrado ou não pertence a este utilizador.'}, status=status.HTTP_404_NOT_FOUND)
             serializer = AlertaSerializer(alerta)
         else:
-            # Buscar todos os alertas do utilizador
             alertas = Alerta.objects.filter(utilizadorid_utilizador=utilizador)
             serializer = AlertaSerializer(alertas, many=True)
 
@@ -452,13 +451,10 @@ class ChatViagemView(APIView):
     # Criar chat_viagem (para sistema)
     def criar_chat_viagem(viagem_id):
         try:
-            # Verifica se a viagem existe
             viagem = Viagem.objects.get(id_viagem=viagem_id)
 
-            # Cria o novo chat para a viagem
             novo_chat_viagem = ChatViagem.objects.create(viagemid_viagem=viagem)
 
-            # Retorna o chat criado
             return novo_chat_viagem
 
         except Viagem.DoesNotExist:
@@ -469,10 +465,8 @@ class ChatViagemView(APIView):
     # Deletar chat_viagem (para sistema)
     def deletar_chat_viagem(chat_viagem_id):
         try:
-            # Verifica se o ChatViagem existe
             chat_viagem = ChatViagem.objects.get(id_chat_viagem=chat_viagem_id)
 
-            # Deleta o ChatViagem
             chat_viagem.delete()
 
             return f"ChatViagem com ID {chat_viagem_id} deletado com sucesso."
@@ -483,53 +477,3 @@ class ChatViagemView(APIView):
             raise ValueError(f"Erro ao deletar o ChatViagem: {str(e)}")
 
 
-"""
-MENSAGEM - Criar Chat_Viagem
-
-    [POST]
-
-    [GEŦ]
-
-    [PUT]
-
-    [DELETE]
-
-    [PUT] "Read"
-
-
-"""
-"""
-class MensagemView(APIView):
-    permission_classes = [IsAuthenticated]
-
-    def post(self, request):
-        user = request.user
-
-        valor = request.data.get('valor')
-        chat_viagem_id = request.data.get('chat_viagemid_chat_viagem')
-
-        if not valor or not chat_viagem_id:
-            return Response({'error': 'Campos obrigatórios faltando.'}, status=status.HTTP_400_BAD_REQUEST)
-
-        try:
-            chat_viagem = ChatViagem.objects.get(id_chat_viagem=chat_viagem_id)
-        except ChatViagem.DoesNotExist:
-            return Response({'error': 'Chat de viagem não encontrado.'}, status=status.HTTP_400_BAD_REQUEST)
-
-        try:
-            utilizador = Utilizador.objects.get(id_utilizador=user.id_utilizador)
-        except Utilizador.DoesNotExist:
-            return Response({'error': 'Utilizador não encontrado.'}, status=status.HTTP_404_NOT_FOUND)
-
-        mensagem = Mensagem.objects.create(
-            valor=valor,
-            data_envio=timezone.now().date(),  # Define o dia de hoje
-            lida=0,  # Marca a mensagem como não lida
-            chat_viagemid_chat_viagem=chat_viagem,  # Relaciona com o ChatViagem
-            utilizadorid_utilizador=utilizador  # Relaciona com o utilizador logado
-        )
-
-        serializer = MensagemSerializer(mensagem)
-
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
-"""

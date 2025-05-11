@@ -6,9 +6,10 @@ import Favorites from "./pages/Favorites.jsx";
 import Register from "./pages/Register.jsx";
 import Admin from "./pages/Admin.jsx"
 import NavBar from "./components/NavBar";
-import RidesSearchResult from './pages/obs/RidesSearchResult.jsx';
+import RidesSearchResult from './pages/RidesSearchResult.jsx';
 import RideTicketsPage from "./pages/RideTicketsPage.jsx";
 import RateRidesPage from "./pages/RateRidesPage.jsx";
+import CondutorTicketsPage from './pages/CondutorTicketsPage.jsx';
 
 function App() {
 
@@ -24,6 +25,7 @@ function App() {
                     <Route path="/admin" element={<Admin/>}/>
                     <Route path="/resultados" element={<RidesSearchResult />} />
                     <Route path="/os-meus-tickets" element={<RideTicketsPage />} />
+                    <Route path="/condutor-tickets" element={<CondutorTicketsPage />} />
                     <Route path="/feedback-boleias" element={<RateRidesPage />} />
                 </Routes>
             </main>

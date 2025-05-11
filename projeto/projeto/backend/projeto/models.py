@@ -7,7 +7,7 @@ class Administrador(models.Model):
     utilizadorid_utilizador = models.ForeignKey('Utilizador', models.DO_NOTHING, db_column='UtilizadorID_utilizador')  # Field name made lowercase.
 
     class Meta:
-        managed = False
+        managed = True 
         db_table = 'Administrador'
 
 
@@ -19,7 +19,7 @@ class Alerta(models.Model):
     tipo_alertaid_tipo_alerta = models.ForeignKey('TipoAlerta', models.DO_NOTHING, db_column='Tipo_AlertaID_tipo_alerta')  # Field name made lowercase.
 
     class Meta:
-        managed = False
+        managed = True
         db_table = 'Alerta'
 
 
@@ -30,7 +30,7 @@ class Avaliacao(models.Model):
     condutorid_condutor = models.ForeignKey('Condutor', models.DO_NOTHING, db_column='CondutorID_condutor')  # Field name made lowercase.
 
     class Meta:
-        managed = False
+        managed = True
         db_table = 'Avaliacao'
 
 
@@ -39,7 +39,7 @@ class BandeiraCartao(models.Model):
     descricao = models.CharField(db_column='Descricao', max_length=10, blank=True, null=True)  # Field name made lowercase.
 
     class Meta:
-        managed = False
+        managed = True
         db_table = 'Bandeira_Cartao'
 
 
@@ -54,7 +54,7 @@ class CartaConducao(models.Model):
     tipo_categoriaid_tipo_categoria = models.ForeignKey('TipoCategoria', models.DO_NOTHING, db_column='Tipo_CategoriaID_tipo_categoria')  # Field name made lowercase.
 
     class Meta:
-        managed = False
+        managed = True
         db_table = 'Carta_Conducao'
 
 
@@ -66,7 +66,7 @@ class Cartao(models.Model):
     bandeira_cartaoid_bandeira_cartao = models.ForeignKey(BandeiraCartao, models.DO_NOTHING, db_column='Bandeira_CartaoID_bandeira_cartao')  # Field name made lowercase.
 
     class Meta:
-        managed = False
+        managed = True
         db_table = 'Cartao'
 
 
@@ -75,7 +75,7 @@ class CartaoUtilizador(models.Model):
     cartaoid_cc = models.ForeignKey(Cartao, models.DO_NOTHING, db_column='CartaoID_cc')  # Field name made lowercase.
 
     class Meta:
-        managed = False
+        managed = True
         db_table = 'Cartao_Utilizador'
 
 
@@ -84,24 +84,10 @@ class ChatViagem(models.Model):
     viagemid_viagem = models.ForeignKey('Viagem', models.DO_NOTHING, db_column='ViagemID_viagem')  # Field name made lowercase.
 
     class Meta:
-        managed = False
+        managed = True
         db_table = 'Chat_Viagem'
 
-"""
-class Condutor(models.Model):
-    id_condutor = models.AutoField(db_column='ID_condutor', primary_key=True)  # Field name made lowercase. 
-    doc_reg_criminal = models.CharField(db_column='Doc_reg_criminal', max_length=255, blank=True, null=True)
-    doc_comprov_residencia = models.CharField(db_column='Doc_comprov_residencia', max_length=255, blank=True, null=True)
-    #documento_reg_criminal = models.CharField(db_column='Documento_reg_criminal', max_length=255, blank=True, null=True)  # Field name made lowercase.
-    #documento_comprov_residencia = models.CharField(db_column='Documento_comprov_residencia', max_length=255, blank=True, null=True)  # Field name made lowercase.
-    reputacao = models.IntegerField(db_column='Reputacao', blank=True, null=True)  # Field name made lowercase.
-    data_criacao = models.DateField(db_column='Data_criacao', blank=True, null=True)  # Field name made lowercase.
-    utilizadorid_utilizador = models.ForeignKey('Utilizador', models.DO_NOTHING, db_column='UtilizadorID_utilizador')  # Field name made lowercase.
 
-    class Meta:
-        managed = False
-        db_table = 'Condutor'
-"""
 class Condutor(models.Model):
     id_condutor = models.AutoField(db_column='ID_condutor', primary_key=True)
     doc_reg_criminal = models.FileField(upload_to='docs/condutores/', db_column='Doc_reg_criminal', blank=True, null=True)
@@ -111,7 +97,7 @@ class Condutor(models.Model):
     utilizadorid_utilizador = models.ForeignKey('Utilizador', models.DO_NOTHING, db_column='UtilizadorID_utilizador')
 
     class Meta:
-        managed = False
+        managed = True
         db_table = 'Condutor'
 
 class CondutorVeiculo(models.Model):
@@ -124,7 +110,7 @@ class CondutorVeiculo(models.Model):
     veiculoid_veiculo = models.ForeignKey('Veiculo', models.DO_NOTHING, db_column='VeiculoID_veiculo')  # Field name made lowercase.
 
     class Meta:
-        managed = False
+        managed = True
         db_table = 'Condutor_Veiculo'
 
 
@@ -134,7 +120,7 @@ class Conselho(models.Model):
     distritoid_distrito = models.ForeignKey('Distrito', models.DO_NOTHING, db_column='DistritoID_distrito')  # Field name made lowercase.
 
     class Meta:
-        managed = False
+        managed = True
         db_table = 'Conselho'
 
 
@@ -145,7 +131,7 @@ class Contacto(models.Model):
     tipo_contactoid_tipo_contacto = models.ForeignKey('TipoContacto', models.DO_NOTHING, db_column='Tipo_ContactoID_tipo_contacto')  # Field name made lowercase.
 
     class Meta:
-        managed = False
+        managed = True
         db_table = 'Contacto'
 
 
@@ -154,7 +140,7 @@ class CorVeiculo(models.Model):
     descricao = models.CharField(db_column='Descricao', max_length=10, blank=True, null=True)  # Field name made lowercase.
 
     class Meta:
-        managed = False
+        managed = True
         db_table = 'Cor_Veiculo'
 
 
@@ -165,7 +151,7 @@ class DadosMb(models.Model):
     data_limite = models.DateField(db_column='Data_limite', blank=True, null=True)  # Field name made lowercase.
 
     class Meta:
-        managed = False
+        managed = True
         db_table = 'Dados_MB'
 
 
@@ -176,7 +162,7 @@ class Desvio(models.Model):
     viagemid_viagem = models.ForeignKey('Viagem', models.DO_NOTHING, db_column='ViagemID_viagem')  # Field name made lowercase.
 
     class Meta:
-        managed = False
+        managed = True
         db_table = 'Desvio'
 
 
@@ -186,7 +172,7 @@ class Distrito(models.Model):
     paisid_pais = models.ForeignKey('Pais', models.DO_NOTHING, db_column='PaisID_pais')  # Field name made lowercase.
 
     class Meta:
-        managed = False
+        managed = True
         db_table = 'Distrito'
 
 
@@ -205,7 +191,7 @@ class Freguesia(models.Model):
     conselhoid_conselho = models.ForeignKey(Conselho, models.DO_NOTHING, db_column='ConselhoID_conselho')  # Field name made lowercase.
 
     class Meta:
-        managed = False
+        managed = True
         db_table = 'Freguesia'
 
 
@@ -224,7 +210,7 @@ class MarcaVeiculo(models.Model):
     descricao = models.CharField(db_column='Descricao', max_length=20, blank=True, null=True)  # Field name made lowercase.
 
     class Meta:
-        managed = False
+        managed = True
         db_table = 'Marca_Veiculo'
 
 
@@ -237,7 +223,7 @@ class Mensagem(models.Model):
     utilizadorid_utilizador = models.ForeignKey('Utilizador', models.DO_NOTHING, db_column='UtilizadorID_utilizador')  # Field name made lowercase.
 
     class Meta:
-        managed = False
+        managed = True
         db_table = 'Mensagem'
 
 
@@ -247,7 +233,7 @@ class ModeloVeiculo(models.Model):
     marca_veiculoid_marca_veiculo = models.ForeignKey(MarcaVeiculo, models.DO_NOTHING, db_column='Marca_VeiculoID_marca_veiculo')  # Field name made lowercase.
 
     class Meta:
-        managed = False
+        managed = True
         db_table = 'Modelo_Veiculo'
 
 
@@ -258,7 +244,7 @@ class Morada(models.Model):
     freguesiaid_freguesia = models.ForeignKey(Freguesia, models.DO_NOTHING, db_column='FreguesiaID_freguesia')  # Field name made lowercase.
 
     class Meta:
-        managed = False
+        managed = True
         db_table = 'Morada'
 
 
@@ -282,7 +268,7 @@ class Ocorrencia(models.Model):
     tipo_ocorrenciaid_tipo_ocorrencia = models.ForeignKey('TipoOcorrencia', models.DO_NOTHING, db_column='Tipo_OcorrenciaID_tipo_ocorrencia')  # Field name made lowercase.
 
     class Meta:
-        managed = False
+        managed = True
         db_table = 'Ocorrencia'
 
 
@@ -294,7 +280,7 @@ class Pagamento(models.Model):
     reservaid_reserva = models.ForeignKey('Reserva', models.DO_NOTHING, db_column='ReservaID_reserva')  # Field name made lowercase.
 
     class Meta:
-        managed = False
+        managed = True
         db_table = 'Pagamento'
 
 
@@ -313,7 +299,7 @@ class Passageiro(models.Model):
     utilizadorid_utilizador = models.ForeignKey('Utilizador', models.DO_NOTHING, db_column='UtilizadorID_utilizador')  # Field name made lowercase.
 
     class Meta:
-        managed = False
+        managed = True
         db_table = 'Passageiro'
 
 
@@ -324,7 +310,7 @@ class PassageiroViagem(models.Model):
     reservaid_reserva = models.ForeignKey('Reserva', models.DO_NOTHING, db_column='ReservaID_reserva')  # Field name made lowercase.
 
     class Meta:
-        managed = False
+        managed = True
         db_table = 'Passageiro_Viagem'
 
 
@@ -333,7 +319,7 @@ class Ponto(models.Model):
     descricao = models.CharField(db_column='Descricao', max_length=20, blank=True, null=True)  # Field name made lowercase.
 
     class Meta:
-        managed = False
+        managed = True
         db_table = 'Ponto'
 
 
@@ -344,7 +330,7 @@ class PontoViagem(models.Model):
     pontoid_ponto = models.ForeignKey(Ponto, models.DO_NOTHING, db_column='PontoID_ponto')  # Field name made lowercase.
 
     class Meta:
-        managed = False
+        managed = True
         db_table = 'Ponto_Viagem'
 
 
@@ -355,7 +341,7 @@ class PontoReserva(models.Model):
     pontoid_ponto = models.ForeignKey(Ponto, models.DO_NOTHING, db_column='PontoID_ponto')  # Field name made lowercase.
 
     class Meta:
-        managed = False
+        managed = True
         db_table = 'Ponto_Reserva'
 
 
@@ -367,7 +353,7 @@ class PontoDesvio(models.Model):
     original = models.IntegerField(db_column='original', blank=True, null=True)
 
     class Meta:
-        managed = False
+        managed = True
         db_table = 'Ponto_Desvio'
 
 
@@ -376,7 +362,7 @@ class StatusReserva(models.Model):
     descricao = models.CharField(db_column='Descricao', max_length=20, blank=True, null=True)  # Field name made lowercase.
 
     class Meta:
-        managed = False
+        managed = True
         db_table = 'Status_Reserva'
 
 
@@ -392,7 +378,7 @@ class Reserva(models.Model):
     data_viagem = models.DateTimeField(db_column='Data_viagem', blank=True, null=True)
 
     class Meta:
-        managed = False
+        managed = True
         db_table = 'Reserva'
 
 
@@ -401,7 +387,7 @@ class StatusDesvio(models.Model):
     descricao = models.CharField(db_column='Descricao', max_length=20, blank=True, null=True)  # Field name made lowercase.
 
     class Meta:
-        managed = False
+        managed = True
         db_table = 'Status_Desvio'
 
 
@@ -410,7 +396,7 @@ class StatusViagem(models.Model):
     descricao = models.CharField(db_column='Descricao', max_length=20, blank=True, null=True)  # Field name made lowercase.
 
     class Meta:
-        managed = False
+        managed = True
         db_table = 'Status_Viagem'
 
 
@@ -423,7 +409,7 @@ class Suspensao(models.Model):
     utilizadorid_utilizador = models.ForeignKey('Utilizador', models.DO_NOTHING, db_column='UtilizadorID_utilizador')  # Field name made lowercase.
 
     class Meta:
-        managed = False
+        managed = True
         db_table = 'Suspensao'
 
 
@@ -432,7 +418,7 @@ class TipoAlerta(models.Model):
     descricao = models.CharField(db_column='Descricao', max_length=10, blank=True, null=True)  # Field name made lowercase.
 
     class Meta:
-        managed = False
+        managed = True
         db_table = 'Tipo_Alerta'
 
 
@@ -441,7 +427,7 @@ class TipoCategoria(models.Model):
     tipo = models.CharField(db_column='Tipo', max_length=10, blank=True, null=True)  # Field name made lowercase.
 
     class Meta:
-        managed = False
+        managed = True
         db_table = 'Tipo_Categoria'
 
 
@@ -450,7 +436,7 @@ class TipoContacto(models.Model):
     descricao = models.CharField(db_column='Descricao', max_length=10, blank=True, null=True)  # Field name made lowercase.
 
     class Meta:
-        managed = False
+        managed = True
         db_table = 'Tipo_Contacto'
 
 
@@ -459,7 +445,7 @@ class TipoOcorrencia(models.Model):
     descricao = models.CharField(db_column='Descricao', max_length=10, blank=True, null=True)  # Field name made lowercase.
 
     class Meta:
-        managed = False
+        managed = True
         db_table = 'Tipo_Ocorrencia'
 
 
@@ -470,7 +456,7 @@ class TipoPagamento(models.Model):
     cartaoid_cc = models.ForeignKey(Cartao, models.DO_NOTHING, db_column='CartaoID_cc')  # Field name made lowercase.
 
     class Meta:
-        managed = False
+        managed = True
         db_table = 'Tipo_Pagamento'
 
 
@@ -479,7 +465,7 @@ class TipoVeiculo(models.Model):
     descricao = models.CharField(db_column='Descricao', max_length=10, blank=True, null=True)  # Field name made lowercase.
 
     class Meta:
-        managed = False
+        managed = True
         db_table = 'Tipo_Veiculo'
 
 
@@ -543,7 +529,7 @@ class Veiculo(models.Model):
     modelo_veiculoid_modelo_veiculo = models.ForeignKey(ModeloVeiculo, models.DO_NOTHING, db_column='Modelo_VeiculoID_modelo_veiculo')  # Field name made lowercase.
 
     class Meta:
-        managed = False
+        managed = True
         db_table = 'Veiculo'
 
 
@@ -556,7 +542,7 @@ class Viagem(models.Model):
     condutorid_condutor = models.ForeignKey(Condutor, models.DO_NOTHING, db_column='CondutorID_condutor')  # Field name made lowercase.
 
     class Meta:
-        managed = False
+        managed = True
         db_table = 'Viagem'
 
 

@@ -18,8 +18,9 @@ urlpatterns = [
     path('viagem/reserva/confirm/<int:pk>/', FinalizarReservaView.as_view()), #requer autenticacao
     path('viagem/reserva/confirm2/<int:pk>/', FinalizarReserva2View.as_view()), #requer autenticacao
     path('viagem/viagem/associate/', AssociarViagemView.as_view()), #requer autenticacao
+    path('viagem/viagem/desassociate/', AutoDesassociarViagemView.as_view()), #requer autenticacao
     path('viagem/viagem/list/', PassageiroAssociarViagemView.as_view()), #requer autenticacao
-    path('viagem/viagem/list_condutor/', PassageiroAssociarViagemView.as_view()), #requer autenticacao
+    path('viagem/viagem/list_condutor/', CondutorAssociarViagemView.as_view()), #requer autenticacao
     path('viagem/desvio/', DesvioView.as_view()), #requer autenticacao
     path('viagem/desvio/<int:pk>/', DesvioView.as_view()), #requer autenticacao
     path('viagem/desvio_condutor/', CondutorDesvioView.as_view()), #requer autenticacao

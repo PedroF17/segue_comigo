@@ -98,6 +98,7 @@ class CondutorView(APIView):
         except Condutor.DoesNotExist:
             return Response({"erro": "Condutor não encontrado."}, status=status.HTTP_404_NOT_FOUND)
 
+        # Remove os ficheiros associados
         if condutor.doc_reg_criminal and os.path.isfile(condutor.doc_reg_criminal.path):
             os.remove(condutor.doc_reg_criminal.path)
         if condutor.doc_comprov_residencia and os.path.isfile(condutor.doc_comprov_residencia.path):
@@ -148,7 +149,6 @@ VEICULO e CONDUTOR_VEICULO - CRUD do Veículo
 
 """
 
-
 class VeiculoView(APIView):
     permission_classes = [IsAuthenticated]
 
@@ -189,7 +189,6 @@ class VeiculoView(APIView):
             veiculo.delete()
             return JsonResponse(condutor_veiculo_serializer.errors, safe=False, status=400)
 
-    # Listar Todos Veiculos percententes ao Grupo do Utilizador Logado
     def get(self, request):
         user = request.user
         if not CheckCondutorView.check_condutor(request.user):

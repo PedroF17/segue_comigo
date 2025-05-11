@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import '../../css/Rides.css';
-import RideConfirmationModal from '../obs/RideConfirmationModal.jsx';
+import RideConfirmationModal from './RideConfirmationModal.jsx';
 
 function Rides({ ride }) {
         const [showConfirmationModal, setShowConfirmationModal] = useState(false);

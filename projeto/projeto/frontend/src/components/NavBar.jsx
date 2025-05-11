@@ -42,8 +42,11 @@ function NavBar() {
                 {isAdmin && (
                     <Link to="/admin" className="navbar-link">Admin</Link> // Este link será mostrado apenas se o utilizador for Admin
                 )}
-                {(isCondutor || isPassageiro) && (
+                {(isPassageiro) && (
                     <Link to="/os-meus-tickets" className="navbar-link">Meus Tickets</Link>
+                )}
+                {(isCondutor) && (
+                    <Link to="/condutor-tickets" className="navbar-link">Painel Condutor</Link>
                 )}
                 {(isCondutor || isPassageiro) && (
                     <Link to="/feedback-boleias" className="navbar-link">Feedback Boleias</Link>

@@ -1,90 +1,159 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import '../css/RateRidesPage.css';
-import RateRideTicket from '../components/rides/RateRideTicket';
+import React, { useState, useEffect } from 'react';
+import Select from 'react-select';
+import { useNavigate } from 'react-router-dom';
 
-function RateRidesPage() {
-    const [ridesToRate, setRidesToRate] = useState([]);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null);
+function OcorrenciasPage() {
+  const [descricao, setDescricao] = useState('');
+  const [viagens, setViagens] = useState([]);
+  const [tiposOcorrencia, setTiposOcorrencia] = useState([]);
+  const [viagemSelecionada, setViagemSelecionada] = useState(null);
+  const [tipoOcorrenciaSelecionado, setTipoOcorrenciaSelecionado] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
 
-     const fetchRidesToRate = useCallback(async () => {
-        setLoading(true);
-        setError(null);
-        try {
-            const accessToken = localStorage.getItem('accessToken');
-            if (!accessToken) {
-                setError('Não está autenticado.');
-                setLoading(false);
-                return;
-            }
-            const response = await fetch('http://127.0.0.1:8000/viagem/viagem/list', { // Endpoint
-                method: 'GET',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${accessToken}`,
-                },
-            });
-
-            if (!response.ok) {
-                if (response.status === 401) {
-                    setError('Não autorizado a aceder ao histórico de viagens.');
-                } else {
-                    const errorData = await response.json();
-                    setError(errorData.detail || `Erro ao carregar o histórico de viagens: Status ${response.status}`);
-                }
-            } else {
-                const data = await response.json();
-                // Filter only completed rides.  You might need to adjust the 'status' check
-                const completedRides = data.filter(ride => ride.status === 'completed' || ride.status === 'finished');
-                setRidesToRate(completedRides);
-            }
-        } catch (err) {
-            setError('Falha ao carregar o histórico de viagens.');
-            console.error('Erro ao buscar histórico de viagens:', err);
-        } finally {
-            setLoading(false);
-        }
-    }, []);
-
-
-    useEffect(() => {
-        fetchRidesToRate();
-    }, [fetchRidesToRate]);
-
-    const handleFeedbackSubmitted = useCallback((rideId) => {
-        // Remove a viagem da lista após o envio do feedback
-        setRidesToRate(prevRides => prevRides.filter(ride => ride.id !== rideId));
-    }, []);
-
-    const handleAnomalySubmitted = useCallback((rideId) => {
-        // Remove a viagem da lista após o envio da anomalia
-        setRidesToRate(prevRides => prevRides.filter(ride => ride.id !== rideId));
-    }, []);
-
-    if (loading) {
-        return <p>A carregar as viagens para avaliação...</p>;
+  useEffect(() => {
+    const token = localStorage.getItem('accessToken');
+    if (!token) {
+      navigate('/login');
+      return;
     }
 
-    if (error) {
-        return <p>Erro ao carregar as viagens para avaliação: {error}</p>;
+    fetchViagens(token);
+    fetchTiposOcorrencia(token);
+  }, [navigate]);
+
+  const fetchViagens = async (token) => {
+    try {
+      const response = await fetch('http://127.0.0.1:8000/viagem/viagem/list/', {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (!response.ok) throw new Error('Erro ao buscar viagens');
+      const data = await response.json();
+
+      const formatted = data.map((viagem) => ({
+        value: viagem.id_viagem,
+        label: `Viagem #${viagem.id_viagem} - ${new Date(viagem.data_viagem).toLocaleString()}`,
+      }));
+
+      setViagens(formatted);
+    } catch (err) {
+      console.error('Erro ao buscar viagens:', err);
+      setViagens([]);
+    }
+  };
+
+  const fetchTiposOcorrencia = async (token) => {
+    try {
+      const response = await fetch('http://127.0.0.1:8000/comunicacao/tipo_ocorrencia/', {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (!response.ok) throw new Error('Erro ao buscar tipos de ocorrência');
+      const data = await response.json();
+
+      const formatted = data.map((tipo) => ({
+        value: tipo.id_tipo_ocorrencia,
+        label: tipo.descricao,
+      }));
+
+      setTiposOcorrencia(formatted);
+    } catch (err) {
+      console.error('Erro ao buscar tipos de ocorrência:', err);
+      setTiposOcorrencia([]);
+    }
+  };
+
+  const handleSubmit = async () => {
+    const token = localStorage.getItem('accessToken');
+
+    if (!descricao || !viagemSelecionada || !tipoOcorrenciaSelecionado) {
+      alert('Por favor, preencha todos os campos.');
+      return;
     }
 
-    return (
-        <div className="rate-rides-page">
-            <h1>Avalie As Seguintes Viagens</h1>
-            {ridesToRate.map((ride) => (
-                <RateRideTicket
-                    key={ride.id}
-                    ride={ride}
-                    onFeedbackSubmitted={handleFeedbackSubmitted}
-                    onAnomalySubmitted={handleAnomalySubmitted}
-                />
-            ))}
-            <div className="terms-and-conditions">
-                {/* ... termos e condições ... */}
-            </div>
+    setLoading(true);
+
+    try {
+      const response = await fetch('http://127.0.0.1:8000/comunicacao/ocorrencia/', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          descricao: descricao,
+          viagemid_viagem: viagemSelecionada.value,
+          tipo_ocorrenciaid_tipo_ocorrencia: tipoOcorrenciaSelecionado.value,
+        }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Erro ao enviar ocorrência.');
+      }
+
+      alert('Ocorrência enviada com sucesso!');
+      setDescricao('');
+      setViagemSelecionada(null);
+      setTipoOcorrenciaSelecionado(null);
+    } catch (err) {
+      console.error('Erro ao enviar ocorrência:', err);
+      alert(err.message || 'Erro ao enviar ocorrência.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div className="ride-tickets-page" style={{ display: 'flex', justifyContent: 'center' }}>
+      <div style={{ width: '80%', maxWidth: '800px' }}>
+        <h1>Feedback</h1>
+
+        <div className="tab-content">
+
+          <div style={{ marginBottom: '1rem' }}>
+            <label>Descrição da Ocorrência:</label>
+            <textarea
+              value={descricao}
+              onChange={(e) => setDescricao(e.target.value)}
+              rows={6}
+              style={{ width: '100%', resize: 'vertical', padding: '0.5rem' }}
+              placeholder="Descreva o que aconteceu..."
+            />
+          </div>
+
+          <div style={{ marginBottom: '1rem' }}>
+            <label>Selecione a Viagem:</label>
+            <Select
+              options={viagens}
+              value={viagemSelecionada}
+              onChange={setViagemSelecionada}
+              placeholder="Escolha uma viagem..."
+            />
+          </div>
+
+          <div style={{ marginBottom: '1rem' }}>
+            <label>Tipo de Ocorrência:</label>
+            <Select
+              options={tiposOcorrencia}
+              value={tipoOcorrenciaSelecionado}
+              onChange={setTipoOcorrenciaSelecionado}
+              placeholder="Escolha um tipo..."
+            />
+          </div>
+
+          <button onClick={handleSubmit} disabled={loading} style={{ padding: '0.5rem 1rem' }}>
+            {loading ? 'Enviando...' : 'Enviar Ocorrência'}
+          </button>
         </div>
-    );
+      </div>
+    </div>
+  );
 }
 
-export default RateRidesPage;
+export default OcorrenciasPage;

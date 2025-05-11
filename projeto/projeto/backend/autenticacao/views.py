@@ -8,12 +8,14 @@ from django.contrib.auth.hashers import check_password, make_password
 from django.contrib.auth import get_user_model
 from django.utils import timezone
 
+
 from projeto.models import *
 from .serializers import *
 
+
 """
 UTILIZADOR - Criar Utilizador
-
+    
     [POST] "First"
         Body:
         grupo_nome (input)
@@ -44,8 +46,6 @@ UTILIZADOR - Criar Utilizador
 
     [DELETE]
 """
-
-
 # Primeira conta criada
 class FirstCreateAccountView(APIView):
 
@@ -111,7 +111,7 @@ class CreateAccountView(APIView):
                 "mensagem": "Utilizador criado com sucesso no grupo do utilizador autenticado.",
                 "utilizador": PrimeiroUtilizadorRegistroSerializer(utilizador).data
             }, status=status.HTTP_201_CREATED)
-
+    
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def delete(self, request):
@@ -133,26 +133,6 @@ class CreateAccountView(APIView):
 
 
 """
-class CreateAccountView(APIView):
-
-    def post(self, request):
-        serializer = UtilizadorRegistroSerializer(data=request.data)
-
-        if serializer.is_valid():
-            utilizador = serializer.save()
-
-            # Re-serializa para esconder senha e mostrar dados limpos
-            response_data = UtilizadorRegistroSerializer(utilizador).data
-
-            return Response({
-                "mensagem": "Conta criada com sucesso.",
-                "utilizador": response_data
-            }, status=status.HTTP_201_CREATED)
-
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-"""
-
-"""
 UTILIZADOR - Alterar Senha
 
     [POST]
@@ -164,18 +144,16 @@ UTILIZADOR - Alterar Senha
         new_password (input)
         confirm_new_password (input)
 """
-
-
 class ChangePasswordView(APIView):
     permission_classes = [IsAuthenticated]
 
     def post(self, request):
         user = request.user
-
+        
         old_password = request.data.get("old_password")
         new_password = request.data.get("new_password")
         confirm_new_password = request.data.get("confirm_new_password")
-
+        
         if not old_password:
             return Response({"erro": "Senha antiga não fornecida."}, status=status.HTTP_400_BAD_REQUEST)
         if not new_password:
@@ -216,10 +194,8 @@ UTILIZADOR - Dados de um Utilizador
         password (input)
         email (input)
 """
-
-
 class AccountView(APIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated]  
 
     def get(self, request):
         user = request.user
@@ -230,7 +206,7 @@ class AccountView(APIView):
             return Response({"erro": "Utilizador não encontrado."}, status=status.HTTP_404_NOT_FOUND)
 
         serializer = UtilizadorRegistroSerializer(utilizador)
-
+        
         return Response({
             "mensagem": "Dados do utilizador recuperados com sucesso.",
             "utilizador": serializer.data
@@ -258,7 +234,7 @@ class AccountView(APIView):
 
 """
 GRUPO - Alterar Dados do Grupo
-
+ 
     [PUT]
         Headers: 
         Authorization Bearer (access token) 
@@ -278,10 +254,20 @@ GRUPO - Alterar Dados do Grupo
         email (input)
 
 """
-
-
 class GrupoView(APIView):
     permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        utilizador_autenticado = request.user
+        grupo = utilizador_autenticado.grupoid_grupo
+
+        utilizadores = Utilizador.objects.filter(
+            grupoid_grupo=grupo,
+            passageiro__isnull=False
+        ).distinct()
+
+        serializer = UtilizadorRegistroSerializer(utilizadores, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
     def put(self, request):
         user = request.user
@@ -312,7 +298,7 @@ class GrupoView(APIView):
 
 """
 CONTACTO - CRUD do Contacto
-
+ 
     [POST]
         Headers: 
         Authorization Bearer (access token)
@@ -334,8 +320,6 @@ CONTACTO - CRUD do Contacto
         tipocontactoid_tipo_contacto (input)
 
 """
-
-
 class ContactoView(APIView):
     permission_classes = [IsAuthenticated]
 
@@ -380,10 +364,9 @@ class ContactoView(APIView):
         contacto.delete()
         return JsonResponse("Contacto deletado com sucesso.", safe=False)
 
-
 """
 MORADA - CRUD da Morada
-
+ 
     [DELETE]
         Headers: 
         Authorization Bearer (access token)
@@ -415,8 +398,6 @@ MORADA - CRUD da Morada
         Authorization Bearer (access token)
 
 """
-
-
 class MoradaView(APIView):
     permission_classes = [IsAuthenticated]
 
@@ -464,12 +445,10 @@ class MoradaView(APIView):
 
 """
 TIPO_CONTACTO - Listar Tipos de Contactos
-
+ 
     [GET]
 
 """
-
-
 class TipoContactoView(APIView):
 
     def get_tipo_contacto(self, pk):
@@ -491,12 +470,10 @@ class TipoContactoView(APIView):
 
 """
 ESTADO_CIVIL - Listar Tipos de Estados Civis
-
+ 
     [GET]
 
 """
-
-
 class EstadoCivilView(APIView):
 
     def get_estado_civil(self, pk):
@@ -518,12 +495,10 @@ class EstadoCivilView(APIView):
 
 """
 NACIONALIDADE - Listar Nacionalidades
-
+ 
     [GET]
 
 """
-
-
 class NacionalidadeView(APIView):
 
     def get_nacionalidade(self, pk):
@@ -545,12 +520,10 @@ class NacionalidadeView(APIView):
 
 """
 PAIS - Listar Paises
-
+ 
     [GET]
 
 """
-
-
 class PaisView(APIView):
 
     def get_pais(self, pk):
@@ -572,12 +545,10 @@ class PaisView(APIView):
 
 """
 DISTRITO - Listar Distritos
-
+ 
     [GET]
 
 """
-
-
 class DistritoView(APIView):
 
     def get_distrito(self, pk):
@@ -599,12 +570,10 @@ class DistritoView(APIView):
 
 """
 CONSELHO - Listar Conselhos
-
+ 
     [GET]
 
 """
-
-
 class ConselhoView(APIView):
 
     def get_conselho(self, pk):
@@ -626,12 +595,10 @@ class ConselhoView(APIView):
 
 """
 FREGUESIA - Listar Freguesias
-
+ 
     [GET]
 
 """
-
-
 class FreguesiaView(APIView):
 
     def get_freguesia(self, pk):
@@ -653,14 +620,12 @@ class FreguesiaView(APIView):
 
 """
 ADMINISTRADOR - Verificar se é Admin
-
+ 
     [GET]
         Headers: 
         Authorization Bearer (access token) 
 
 """
-
-
 class CheckAdminView(APIView):
     permission_classes = [IsAuthenticated]
 
@@ -677,14 +642,12 @@ class CheckAdminView(APIView):
 
 """
 CONDUTOR - Verificar se é Condutor
-
+ 
     [GET]
         Headers: 
         Authorization Bearer (access token) 
 
 """
-
-
 class CheckCondutorView(APIView):
     permission_classes = [IsAuthenticated]
 
@@ -701,14 +664,12 @@ class CheckCondutorView(APIView):
 
 """
 PASSAGEIRO - Verificar se é Passageiro
-
+ 
     [GET]
         Headers: 
         Authorization Bearer (access token) 
 
 """
-
-
 class CheckPassageiroView(APIView):
     permission_classes = [IsAuthenticated]
 

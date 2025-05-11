@@ -4,3 +4,6 @@ django-cors-headers
 drf-writable-nested
 mysql-connector-python
 mysqlclient
+pytest
+pytest-django
+pyyaml

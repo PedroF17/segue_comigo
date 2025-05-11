@@ -79,6 +79,13 @@ class CondutorSerializer(WritableNestedModelSerializer):
         ]
 
 
+class StatusReservaSerializer(WritableNestedModelSerializer):
+
+    class Meta:
+        model = StatusReserva 
+        fields = ["id_status_reserva", "descricao"]
+
+
 class StatusViagemSerializer(WritableNestedModelSerializer):
 
     class Meta:
@@ -205,6 +212,8 @@ class ReservaSerializer(WritableNestedModelSerializer):
 class ReadReservaSerializer(WritableNestedModelSerializer):
     condutorid_condutor = CondutorSerializer()
     passageiroid_passageiro = ReadPassageiroSerializer()
+    pontos_reserva = serializers.SerializerMethodField()
+    status_reservaid_status_reserva = StatusReservaSerializer()
 
     class Meta:
         model = Reserva
@@ -216,7 +225,13 @@ class ReadReservaSerializer(WritableNestedModelSerializer):
             "condutorid_condutor",
             "passageiroid_passageiro",
             "data_viagem",
+            "pontos_reserva",
+            "status_reservaid_status_reserva"
         ]
+
+    def get_pontos_reserva(self, obj):
+        pontos = PontoReserva.objects.filter(reservaid_reserva=obj)
+        return PontoReservaSerializer(pontos, many=True).data
 
 
 class PassageiroViagemSerializer(WritableNestedModelSerializer):
@@ -239,6 +254,14 @@ class PontoSerializer(WritableNestedModelSerializer):
     class Meta:
         model = Ponto
         fields = ["id_ponto", "descricao"]
+
+
+class PontoReservaSerializer(serializers.ModelSerializer):
+    pontoid_ponto = PontoSerializer()
+
+    class Meta:
+        model = PontoReserva
+        fields = ["id_ponto_reserva", "destino", "pontoid_ponto"]
 
 
 class PontoViagemSerializer(WritableNestedModelSerializer):

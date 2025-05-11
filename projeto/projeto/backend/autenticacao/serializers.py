@@ -36,10 +36,10 @@ class GrupoSerializer(WritableNestedModelSerializer):
 
 
 # Serializer do Utilizador para Registo
-class UtilizadorRegistroSerializer(WritableNestedModelSerializer):
-    grupoid_grupo = GrupoSerializer()
-    estado_civilid_estado_civil = EstadoCivilSerializer()
-    nacionalidadeid_nacionalidade = NacionalidadeSerializer()
+class UtilizadorRegistroSerializer(serializers.ModelSerializer):
+    grupoid_grupo = serializers.PrimaryKeyRelatedField(queryset=Grupo.objects.all())
+    estado_civilid_estado_civil = serializers.PrimaryKeyRelatedField(queryset=EstadoCivil.objects.all())
+    nacionalidadeid_nacionalidade = serializers.PrimaryKeyRelatedField(queryset=Nacionalidade.objects.all())
 
     class Meta:
         model = Utilizador
@@ -58,18 +58,23 @@ class UtilizadorRegistroSerializer(WritableNestedModelSerializer):
             "email",
         ]
         extra_kwargs = {
-            "password" : {"write_only": True}
+            "password": {"write_only": True}
         }
 
-    def create(self, validated_data):
-        password = validated_data.pop("password")
-        validated_data["password"] = make_password(password)
-        return super().create(validated_data)
+    def update(self, instance, validated_data):
+        password = validated_data.pop("password", None)
+        if password:
+            instance.password = make_password(password)
+        return super().update(instance, validated_data)
 
 
-class PrimeiroUtilizadorRegistroSerializer(WritableNestedModelSerializer):
-    estado_civilid_estado_civil = EstadoCivilSerializer()
-    nacionalidadeid_nacionalidade = NacionalidadeSerializer()
+class PrimeiroUtilizadorRegistroSerializer(serializers.ModelSerializer):
+    estado_civilid_estado_civil = serializers.PrimaryKeyRelatedField(
+        queryset=EstadoCivil.objects.all()
+    )
+    nacionalidadeid_nacionalidade = serializers.PrimaryKeyRelatedField(
+        queryset=Nacionalidade.objects.all()
+    )
 
     class Meta:
         model = Utilizador
@@ -88,7 +93,7 @@ class PrimeiroUtilizadorRegistroSerializer(WritableNestedModelSerializer):
             "email",
         ]
         extra_kwargs = {
-            "password" : {"write_only": True}
+            "password": {"write_only": True}
         }
 
     def create(self, validated_data):
@@ -121,7 +126,7 @@ class FreguesiaSerializer(WritableNestedModelSerializer):
         fields = ["id_freguesia", "descricao", "conselhoid_conselho"]
 
 
-class MoradaSerializer(WritableNestedModelSerializer):
+class MoradaShowSerializer(WritableNestedModelSerializer):
     freguesiaid_freguesia = FreguesiaSerializer()
 
     class Meta:
@@ -133,20 +138,18 @@ class MoradaSerializer(WritableNestedModelSerializer):
             "freguesiaid_freguesia",
         ]
 
-"""
-class MoradaSerializer(WritableNestedModelSerializer):
-    utilizadorid_utilizador = UtilizadorRegistroSerializer()
-    freguesiaid_freguesia = FreguesiaSerializer()
+
+class MoradaSerializer(serializers.ModelSerializer):
+    freguesiaid_freguesia = serializers.PrimaryKeyRelatedField(queryset=Freguesia.objects.all())
 
     class Meta:
         model = Morada
         fields = [
             "id_morada",
             "descricao",
-            "utilizadorid_utilizador",
             "freguesiaid_freguesia",
         ]
-"""
+
 
 class TipoContactoSerializer(WritableNestedModelSerializer):
 
@@ -156,25 +159,19 @@ class TipoContactoSerializer(WritableNestedModelSerializer):
 
 
 class ContactoSerializer(serializers.ModelSerializer):
-    tipo_contactoid_tipo_contacto = TipoContactoSerializer()
+    tipo_contactoid_tipo_contacto = serializers.PrimaryKeyRelatedField(queryset=TipoContacto.objects.all())
 
     class Meta:
         model = Contacto
         fields = ["id_contacto", "descricao", "tipo_contactoid_tipo_contacto"]
 
-"""
-class ContactoSerializer(WritableNestedModelSerializer):
+
+class ContactoShowSerializer(serializers.ModelSerializer):
     tipo_contactoid_tipo_contacto = TipoContactoSerializer()
 
     class Meta:
         model = Contacto
-        fields = [
-            "id_contacto",
-            "descricao",
-            "utilizadorid_utilizador",
-            "tipo_contactoid_tipo_contacto",
-        ]
-"""
+        fields = ["id_contacto", "descricao", "tipo_contactoid_tipo_contacto"]
 
 
 class AdministradorSerializer(WritableNestedModelSerializer):
@@ -222,13 +219,16 @@ class CustomTokenSerializer(serializers.Serializer):
         senha = attrs.get("senha")
 
         try:
+            # Busca pelo utilizador utilizando o email fornecido
             user = Utilizador.objects.get(email=email)
         except Utilizador.DoesNotExist:
             raise serializers.ValidationError(_("Email ou senha inválidos"))
 
+        # Verifica a senha fornecida com a senha criptografada
         if not check_password(senha, user.senha):
             raise serializers.ValidationError(_("Email ou senha inválidos"))
 
+        # Gera os tokens de acesso e refresh para o usuário
         refresh = RefreshToken.for_user(user)
 
         return {
@@ -236,9 +236,10 @@ class CustomTokenSerializer(serializers.Serializer):
             "access": str(refresh.access_token),
         }
 
+# Serializer do Utilizador Tokenizado para Alterar Senha
 class AlterarSenhaSerializer(serializers.Serializer):
-    senha_atual = serializers.CharField(write_only=True)  
-    nova_senha = serializers.CharField(write_only=True)  
+    senha_atual = serializers.CharField(write_only=True)  # Para verificar a senha atual
+    nova_senha = serializers.CharField(write_only=True)  # Para a nova senha
 
     def validate_nova_senha(self, value):
         # Validando a nova senha

@@ -41,7 +41,7 @@ INSTALLED_APPS = [
     
     "corsheaders",
     "rest_framework",
-    #'rest_framework_simplejwt.token_blacklist',
+    "drf_yasg",
     
     "projeto.apps.ProjetoConfig",
     "autenticacao.apps.AutenticacaoConfig",
@@ -49,7 +49,6 @@ INSTALLED_APPS = [
     "condutor.apps.CondutorConfig",
     #"pagamento.apps.PagamentoConfig",
     "viagem.apps.ViagemConfig",
-    #api_auth.apps.ApiAuthConfig",
 ]
 
 CORS_ORIGIN_ALLOW_ALL = True
@@ -94,7 +93,7 @@ DATABASES = {
         "ENGINE": "django.db.backends.mysql",
         "NAME": "proj2",
         "USER": "root",
-        "PASSWORD": "cpcorreia+-05",
+        "PASSWORD": "123",
         "HOST": "localhost",
         "PORT": "3306",
     }
@@ -160,3 +159,16 @@ import os
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+SWAGGER_SETTINGS = {
+    'SECURITY_DEFINITIONS': {
+        'Bearer': {
+            'type': 'apiKey',
+            'name': 'Authorization',
+            'in': 'header',
+            'description': 'Formato: Bearer <seu_token>',
+        }
+    },
+    'USE_SESSION_AUTH': False,
+    'DEFAULT_INFO': 'backend.urls.schema_view',
+}
