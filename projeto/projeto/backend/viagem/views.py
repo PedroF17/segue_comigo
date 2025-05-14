@@ -354,9 +354,19 @@ class CondutorReservaView(APIView):
         except StatusReserva.DoesNotExist:
             return Response({"erro": "StatusReserva com ID 2 não encontrado."}, status=status.HTTP_404_NOT_FOUND)
 
+        if condutor.reputacao != 1:
+            return Response({"erro": "Conta de condutor não validada."}, status=status.HTTP_403_FORBIDDEN)
+
         reserva.status_reservaid_status_reserva = status_reserva
         reserva.passageiroid_passageiro = passageiro
         reserva.condutorid_condutor = condutor
+
+        if reserva.condutorid_condutor:
+                condutor_destino = Condutor.objects.get(id_condutor=reserva.condutorid_condutor.id_condutor)
+                utilizador_destino = Utilizador.objects.get(id_utilizador=condutor_destino.utilizadorid_utilizador.id_utilizador)
+                descricao = f"Reserva aceite ({reserva.id_reserva})."
+
+                AlertaView.alerta_interno(descricao, utilizador_destino.id_utilizador, 1)
 
         reserva.save()
 
@@ -393,6 +403,9 @@ class CancelarReservaView(APIView):
 
         if reserva.condutorid_condutor != condutor_logado:
             return Response({"erro": "Você não tem permissão para resetar esta reserva."}, status=status.HTTP_403_FORBIDDEN)
+
+        if condutor_logado.reputacao != 1:
+            return Response({"erro": "Conta de condutor não validada."}, status=status.HTTP_403_FORBIDDEN)
 
         try:
             status_reserva = StatusReserva.objects.get(id_status_reserva=1)
@@ -574,7 +587,6 @@ class AssociarViagemView(APIView):
     def post(self, request):
         user = request.user
 
-        # 1. Verifica se o usuário autenticado é um passageiro
         if not CheckPassageiroView.check_passageiro(user):
             return Response(
                 {"detail": "Permissão Negada."},
@@ -689,7 +701,16 @@ class AutoDesassociarViagemView(APIView):
             if not id_viagem:
                 return Response({'error': 'id_viagem é obrigatório.'}, status=status.HTTP_400_BAD_REQUEST)
 
-            viagem = get_object_or_404(Viagem, id_viagem=id_viagem)
+            # Recuperar a viagem
+            try:
+                viagem = Viagem.objects.get(id_viagem=id_viagem)
+            except Viagem.DoesNotExist:
+                return Response({'error': 'Viagem não encontrada.'}, status=status.HTTP_404_NOT_FOUND)
+
+            # Verificar se a viagem está com status "planeada" (status 1)
+            if viagem.status_viagemid_status_viagem.id_status_viagem != 1:
+                return Response({'error': 'Você não pode se desassociar de uma viagem que já foi iniciada ou finalizada.'},
+                                status=status.HTTP_403_FORBIDDEN)
 
             reserva = get_object_or_404(
                 Reserva,
@@ -718,6 +739,19 @@ class AutoDesassociarViagemView(APIView):
                 )
 
             passageiro_viagem.delete()
+
+            # Enviar alertas para todos os passageiros desta viagem
+            passageiros_viagem = PassageiroViagem.objects.filter(viagemid_viagem=viagem)
+            try:
+                tipo_alerta = TipoAlerta.objects.get(id_tipo_alerta=1)
+            except TipoAlerta.DoesNotExist:
+                return Response({'error': 'Tipo de alerta não encontrado.'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+            descricao_alerta = f"Passageiro se desassocio da viagem ({viagem.id_viagem})."
+
+            for pv in passageiros_viagem:
+                utilizador_passageiro = pv.passageiroid_passageiro.utilizadorid_utilizador
+                AlertaView.alerta_interno(descricao_alerta, utilizador_passageiro.id_utilizador, 1)
 
             return Response({'success': 'Você foi removido da viagem com sucesso.'}, status=status.HTTP_200_OK)
 
@@ -796,7 +830,88 @@ class PassageiroAssociarViagemView(APIView):
             return Response({'error': 'O utilizador logado não está associado a nenhum passageiro.'}, status=404)
         except Exception as e:
             return Response({'error': f'Ocorreu um erro: {str(e)}'}, status=500)
-    
+
+    """
+    def get(self, request):
+        user = request.user
+        if not CheckPassageiroView.check_passageiro(user):
+            return Response(
+                {"detail": "Permissão Negada."},
+                status=status.HTTP_403_FORBIDDEN
+            )
+
+        try:
+            passageiro = Passageiro.objects.get(utilizadorid_utilizador=user)
+
+            passagens = PassageiroViagem.objects.filter(passageiroid_passageiro=passageiro)
+
+            viagens_ids = passagens.values_list('viagemid_viagem_id', flat=True).distinct()
+
+            viagens = Viagem.objects.filter(id_viagem__in=viagens_ids)
+
+            viagens_data = []
+
+            for viagem in viagens:
+                passageiros_viagem = PassageiroViagem.objects.filter(viagemid_viagem=viagem)
+                passageiros = [pviagem.passageiroid_passageiro for pviagem in passageiros_viagem]
+
+                viagem_data = ListViagemSerializer(viagem).data
+                viagem_data['passageiros'] = PassageiroSerializer(passageiros, many=True).data
+
+                # Adicionar pontos de ida e volta
+                pontos_viagem = PontoViagem.objects.filter(viagemid_viagem=viagem).order_by('destino')
+                viagem_data['pontos_viagem'] = PontoViagemSerializer(pontos_viagem, many=True).data
+
+                viagens_data.append(viagem_data)
+
+            return Response(viagens_data)
+
+        except Passageiro.DoesNotExist:
+            return Response({'error': 'O utilizador logado não está associado a nenhum passageiro.'}, status=404)
+        except Exception as e:
+            return Response({'error': f'Ocorreu um erro: {str(e)}'}, status=500)
+    """
+
+    """
+    def get(self, request):
+        user = request.user
+        if not CheckPassageiroView.check_passageiro(request.user):
+            return Response(
+                {"detail": "Permissão Negada."},
+                status=status.HTTP_403_FORBIDDEN
+            )
+
+        try:
+            passageiro = Passageiro.objects.get(utilizadorid_utilizador=request.user)
+
+            passagens = PassageiroViagem.objects.filter(passageiroid_passageiro=passageiro)
+
+            viagens_ids = passagens.values_list('viagemid_viagem_id', flat=True).distinct()
+
+            viagens = Viagem.objects.filter(id_viagem__in=viagens_ids)
+
+            viagens_data = []
+
+            for viagem in viagens:
+                passageiros_viagem = PassageiroViagem.objects.filter(viagemid_viagem=viagem)
+                passageiros = [pviagem.passageiroid_passageiro for pviagem in passageiros_viagem]
+
+                viagem_data = ListViagemSerializer(viagem).data
+
+                passageiros_data = PassageiroSerializer(passageiros, many=True).data
+
+                viagem_data['passageiros'] = passageiros_data
+
+                viagens_data.append(viagem_data)
+
+            return Response(viagens_data)
+
+        except Passageiro.DoesNotExist:
+            return Response({'error': 'O utilizador logado não está associado a nenhum passageiro.'}, status=404)
+        except Exception as e:
+            return Response({'error': f'Ocorreu um erro: {str(e)}'}, status=500)
+    """
+
 
 # Listar viagens (Condutor)
 class CondutorAssociarViagemView(APIView):
@@ -813,6 +928,7 @@ class CondutorAssociarViagemView(APIView):
             )
 
         try:
+            # Viagens onde o utilizador é o condutor
             viagens_directas = Viagem.objects.filter(condutorid_condutor=condutor)
 
             # Viagens obtidas via reservas feitas para esse condutor
@@ -820,15 +936,18 @@ class CondutorAssociarViagemView(APIView):
             viagens_reservas_ids = PassageiroViagem.objects.filter(reservaid_reserva__in=reservas).values_list('viagemid_viagem_id', flat=True)
             viagens_reservas = Viagem.objects.filter(id_viagem__in=viagens_reservas_ids)
 
+            # Junta todas as viagens sem duplicar
             todas_viagens = (viagens_directas | viagens_reservas).distinct()
 
             viagens_data = []
 
             for viagem in todas_viagens:
+                # Passageiros da viagem
                 passageiros_viagem = PassageiroViagem.objects.filter(viagemid_viagem=viagem)
                 passageiros = [pv.passageiroid_passageiro for pv in passageiros_viagem]
                 passageiros_data = PassageiroSerializer(passageiros, many=True).data
 
+                # Desvios da viagem
                 desvios = Desvio.objects.filter(viagemid_viagem=viagem)
                 desvios_data = []
                 for desvio in desvios:
@@ -852,9 +971,11 @@ class CondutorAssociarViagemView(APIView):
                         'pontos_desvio': pontos_desvio_data
                     })
 
+                # Pontos da viagem (ida/volta)
                 pontos_viagem = PontoViagem.objects.filter(viagemid_viagem=viagem).order_by('destino')
                 pontos_viagem_data = PontoViagemSerializer(pontos_viagem, many=True).data
 
+                # Serialização final
                 viagem_data = ListViagemSerializer(viagem).data
                 viagem_data['passageiros'] = passageiros_data
                 viagem_data['desvios'] = desvios_data
@@ -994,6 +1115,7 @@ class DesvioView(APIView):
         try:
             passageiro = Passageiro.objects.get(utilizadorid_utilizador=user)
 
+            # Recupera as viagens associadas ao passageiro logado
             passagens = PassageiroViagem.objects.filter(passageiroid_passageiro=passageiro)
             viagens_ids = passagens.values_list('viagemid_viagem_id', flat=True).distinct()
             viagens = Viagem.objects.filter(id_viagem__in=viagens_ids)
@@ -1001,10 +1123,12 @@ class DesvioView(APIView):
             viagens_data = []
 
             for viagem in viagens:
+                # Recupera os desvios associados à viagem
                 desvios = Desvio.objects.filter(viagemid_viagem=viagem)
 
                 desvios_data = []
                 for desvio in desvios:
+                    # Recupera os pontos de desvio associados ao desvio
                     pontos_desvio = PontoDesvio.objects.filter(desvioid_desvio=desvio).select_related('pontoid_ponto')
 
                     pontos_desvio_data = [
@@ -1026,9 +1150,11 @@ class DesvioView(APIView):
                         'pontos_desvio': pontos_desvio_data
                     })
 
+                # Prepara os dados da viagem
                 viagem_data = ListViagemSerializer(viagem).data
                 viagem_data['desvios'] = desvios_data
 
+                # Adicionar pontos de ida e volta
                 pontos_viagem = PontoViagem.objects.filter(viagemid_viagem=viagem).order_by('destino')
                 viagem_data['pontos_viagem'] = PontoViagemSerializer(pontos_viagem, many=True).data
 
@@ -1040,8 +1166,65 @@ class DesvioView(APIView):
             return Response({'error': 'O utilizador logado não está associado a nenhum passageiro.'}, status=404)
         except Exception as e:
             return Response({'error': f'Ocorreu um erro: {str(e)}'}, status=500)
+
     
-    
+    """
+    def get(self, request, pk):
+        if not CheckPassageiroView.check_passageiro(request.user):
+            return Response(
+                {"detail": "Permissão Negada."},
+                status=status.HTTP_403_FORBIDDEN
+            )
+
+        try:
+            viagem = Viagem.objects.get(pk=pk)
+        except Viagem.DoesNotExist:
+            return Response({'error': 'Viagem não encontrada.'}, status=status.HTTP_404_NOT_FOUND)
+
+        try:
+            passageiro = Passageiro.objects.get(utilizadorid_utilizador=request.user)
+        except Passageiro.DoesNotExist:
+            return Response({'error': 'Utilizador não é um passageiro válido.'}, status=status.HTTP_403_FORBIDDEN)
+
+        associado = PassageiroViagem.objects.filter(
+            viagemid_viagem=viagem,
+            passageiroid_passageiro=passageiro
+        ).exists()
+
+        if not associado:
+            return Response({'error': 'Você não está autorizado a visualizar os desvios desta viagem.'},
+                            status=status.HTTP_403_FORBIDDEN)
+
+        # Recupera os desvios da viagem
+        desvios = Desvio.objects.filter(viagemid_viagem=viagem)
+
+        resultado = []
+        for desvio in desvios:
+            # Recupera os pontos de desvio associados ao desvio atual
+            pontos_desvio = PontoDesvio.objects.filter(desvioid_desvio=desvio).select_related('pontoid_ponto')
+            
+            pontos_desvio_data = [
+                {
+                    'id_ponto_desvio': pd.id_ponto_desvio,
+                    'original': pd.original,
+                    'destino': pd.destino,
+                    'ponto_id': pd.pontoid_ponto.id_ponto,
+                    'descricao_ponto': pd.pontoid_ponto.descricao
+                }
+                for pd in pontos_desvio
+            ]
+
+            resultado.append({
+                'id_desvio': desvio.id_desvio,
+                'data_emissao': desvio.data_emissao,
+                'status_desvio': desvio.status_desvioid_status_desvio.descricao,
+                'viagem_id': desvio.viagemid_viagem.id_viagem,
+                'pontos_desvio': pontos_desvio_data
+            })
+
+        return Response(resultado, status=status.HTTP_200_OK)
+    """
+
     # Cancelar Desvio (Passageiro)
     def delete(self, request, pk):
         if not CheckPassageiroView.check_passageiro(request.user):
@@ -1055,6 +1238,7 @@ class DesvioView(APIView):
         except Viagem.DoesNotExist:
             return Response({'error': 'Viagem não encontrada.'}, status=status.HTTP_404_NOT_FOUND)
 
+        # Verificar se o utilizador está associado à viagem via Reserva -> PassageiroViagem
         associado = PassageiroViagem.objects.filter(
             viagemid_viagem=viagem,
             reservaid_reserva__utilizadorid_utilizador=request.user
@@ -1063,6 +1247,7 @@ class DesvioView(APIView):
         if not associado:
             return Response({'error': 'Você não tem permissão para modificar o desvio desta viagem.'}, status=status.HTTP_403_FORBIDDEN)
 
+        # Buscar desvio ativo
         desvio_ativo = Desvio.objects.filter(
             viagemid_viagem=viagem,
             status_desvioid_status_desvio=2
@@ -1094,6 +1279,7 @@ class CondutorDesvioView(APIView):
         except Viagem.DoesNotExist:
             return Response({'error': 'Viagem não encontrada.'}, status=status.HTTP_404_NOT_FOUND)
 
+        # Verifica se o utilizador é o condutor da viagem
         try:
             condutor = Condutor.objects.get(utilizadorid_utilizador=request.user)
         except Condutor.DoesNotExist:
@@ -1103,10 +1289,12 @@ class CondutorDesvioView(APIView):
             return Response({'error': 'Você não está autorizado a visualizar os desvios desta viagem.'},
                             status=status.HTTP_403_FORBIDDEN)
 
+        # Recupera os desvios da viagem
         desvios = Desvio.objects.filter(viagemid_viagem=viagem)
 
         resultado = []
         for desvio in desvios:
+            # Recupera os pontos de desvio associados ao desvio atual
             pontos_desvio = PontoDesvio.objects.filter(desvioid_desvio=desvio).select_related('pontoid_ponto')
             
             pontos_desvio_data = [
@@ -1149,6 +1337,9 @@ class CondutorDesvioView(APIView):
         except Condutor.DoesNotExist:
             return Response({'error': 'Utilizador não é um condutor válido.'}, status=status.HTTP_403_FORBIDDEN)
 
+        if condutor.reputacao != 1:
+            return Response({"erro": "Conta de condutor não validada."}, status=status.HTTP_403_FORBIDDEN)
+
         if viagem.condutorid_condutor != condutor:
             return Response({'error': 'Você não tem permissão para modificar esta viagem.'}, status=status.HTTP_403_FORBIDDEN)
 
@@ -1180,6 +1371,19 @@ class CondutorDesvioView(APIView):
             except (PontoDesvio.DoesNotExist, PontoViagem.DoesNotExist):
                 return Response({'error': f'Erro ao atualizar ponto de destino {destino_valor}.'}, status=status.HTTP_400_BAD_REQUEST)
 
+        # Enviar alertas para todos os passageiros desta viagem
+        passageiros_viagem = PassageiroViagem.objects.filter(viagemid_viagem=viagem)
+        try:
+            tipo_alerta = TipoAlerta.objects.get(id_tipo_alerta=1)
+        except TipoAlerta.DoesNotExist:
+            return Response({'error': 'Tipo de alerta não encontrado.'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+        descricao_alerta = f"Desvio aceito ({viagem.id_viagem})."
+
+        for pv in passageiros_viagem:
+            utilizador_passageiro = pv.passageiroid_passageiro.utilizadorid_utilizador
+            AlertaView.alerta_interno(descricao_alerta, utilizador_passageiro.id_utilizador, 1)
+
         return Response({'mensagem': 'Desvio aplicado com sucesso.', 'id_desvio': desvio_ativo.id_desvio}, status=status.HTTP_200_OK)
    
 
@@ -1201,6 +1405,9 @@ class CondutorDesvioView(APIView):
         except Condutor.DoesNotExist:
             return Response({'error': 'Utilizador não é um condutor válido.'}, status=status.HTTP_403_FORBIDDEN)
 
+        if condutor.reputacao != 1:
+            return Response({"erro": "Conta de condutor não validada."}, status=status.HTTP_403_FORBIDDEN)
+
         if viagem.condutorid_condutor != condutor:
             return Response({'error': 'Você não tem permissão para modificar esta viagem.'}, status=status.HTTP_403_FORBIDDEN)
 
@@ -1210,6 +1417,19 @@ class CondutorDesvioView(APIView):
 
         desvio.status_desvioid_status_desvio_id = 1
         desvio.save()
+
+        # Enviar alertas para todos os passageiros desta viagem
+        passageiros_viagem = PassageiroViagem.objects.filter(viagemid_viagem=viagem)
+        try:
+            tipo_alerta = TipoAlerta.objects.get(id_tipo_alerta=1)
+        except TipoAlerta.DoesNotExist:
+            return Response({'error': 'Tipo de alerta não encontrado.'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+        descricao_alerta = f"Desvio aceito ({viagem.id_viagem})."
+
+        for pv in passageiros_viagem:
+            utilizador_passageiro = pv.passageiroid_passageiro.utilizadorid_utilizador
+            AlertaView.alerta_interno(descricao_alerta, utilizador_passageiro.id_utilizador, 1)
 
         return Response({'mensagem': 'Desvio rejeitado com sucesso.', 'id_desvio': desvio.id_desvio}, status=status.HTTP_200_OK)
 
@@ -1250,6 +1470,9 @@ class IniciarViagemView(APIView):
         except Condutor.DoesNotExist:
             return Response({'error': 'Utilizador não é um condutor válido.'}, status=status.HTTP_403_FORBIDDEN)
 
+        if condutor.reputacao != 1:
+            return Response({"erro": "Conta de condutor não validada."}, status=status.HTTP_403_FORBIDDEN)
+
         if viagem.condutorid_condutor != condutor:
             return Response({'error': 'Você não está autorizado a iniciar esta viagem.'},
                             status=status.HTTP_403_FORBIDDEN)
@@ -1266,6 +1489,19 @@ class IniciarViagemView(APIView):
 
         viagem.status_viagemid_status_viagem = status_viagem_iniciada
         viagem.save()
+
+        # Enviar alertas para todos os passageiros desta viagem
+        passageiros_viagem = PassageiroViagem.objects.filter(viagemid_viagem=viagem)
+        try:
+            tipo_alerta = TipoAlerta.objects.get(id_tipo_alerta=1)
+        except TipoAlerta.DoesNotExist:
+            return Response({'error': 'Tipo de alerta não encontrado.'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+        descricao_alerta = f"Viagem iniciada ({viagem.id_viagem})."
+
+        for pv in passageiros_viagem:
+            utilizador_passageiro = pv.passageiroid_passageiro.utilizadorid_utilizador
+            AlertaView.alerta_interno(descricao_alerta, utilizador_passageiro.id_utilizador, 1)
 
         return Response({'message': 'Viagem iniciada com sucesso.'}, status=status.HTTP_200_OK)
 
@@ -1301,6 +1537,9 @@ class FinalizarViagemView(APIView):
         except Condutor.DoesNotExist:
             return Response({'error': 'Utilizador não é um condutor válido.'}, status=status.HTTP_403_FORBIDDEN)
 
+        if condutor.reputacao != 1:
+            return Response({"erro": "Conta de condutor não validada."}, status=status.HTTP_403_FORBIDDEN)
+
         if viagem.condutorid_condutor != condutor:
             return Response({'error': 'Você não está autorizado a finalizar esta viagem.'},
                             status=status.HTTP_403_FORBIDDEN)
@@ -1318,6 +1557,19 @@ class FinalizarViagemView(APIView):
         viagem.status_viagemid_status_viagem = status_finalizada
         viagem.distancia_percorrida = distancia
         viagem.save()
+
+        # Enviar alertas para todos os passageiros desta viagem
+        passageiros_viagem = PassageiroViagem.objects.filter(viagemid_viagem=viagem)
+        try:
+            tipo_alerta = TipoAlerta.objects.get(id_tipo_alerta=1)
+        except TipoAlerta.DoesNotExist:
+            return Response({'error': 'Tipo de alerta não encontrado.'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+        descricao_alerta = f"Viagem finalizada ({viagem.id_viagem})."
+
+        for pv in passageiros_viagem:
+            utilizador_passageiro = pv.passageiroid_passageiro.utilizadorid_utilizador
+            AlertaView.alerta_interno(descricao_alerta, utilizador_passageiro.id_utilizador, 1)
 
         return Response({'message': 'Viagem finalizada com sucesso.'}, status=status.HTTP_200_OK)
 

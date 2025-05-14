@@ -113,6 +113,30 @@ class CondutorEditSerializer(WritableNestedModelSerializer):
             "doc_comprov_residencia",
         ]
 
+"""
+class CondutorCreateSerializer(WritableNestedModelSerializer):
+
+    class Meta:
+        model = Condutor
+        fields = [
+            "id_condutor",
+            "doc_reg_criminal",
+            "doc_comprov_residencia",
+            "reputacao",
+            "data_criacao",
+        ]
+
+
+class CondutorEditSerializer(WritableNestedModelSerializer):
+
+    class Meta:
+        model = Condutor
+        fields = [
+            "id_condutor",
+            "doc_reg_criminal",
+            "doc_comprov_residencia",
+        ]
+"""
 
 class TipoCategoriaSerializer(WritableNestedModelSerializer):
 

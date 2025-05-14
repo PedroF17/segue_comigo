@@ -10,6 +10,8 @@ import RidesSearchResult from './pages/RidesSearchResult.jsx';
 import RideTicketsPage from "./pages/RideTicketsPage.jsx";
 import RateRidesPage from "./pages/RateRidesPage.jsx";
 import CondutorTicketsPage from './pages/CondutorTicketsPage.jsx';
+import Alerts from './pages/Alerts.jsx';
+import Profile from './pages/Profile.jsx';
 
 function App() {
 
@@ -27,6 +29,8 @@ function App() {
                     <Route path="/os-meus-tickets" element={<RideTicketsPage />} />
                     <Route path="/condutor-tickets" element={<CondutorTicketsPage />} />
                     <Route path="/feedback-boleias" element={<RateRidesPage />} />
+                    <Route path="/alerts" element={<Alerts />} />
+                    <Route path="/profile" element={<Profile />} />
                 </Routes>
             </main>
         </div>

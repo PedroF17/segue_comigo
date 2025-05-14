@@ -48,7 +48,7 @@ const checkAdmin = async () => {
     if (!token) return false;
 
     try {
-        const response = await fetch('http://localhost:8000/check_admin/', {
+        const response = await fetch('http://localhost:8000/utilizador/check_admin/', {
             method: 'GET',
             headers: {
                 'Authorization': `Bearer ${token}`,
@@ -67,7 +67,7 @@ const checkCondutor = async () => {
     if (!token) return false;
 
     try {
-        const response = await fetch('http://localhost:8000/check_condutor/', {
+        const response = await fetch('http://localhost:8000/utilizador/check_condutor/', {
             method: 'GET',
             headers: {
                 'Authorization': `Bearer ${token}`,
@@ -86,7 +86,7 @@ const checkPassageiro = async () => {
     if (!token) return false;
 
     try {
-        const response = await fetch('http://localhost:8000/check_passageiro/', {
+        const response = await fetch('http://localhost:8000/utilizador/check_passageiro/', {
             method: 'GET',
             headers: {
                 'Authorization': `Bearer ${token}`,

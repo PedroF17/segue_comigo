@@ -8,6 +8,7 @@ function Admin() {
   const [activeTab, setActiveTab] = useState('Ocorrências');
   const [loading, setLoading] = useState(true);
   const [ocorrencias, setOcorrencias] = useState([]);
+  const [condutores, setCondutores] = useState([]);
   const [sortBy, setSortBy] = useState('id_ocorrencia');
   const [sortOrder, setSortOrder] = useState('desc');
   const navigate = useNavigate();
@@ -37,6 +38,8 @@ function Admin() {
   useEffect(() => {
     if (activeTab === 'Ocorrências') {
       fetchOcorrencias();
+    } else if (activeTab === 'Condutores') {
+      fetchCondutores();
     }
   }, [activeTab]);
 
@@ -44,9 +47,7 @@ function Admin() {
     try {
       const token = localStorage.getItem('accessToken');
       const response = await fetch('http://127.0.0.1:8000/comunicacao/ocorrencia/read/', {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+        headers: { Authorization: `Bearer ${token}` },
       });
 
       if (!response.ok) throw new Error('Erro ao buscar ocorrências.');
@@ -55,6 +56,43 @@ function Admin() {
     } catch (error) {
       console.error('Erro ao buscar ocorrências:', error);
       setOcorrencias([]);
+    }
+  };
+
+  const fetchCondutores = async () => {
+    try {
+      const token = localStorage.getItem('accessToken');
+      const response = await fetch('http://127.0.0.1:8000/condutor/list/', {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      if (!response.ok) throw new Error('Erro ao buscar condutores.');
+      const data = await response.json();
+      setCondutores(data);
+    } catch (error) {
+      console.error('Erro ao buscar condutores:', error);
+      setCondutores([]);
+    }
+  };
+
+  const handleAtualizarCondutor = async (idUtilizador) => {
+    try {
+      const token = localStorage.getItem('accessToken');
+      const response = await fetch('http://127.0.0.1:8000/condutor/list/', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ id_utilizador: idUtilizador }),
+      });
+
+      if (!response.ok) throw new Error('Erro ao atualizar condutor.');
+      alert('Condutor atualizado com sucesso!');
+      fetchCondutores(); // Atualiza lista após alteração
+    } catch (error) {
+      console.error('Erro ao atualizar condutor:', error);
+      alert('Erro ao atualizar condutor.');
     }
   };
 
@@ -67,11 +105,7 @@ function Admin() {
         ? b.id_ocorrencia
         : new Date(b.viagemid_viagem?.data_viagem || 0);
 
-      if (sortOrder === 'asc') {
-        return aVal > bVal ? 1 : -1;
-      } else {
-        return aVal < bVal ? 1 : -1;
-      }
+      return sortOrder === 'asc' ? aVal - bVal : bVal - aVal;
     });
     return sorted;
   };
@@ -98,7 +132,38 @@ function Admin() {
         <h2>{activeTab}</h2>
 
         {activeTab === 'Condutores' && (
-          <p>Conteúdo relacionado aos condutores será implementado aqui.</p>
+          <>
+            <table className="admin-table">
+              <thead>
+                <tr>
+                  <th>ID Utilizador</th>
+                  <th>ID Condutor</th>
+                  <th>Nome</th>
+                  <th>Apelido</th>
+                  <th>Reputação</th>
+                  <th>Ações</th>
+                </tr>
+              </thead>
+              <tbody>
+                {condutores.map((c) => (
+                  <tr key={c.id_condutor}>
+                    <td>{c.utilizadorid_utilizador?.id_utilizador}</td>
+                    <td>{c.id_condutor}</td>
+                    <td>{c.utilizadorid_utilizador?.nome_primeiro}</td>
+                    <td>{c.utilizadorid_utilizador?.nome_ultimo}</td>
+                    <td>{c.reputacao === 1 ? 'Validado' : 'Invalidado'}</td>
+                    <td>
+                      <button
+                        onClick={() => handleAtualizarCondutor(c.utilizadorid_utilizador?.id_utilizador)}
+                      >
+                        Atualizar
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </>
         )}
 
         {activeTab === 'Ocorrências' && (

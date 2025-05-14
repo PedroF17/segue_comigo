@@ -19,7 +19,7 @@ function NeighborRideSearch() {
       return false;
     }
 
-    const response = await fetch('http://127.0.0.1:8000/check_passageiro/', {
+    const response = await fetch('http://127.0.0.1:8000/utilizador/check_passageiro/', {
       headers: { Authorization: `Bearer ${token}` },
     });
 

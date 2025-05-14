@@ -147,10 +147,12 @@ class CondutorReservaViewTests(TestCase):
         self.ponto = Ponto.objects.create(id_ponto=1, descricao="Teste")
         self.ponto2 = Ponto.objects.create(id_ponto=2, descricao="Teste2")
         self.passageiro = Passageiro.objects.create(id_passageiro=1, utilizadorid_utilizador=self.user)
-        self.condutor = Condutor.objects.create(id_condutor=1, utilizadorid_utilizador=self.user)
+        self.condutor = Condutor.objects.create(id_condutor=1, utilizadorid_utilizador=self.user, reputacao=1)
+        self.administrador = Administrador.objects.create(id_administrador=1, utilizadorid_utilizador=self.user)
         self.status_reserva = StatusReserva.objects.create(id_status_reserva=1, descricao="Pendente")
         self.status_reserva2 = StatusReserva.objects.create(id_status_reserva=2, descricao="Aceite")
         self.status_reserva3 = StatusReserva.objects.create(id_status_reserva=3, descricao="Finalizada")
+        self.tipo_alerta = TipoAlerta.objects.create(id_tipo_alerta=1, descricao="Aviso")
         self.reserva = Reserva.objects.create(
                                     id_reserva=1, 
                                     utilizadorid_utilizador=self.user, 
@@ -205,7 +207,7 @@ class CancelarReservaViewTests(TestCase):
         self.ponto = Ponto.objects.create(id_ponto=1, descricao="Teste")
         self.ponto2 = Ponto.objects.create(id_ponto=2, descricao="Teste2")
         self.passageiro = Passageiro.objects.create(id_passageiro=1, utilizadorid_utilizador=self.user)
-        self.condutor = Condutor.objects.create(id_condutor=1, utilizadorid_utilizador=self.user)
+        self.condutor = Condutor.objects.create(id_condutor=1, utilizadorid_utilizador=self.user, reputacao=1)
         self.status_reserva = StatusReserva.objects.create(id_status_reserva=1, descricao="Pendente")
         self.status_reserva2 = StatusReserva.objects.create(id_status_reserva=2, descricao="Aceite")
         self.status_reserva3 = StatusReserva.objects.create(id_status_reserva=3, descricao="Finalizada")
@@ -593,7 +595,8 @@ class CondutorDesvioViewTests(TestCase):
         self.ponto = Ponto.objects.create(id_ponto=1, descricao="Teste")
         self.ponto2 = Ponto.objects.create(id_ponto=2, descricao="Teste2")
         self.passageiro = Passageiro.objects.create(id_passageiro=1, utilizadorid_utilizador=self.user)
-        self.condutor = Condutor.objects.create(id_condutor=1, utilizadorid_utilizador=self.user)
+        self.condutor = Condutor.objects.create(id_condutor=1, utilizadorid_utilizador=self.user, reputacao=1)
+        self.administrador = Administrador.objects.create(id_administrador=1, utilizadorid_utilizador=self.user)
         self.status_reserva = StatusReserva.objects.create(id_status_reserva=1, descricao="Pendente")
         self.status_reserva2 = StatusReserva.objects.create(id_status_reserva=2, descricao="Aceite")
         self.status_reserva3 = StatusReserva.objects.create(id_status_reserva=3, descricao="Finalizada")
@@ -603,6 +606,7 @@ class CondutorDesvioViewTests(TestCase):
         self.status_desvio = StatusDesvio.objects.create(id_status_desvio=1, descricao="Inativo")
         self.status_desvio2 = StatusDesvio.objects.create(id_status_desvio=2, descricao="Pendente")
         self.status_desvio3 = StatusDesvio.objects.create(id_status_desvio=3, descricao="Ativo")
+        self.tipo_alerta = TipoAlerta.objects.create(id_tipo_alerta=1, descricao="Aviso")
         self.reserva = Reserva.objects.create(
                                     id_reserva=1, 
                                     utilizadorid_utilizador=self.user, 
@@ -715,13 +719,15 @@ class IniciarViagemViewTests(TestCase):
         self.ponto = Ponto.objects.create(id_ponto=1, descricao="Teste")
         self.ponto2 = Ponto.objects.create(id_ponto=2, descricao="Teste2")
         self.passageiro = Passageiro.objects.create(id_passageiro=1, utilizadorid_utilizador=self.user)
-        self.condutor = Condutor.objects.create(id_condutor=1, utilizadorid_utilizador=self.user)
+        self.condutor = Condutor.objects.create(id_condutor=1, utilizadorid_utilizador=self.user, reputacao=1)
+        self.administrador = Administrador.objects.create(id_administrador=1, utilizadorid_utilizador=self.user)
         self.status_reserva = StatusReserva.objects.create(id_status_reserva=1, descricao="Pendente")
         self.status_reserva2 = StatusReserva.objects.create(id_status_reserva=2, descricao="Aceite")
         self.status_reserva3 = StatusReserva.objects.create(id_status_reserva=3, descricao="Finalizada")
         self.status_viagem = StatusViagem.objects.create(id_status_viagem=1, descricao="Pendente")
         self.status_viagem2 = StatusViagem.objects.create(id_status_viagem=2, descricao="Em Andamento")
         self.status_viagem3 = StatusViagem.objects.create(id_status_viagem=3, descricao="Finalizada")
+        self.tipo_alerta = TipoAlerta.objects.create(id_tipo_alerta=1, descricao="Aviso")
         self.reserva = Reserva.objects.create(
                                     id_reserva=1, 
                                     utilizadorid_utilizador=self.user, 
@@ -796,13 +802,15 @@ class FinalizarViagemViewTests(TestCase):
         self.ponto = Ponto.objects.create(id_ponto=1, descricao="Teste")
         self.ponto2 = Ponto.objects.create(id_ponto=2, descricao="Teste2")
         self.passageiro = Passageiro.objects.create(id_passageiro=1, utilizadorid_utilizador=self.user)
-        self.condutor = Condutor.objects.create(id_condutor=1, utilizadorid_utilizador=self.user)
+        self.condutor = Condutor.objects.create(id_condutor=1, utilizadorid_utilizador=self.user, reputacao=1)
+        self.administrador = Administrador.objects.create(id_administrador=1, utilizadorid_utilizador=self.user)
         self.status_reserva = StatusReserva.objects.create(id_status_reserva=1, descricao="Pendente")
         self.status_reserva2 = StatusReserva.objects.create(id_status_reserva=2, descricao="Aceite")
         self.status_reserva3 = StatusReserva.objects.create(id_status_reserva=3, descricao="Finalizada")
         self.status_viagem = StatusViagem.objects.create(id_status_viagem=1, descricao="Pendente")
         self.status_viagem2 = StatusViagem.objects.create(id_status_viagem=2, descricao="Em Andamento")
         self.status_viagem3 = StatusViagem.objects.create(id_status_viagem=3, descricao="Finalizada")
+        self.tipo_alerta = TipoAlerta.objects.create(id_tipo_alerta=1, descricao="Aviso")
         self.reserva = Reserva.objects.create(
                                     id_reserva=1, 
                                     utilizadorid_utilizador=self.user, 
@@ -1131,7 +1139,7 @@ class ReservaViagemTests(TestCase):
         self.ponto2 = Ponto.objects.create(id_ponto=2, descricao="Teste2")
         self.passageiro = Passageiro.objects.create(id_passageiro=1, utilizadorid_utilizador=self.user)
         self.passageiro2 = Passageiro.objects.create(id_passageiro=2, utilizadorid_utilizador=self.user2)
-        self.condutor = Condutor.objects.create(id_condutor=1, utilizadorid_utilizador=self.user)
+        self.condutor = Condutor.objects.create(id_condutor=1, utilizadorid_utilizador=self.user, reputacao=1)
         self.administrador = Administrador.objects.create(id_administrador=1, utilizadorid_utilizador=self.user)
         self.status_reserva = StatusReserva.objects.create(id_status_reserva=1, descricao="Pendente")
         self.status_reserva2 = StatusReserva.objects.create(id_status_reserva=2, descricao="Aceite")
@@ -1354,7 +1362,7 @@ class DesvioViagemTests(TestCase):
         self.ponto = Ponto.objects.create(id_ponto=1, descricao="Teste")
         self.ponto2 = Ponto.objects.create(id_ponto=2, descricao="Teste2")
         self.passageiro = Passageiro.objects.create(id_passageiro=1, utilizadorid_utilizador=self.user)
-        self.condutor = Condutor.objects.create(id_condutor=1, utilizadorid_utilizador=self.user)
+        self.condutor = Condutor.objects.create(id_condutor=1, utilizadorid_utilizador=self.user, reputacao=1)
         self.administrador = Administrador.objects.create(id_administrador=1, utilizadorid_utilizador=self.user)
         self.status_reserva = StatusReserva.objects.create(id_status_reserva=1, descricao="Pendente")
         self.status_reserva2 = StatusReserva.objects.create(id_status_reserva=2, descricao="Aceite")
@@ -1365,6 +1373,7 @@ class DesvioViagemTests(TestCase):
         self.status_desvio = StatusDesvio.objects.create(id_status_desvio=1, descricao="Inativo")
         self.status_desvio2 = StatusDesvio.objects.create(id_status_desvio=2, descricao="Pendente")
         self.status_desvio3 = StatusDesvio.objects.create(id_status_desvio=3, descricao="Ativo")
+        self.tipo_alerta = TipoAlerta.objects.create(id_tipo_alerta=1, descricao="Aviso")
 
         self.reserva = Reserva.objects.create(
                                     id_reserva=1, 

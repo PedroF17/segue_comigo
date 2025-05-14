@@ -100,7 +100,36 @@ class PrimeiroUtilizadorRegistroSerializer(serializers.ModelSerializer):
         password = validated_data.pop("password")
         validated_data["password"] = make_password(password)
         return super().create(validated_data)
+"""
+class PrimeiroUtilizadorRegistroSerializer(WritableNestedModelSerializer):
+    estado_civilid_estado_civil = EstadoCivilSerializer()
+    nacionalidadeid_nacionalidade = NacionalidadeSerializer()
 
+    class Meta:
+        model = Utilizador
+        fields = [
+            "id_utilizador",
+            "nome_primeiro",
+            "nome_ultimo",
+            "data_nasc",
+            "genero",
+            "numero_cc",
+            "data_criacao",
+            "grupoid_grupo",
+            "estado_civilid_estado_civil",
+            "nacionalidadeid_nacionalidade",
+            "password",
+            "email",
+        ]
+        extra_kwargs = {
+            "password" : {"write_only": True}
+        }
+
+    def create(self, validated_data):
+        password = validated_data.pop("password")
+        validated_data["password"] = make_password(password)
+        return super().create(validated_data)
+"""
 
 class DistritoSerializer(WritableNestedModelSerializer):
     paisid_pais = PaisSerializer()
@@ -150,6 +179,20 @@ class MoradaSerializer(serializers.ModelSerializer):
             "freguesiaid_freguesia",
         ]
 
+"""
+class MoradaSerializer(WritableNestedModelSerializer):
+    utilizadorid_utilizador = UtilizadorRegistroSerializer()
+    freguesiaid_freguesia = FreguesiaSerializer()
+
+    class Meta:
+        model = Morada
+        fields = [
+            "id_morada",
+            "descricao",
+            "utilizadorid_utilizador",
+            "freguesiaid_freguesia",
+        ]
+"""
 
 class TipoContactoSerializer(WritableNestedModelSerializer):
 
@@ -172,6 +215,20 @@ class ContactoShowSerializer(serializers.ModelSerializer):
     class Meta:
         model = Contacto
         fields = ["id_contacto", "descricao", "tipo_contactoid_tipo_contacto"]
+
+"""
+class ContactoSerializer(WritableNestedModelSerializer):
+    tipo_contactoid_tipo_contacto = TipoContactoSerializer()
+
+    class Meta:
+        model = Contacto
+        fields = [
+            "id_contacto",
+            "descricao",
+            "utilizadorid_utilizador",
+            "tipo_contactoid_tipo_contacto",
+        ]
+"""
 
 
 class AdministradorSerializer(WritableNestedModelSerializer):

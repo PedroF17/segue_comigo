@@ -8,6 +8,9 @@ from django.contrib.auth.hashers import check_password, make_password
 from django.contrib.auth import get_user_model
 from django.utils import timezone
 
+import string
+import random
+
 
 from projeto.models import *
 from .serializers import *
@@ -49,6 +52,38 @@ UTILIZADOR - Criar Utilizador
 # Primeira conta criada
 class FirstCreateAccountView(APIView):
 
+    def gerar_nome_unico_grupo(self, tamanho=10):
+        while True:
+            nome_aleatorio = ''.join(random.choices(string.ascii_letters + string.digits, k=tamanho))
+            if not Grupo.objects.filter(nome=nome_aleatorio).exists():
+                return nome_aleatorio
+
+    def post(self, request):
+        nome_unico = self.gerar_nome_unico_grupo()
+
+        novo_grupo = Grupo.objects.create(
+            nome=nome_unico,
+            data_criacao=timezone.now().date()
+        )
+
+        dados_utilizador = request.data.copy()
+        dados_utilizador["grupoid_grupo"] = novo_grupo.id_grupo
+
+        serializer = PrimeiroUtilizadorRegistroSerializer(data=dados_utilizador)
+
+        if serializer.is_valid():
+            utilizador = serializer.save()
+            return Response({
+                "mensagem": "Grupo e conta criados com sucesso.",
+                "grupo_nome": nome_unico,
+                "utilizador": PrimeiroUtilizadorRegistroSerializer(utilizador).data
+            }, status=status.HTTP_201_CREATED)
+
+        # Remove grupo se o utilizador não for criado com sucesso
+        novo_grupo.delete()
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    """
     def post(self, request):
         grupo_nome = request.data.get("grupo_nome")
 
@@ -77,6 +112,7 @@ class FirstCreateAccountView(APIView):
 
         novo_grupo.delete()
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    """
 
 
 class CreateAccountView(APIView):
@@ -131,6 +167,26 @@ class CreateAccountView(APIView):
 
         return Response({"mensagem": "Utilizador removido com sucesso."}, status=status.HTTP_200_OK)
 
+
+"""
+class CreateAccountView(APIView):
+
+    def post(self, request):
+        serializer = UtilizadorRegistroSerializer(data=request.data)
+
+        if serializer.is_valid():
+            utilizador = serializer.save()
+
+            # Re-serializa para esconder senha e mostrar dados limpos
+            response_data = UtilizadorRegistroSerializer(utilizador).data
+
+            return Response({
+                "mensagem": "Conta criada com sucesso.",
+                "utilizador": response_data
+            }, status=status.HTTP_201_CREATED)
+
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+"""
 
 """
 UTILIZADOR - Alterar Senha
@@ -261,6 +317,7 @@ class GrupoView(APIView):
         utilizador_autenticado = request.user
         grupo = utilizador_autenticado.grupoid_grupo
 
+        # Filtra apenas os utilizadores que pertencem ao grupo e possuem registro como Passageiro
         utilizadores = Utilizador.objects.filter(
             grupoid_grupo=grupo,
             passageiro__isnull=False
@@ -269,6 +326,30 @@ class GrupoView(APIView):
         serializer = UtilizadorRegistroSerializer(utilizadores, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
+    permission_classes = [IsAuthenticated]
+
+    def put(self, request):
+        utilizador = request.user
+
+        try:
+            grupo = Grupo.objects.get(utilizadorid_utilizador=utilizador.id_utilizador)
+        except Grupo.DoesNotExist:
+            return Response({"erro": "Grupo não encontrado para este utilizador."}, status=status.HTTP_404_NOT_FOUND)
+
+        # Gerar nome aleatório único
+        def gerar_nome_unico():
+            while True:
+                nome = ''.join(random.choices(string.ascii_letters + string.digits, k=10))
+                if not Grupo.objects.filter(nome=nome).exists():
+                    return nome
+
+        novo_nome = gerar_nome_unico()
+        grupo.nome = novo_nome
+        grupo.save()
+
+        return Response({"novo_nome_grupo": novo_nome}, status=status.HTTP_200_OK)
+
+    """
     def put(self, request):
         user = request.user
 
@@ -294,6 +375,49 @@ class GrupoView(APIView):
             "mensagem": "Nome do grupo atualizado com sucesso.",
             "grupo": serializer.data
         }, status=status.HTTP_200_OK)
+    """
+
+class CodigoGrupoView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        utilizador = request.user
+
+        try:
+            grupo = Grupo.objects.get(utilizadorid_utilizador=utilizador.id_utilizador)
+        except Grupo.DoesNotExist:
+            return Response(
+                {"erro": "Grupo associado ao utilizador não encontrado."},
+                status=status.HTTP_404_NOT_FOUND
+            )
+
+        return Response(grupo.nome)
+
+    def put(self, request):
+        utilizador = request.user
+        grupo_id = request.data.get("grupo_id")
+
+        if not grupo_id:
+            return Response(
+                {"erro": "O campo 'grupo_id' é obrigatório."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        try:
+            grupo = Grupo.objects.get(id_grupo=grupo_id)
+        except Grupo.DoesNotExist:
+            return Response(
+                {"erro": "Grupo com o ID fornecido não existe."},
+                status=status.HTTP_404_NOT_FOUND
+            )
+
+        utilizador.grupoid_grupo = grupo
+        utilizador.save()
+
+        return Response(
+            {"mensagem": "Grupo atualizado com sucesso."},
+            status=status.HTTP_200_OK
+        )
 
 
 """

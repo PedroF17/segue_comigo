@@ -64,7 +64,7 @@ CREATE TABLE `Alerta` (
   CONSTRAINT `FKAlerta6974` FOREIGN KEY (`Tipo_AlertaID_tipo_alerta`) REFERENCES `Tipo_Alerta` (`ID_tipo_alerta`),
   CONSTRAINT `FKAlerta757900` FOREIGN KEY (`UtilizadorID_utilizador`) REFERENCES `Utilizador` (`ID_utilizador`),
   CONSTRAINT `FKAlerta954578` FOREIGN KEY (`AdministradorID_administrador`) REFERENCES `Administrador` (`ID_administrador`)
-) ENGINE=InnoDB AUTO_INCREMENT=17 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=35 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -74,22 +74,40 @@ CREATE TABLE `Alerta` (
 LOCK TABLES `Alerta` WRITE;
 /*!40000 ALTER TABLE `Alerta` DISABLE KEYS */;
 INSERT INTO `Alerta` VALUES
-(1,'Teste!',12,1,1),
-(2,'Teste2!',11,1,1),
-(3,'Teste3!',11,1,1),
-(4,'Teste3!',11,1,1),
-(5,'Dados da Reserva, 1 alterados.',11,1,1),
-(6,'Dados da Reserva, 1 alterados.',11,1,1),
-(7,'Viagem confirmada (6).',11,1,1),
-(8,'Viagem confirmada (7).',11,1,1),
+(1,'Teste!',12,1,2),
+(2,'Teste2!',11,1,2),
+(3,'Teste3!',11,1,2),
+(4,'Teste3!',11,1,2),
+(5,'Dados da Reserva, 1 alterados.',11,1,2),
+(6,'Dados da Reserva, 1 alterados.',11,1,2),
+(7,'Viagem confirmada (6).',11,1,2),
+(8,'Viagem confirmada (7).',11,1,2),
 (9,'Viagem confirmada (12).',2,1,1),
 (10,'Viagem confirmada (16).',2,1,1),
-(11,'Viagem confirmada (19).',11,1,1),
-(12,'Viagem confirmada (20).',11,1,1),
-(13,'Viagem confirmada (21).',11,1,1),
-(14,'Viagem confirmada (22).',11,1,1),
-(15,'Viagem confirmada (23).',11,1,1),
-(16,'Viagem confirmada (24).',12,1,1);
+(11,'Viagem confirmada (19).',11,1,2),
+(12,'Viagem confirmada (20).',11,1,2),
+(13,'Viagem confirmada (21).',11,1,2),
+(14,'Viagem confirmada (22).',11,1,2),
+(15,'Viagem confirmada (23).',11,1,2),
+(16,'Viagem confirmada (24).',12,1,2),
+(17,'Viagem confirmada (30).',25,1,2),
+(18,'Viagem confirmada (31).',11,1,2),
+(19,'Viagem confirmada (32).',11,1,2),
+(20,'Reserva aceite (32).',11,1,2),
+(21,'Viagem iniciada (2).',11,1,2),
+(22,'Viagem iniciada (2).',12,1,2),
+(23,'Viagem finalizada (2).',11,1,2),
+(24,'Viagem finalizada (2).',12,1,2),
+(25,'Desvio aceito (15).',11,1,2),
+(26,'Reserva aceite (33).',11,1,2),
+(27,'Viagem confirmada (33).',11,1,2),
+(28,'Desvio aceito (16).',11,1,2),
+(29,'Desvio aceito (16).',12,1,2),
+(30,'Desvio aceito (16).',11,1,2),
+(31,'Desvio aceito (16).',12,1,2),
+(32,'Desvio aceito (16).',11,1,2),
+(33,'Desvio aceito (16).',12,1,2),
+(34,'Desvio aceito (16).',11,1,2);
 /*!40000 ALTER TABLE `Alerta` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -282,7 +300,7 @@ CREATE TABLE `Condutor` (
   PRIMARY KEY (`ID_condutor`),
   KEY `FKCondutor482216` (`UtilizadorID_utilizador`),
   CONSTRAINT `FKCondutor482216` FOREIGN KEY (`UtilizadorID_utilizador`) REFERENCES `Utilizador` (`ID_utilizador`)
-) ENGINE=InnoDB AUTO_INCREMENT=25 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=28 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -292,10 +310,11 @@ CREATE TABLE `Condutor` (
 LOCK TABLES `Condutor` WRITE;
 /*!40000 ALTER TABLE `Condutor` DISABLE KEYS */;
 INSERT INTO `Condutor` VALUES
-(1,NULL,NULL,2,NULL,NULL),
+(1,0,NULL,2,'',''),
 (3,2,NULL,6,'',''),
-(23,0,'2025-04-20',11,'docs/condutores/Aula_9_1.pdf','docs/condutores/Aula_9_1_kbt3eY1.pdf'),
-(24,0,'2025-04-20',12,NULL,NULL);
+(23,1,'2025-04-20',11,'docs/condutores/Aula_9_1.pdf','docs/condutores/Aula_9_1_kbt3eY1.pdf'),
+(24,0,'2025-04-20',12,NULL,NULL),
+(27,0,'2025-05-14',25,'','');
 /*!40000 ALTER TABLE `Condutor` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -464,7 +483,7 @@ CREATE TABLE `Desvio` (
   KEY `FKDesvio108382` (`ViagemID_viagem`),
   CONSTRAINT `FKDesvio108382` FOREIGN KEY (`ViagemID_viagem`) REFERENCES `Viagem` (`ID_viagem`),
   CONSTRAINT `FKDesvio848337` FOREIGN KEY (`Status_DesvioID_status_desvio`) REFERENCES `Status_Desvio` (`ID_status_desvio`)
-) ENGINE=InnoDB AUTO_INCREMENT=15 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=23 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -487,7 +506,15 @@ INSERT INTO `Desvio` VALUES
 (11,'2025-05-10',1,12),
 (12,'2025-05-11',1,13),
 (13,'2025-05-11',1,13),
-(14,'2025-05-11',3,13);
+(14,'2025-05-11',3,13),
+(15,'2025-05-11',1,12),
+(16,'2025-05-14',1,15),
+(17,'2025-05-14',1,15),
+(18,'2025-05-14',1,15),
+(19,'2025-05-14',3,15),
+(20,'2025-05-14',1,16),
+(21,'2025-05-14',3,16),
+(22,'2025-05-14',1,16);
 /*!40000 ALTER TABLE `Desvio` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -583,8 +610,9 @@ CREATE TABLE `Grupo` (
   `ID_grupo` int(10) NOT NULL AUTO_INCREMENT,
   `Nome` varchar(50) DEFAULT NULL,
   `Data_criacao` date DEFAULT NULL,
+  `utilizadorid_utilizador` int(11) DEFAULT NULL,
   PRIMARY KEY (`ID_grupo`)
-) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -594,11 +622,12 @@ CREATE TABLE `Grupo` (
 LOCK TABLES `Grupo` WRITE;
 /*!40000 ALTER TABLE `Grupo` DISABLE KEYS */;
 INSERT INTO `Grupo` VALUES
-(1,'grupo1','2025-04-01'),
-(2,'grupo2','2025-04-01'),
-(7,'Grupo de Teste','2025-05-06'),
-(9,'Meu Grupo','2025-05-09'),
-(10,'Meu Grupo','2025-05-09');
+(1,'ZMG3Ed0orF','2025-04-01',11),
+(2,'grupo2','2025-04-01',NULL),
+(7,'Grupo de Teste','2025-05-06',NULL),
+(9,'Meu Grupo','2025-05-09',NULL),
+(10,'Meu Grupo2','2025-05-09',NULL),
+(11,'OeHNlHn01r','2025-05-13',25);
 /*!40000 ALTER TABLE `Grupo` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -771,7 +800,7 @@ CREATE TABLE `Ocorrencia` (
   CONSTRAINT `FKOcorrencia422270` FOREIGN KEY (`UtilizadorID_utilizador`) REFERENCES `Utilizador` (`ID_utilizador`),
   CONSTRAINT `FKOcorrencia766645` FOREIGN KEY (`Tipo_OcorrenciaID_tipo_ocorrencia`) REFERENCES `Tipo_Ocorrencia` (`ID_tipo_ocorrencia`),
   CONSTRAINT `FKOcorrencia836840` FOREIGN KEY (`AdministradorID_administrador`) REFERENCES `Administrador` (`ID_administrador`)
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -783,7 +812,9 @@ LOCK TABLES `Ocorrencia` WRITE;
 INSERT INTO `Ocorrencia` VALUES
 (1,'Veículo apresentou problema durante a viagem.','2025-04-26',NULL,1,11,1,1),
 (3,'teste','2025-05-10',NULL,11,11,1,1),
-(4,'fwffwefw','2025-05-10',NULL,11,11,1,1);
+(4,'fwffwefw','2025-05-10',NULL,11,11,1,1),
+(5,'teste de feedback','2025-05-14',NULL,9,11,1,2),
+(6,'yfyufyfuf','2025-05-14',NULL,16,11,1,2);
 /*!40000 ALTER TABLE `Ocorrencia` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -861,7 +892,7 @@ CREATE TABLE `Passageiro` (
   PRIMARY KEY (`ID_passageiro`),
   KEY `FKPassageiro451853` (`UtilizadorID_utilizador`),
   CONSTRAINT `FKPassageiro451853` FOREIGN KEY (`UtilizadorID_utilizador`) REFERENCES `Utilizador` (`ID_utilizador`)
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -873,7 +904,8 @@ LOCK TABLES `Passageiro` WRITE;
 INSERT INTO `Passageiro` VALUES
 (1,NULL,2),
 (4,'2025-04-27',11),
-(5,'2025-04-28',12);
+(5,'2025-04-28',12),
+(9,'2025-05-14',25);
 /*!40000 ALTER TABLE `Passageiro` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -896,7 +928,7 @@ CREATE TABLE `Passageiro_Viagem` (
   CONSTRAINT `FKPassageiro146953` FOREIGN KEY (`ViagemID_viagem`) REFERENCES `Viagem` (`ID_viagem`),
   CONSTRAINT `FKPassageiro360421` FOREIGN KEY (`ReservaID_reserva`) REFERENCES `Reserva` (`ID_reserva`),
   CONSTRAINT `FKPassageiro635573` FOREIGN KEY (`PassageiroID_passageiro`) REFERENCES `Passageiro` (`ID_passageiro`)
-) ENGINE=InnoDB AUTO_INCREMENT=35 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=42 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -922,7 +954,12 @@ INSERT INTO `Passageiro_Viagem` VALUES
 (30,5,2,4),
 (31,4,11,22),
 (32,4,12,23),
-(33,5,13,24);
+(33,5,13,24),
+(35,1,12,23),
+(36,9,14,30),
+(37,1,14,30),
+(38,4,15,31),
+(40,4,16,33);
 /*!40000 ALTER TABLE `Passageiro_Viagem` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -970,7 +1007,7 @@ CREATE TABLE `Ponto_Desvio` (
   KEY `pontoid_ponto` (`pontoid_ponto`),
   CONSTRAINT `Ponto_Desvio_ibfk_1` FOREIGN KEY (`desvioid_desvio`) REFERENCES `Desvio` (`ID_desvio`),
   CONSTRAINT `Ponto_Desvio_ibfk_2` FOREIGN KEY (`pontoid_ponto`) REFERENCES `Ponto` (`ID_ponto`)
-) ENGINE=InnoDB AUTO_INCREMENT=57 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=89 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1035,7 +1072,39 @@ INSERT INTO `Ponto_Desvio` VALUES
 (53,'0',14,1,'1'),
 (54,'1',14,2,'1'),
 (55,'0',14,2,'0'),
-(56,'1',14,1,'0');
+(56,'1',14,1,'0'),
+(57,'0',15,2,'1'),
+(58,'1',15,2,'1'),
+(59,'0',15,1,'0'),
+(60,'1',15,2,'0'),
+(61,'0',16,2,'1'),
+(62,'1',16,2,'1'),
+(63,'0',16,1,'0'),
+(64,'1',16,2,'0'),
+(65,'0',17,1,'1'),
+(66,'1',17,2,'1'),
+(67,'0',17,2,'0'),
+(68,'1',17,2,'0'),
+(69,'0',18,2,'1'),
+(70,'1',18,2,'1'),
+(71,'0',18,1,'0'),
+(72,'1',18,1,'0'),
+(73,'0',19,2,'1'),
+(74,'1',19,2,'1'),
+(75,'0',19,1,'0'),
+(76,'1',19,2,'0'),
+(77,'0',20,1,'1'),
+(78,'1',20,2,'1'),
+(79,'0',20,2,'0'),
+(80,'1',20,2,'0'),
+(81,'0',21,2,'1'),
+(82,'1',21,2,'1'),
+(83,'0',21,1,'0'),
+(84,'1',21,1,'0'),
+(85,'0',22,1,'1'),
+(86,'1',22,1,'1'),
+(87,'0',22,2,'0'),
+(88,'1',22,2,'0');
 /*!40000 ALTER TABLE `Ponto_Desvio` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -1056,7 +1125,7 @@ CREATE TABLE `Ponto_Reserva` (
   KEY `pontoid_ponto` (`pontoid_ponto`),
   CONSTRAINT `Ponto_Reserva_ibfk_1` FOREIGN KEY (`reservaid_reserva`) REFERENCES `Reserva` (`ID_reserva`),
   CONSTRAINT `Ponto_Reserva_ibfk_2` FOREIGN KEY (`pontoid_ponto`) REFERENCES `Ponto` (`ID_ponto`)
-) ENGINE=InnoDB AUTO_INCREMENT=49 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=67 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1080,8 +1149,6 @@ INSERT INTO `Ponto_Reserva` VALUES
 (28,'1',14,2),
 (31,'0',16,1),
 (32,'1',16,2),
-(33,'0',17,1),
-(34,'1',17,2),
 (37,'0',19,1),
 (38,'1',19,2),
 (39,'0',20,2),
@@ -1093,7 +1160,21 @@ INSERT INTO `Ponto_Reserva` VALUES
 (45,'0',23,2),
 (46,'1',23,2),
 (47,'0',24,1),
-(48,'1',24,2);
+(48,'1',24,2),
+(49,'0',25,2),
+(50,'1',25,1),
+(51,'0',26,1),
+(52,'1',26,2),
+(55,'0',28,1),
+(56,'1',28,2),
+(59,'0',30,1),
+(60,'1',30,2),
+(61,'0',31,2),
+(62,'1',31,2),
+(63,'0',32,2),
+(64,'1',32,2),
+(65,'0',33,1),
+(66,'1',33,2);
 /*!40000 ALTER TABLE `Ponto_Reserva` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -1114,7 +1195,7 @@ CREATE TABLE `Ponto_Viagem` (
   KEY `FKPonto_Viag133463` (`PontoID_ponto`),
   CONSTRAINT `FKPonto_Viag109697` FOREIGN KEY (`ViagemID_viagem`) REFERENCES `Viagem` (`ID_viagem`),
   CONSTRAINT `FKPonto_Viag133463` FOREIGN KEY (`PontoID_ponto`) REFERENCES `Ponto` (`ID_ponto`)
-) ENGINE=InnoDB AUTO_INCREMENT=25 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=31 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1147,7 +1228,13 @@ INSERT INTO `Ponto_Viagem` VALUES
 (21,0,12,2),
 (22,1,12,2),
 (23,0,13,2),
-(24,1,13,1);
+(24,1,13,1),
+(25,0,14,1),
+(26,1,14,2),
+(27,0,15,1),
+(28,1,15,2),
+(29,0,16,1),
+(30,1,16,1);
 /*!40000 ALTER TABLE `Ponto_Viagem` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -1176,7 +1263,7 @@ CREATE TABLE `Reserva` (
   CONSTRAINT `FKReserva324074` FOREIGN KEY (`CondutorID_condutor`) REFERENCES `Condutor` (`ID_condutor`),
   CONSTRAINT `FKReserva785147` FOREIGN KEY (`UtilizadorID_utilizador`) REFERENCES `Utilizador` (`ID_utilizador`),
   CONSTRAINT `fk_status_reserva` FOREIGN KEY (`Status_reservaID_status_reserva`) REFERENCES `Status_Reserva` (`ID_status_reserva`)
-) ENGINE=InnoDB AUTO_INCREMENT=25 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=34 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1191,15 +1278,21 @@ INSERT INTO `Reserva` VALUES
 (6,'2025-04-28',300,11,23,4,3,'2025-05-05 00:00:00'),
 (7,'2025-04-28',500,12,23,5,3,'2025-10-10 00:00:00'),
 (12,'2025-05-09',10,11,1,1,3,'2025-05-01 00:00:00'),
-(14,'2025-05-09',10,11,1,1,1,'2025-05-21 00:00:00'),
+(14,'2025-05-09',10,11,23,4,2,'2025-05-21 00:00:00'),
 (16,'2025-05-09',10,11,1,1,3,'2025-05-22 00:00:00'),
-(17,'2025-05-09',10,11,1,1,1,'2025-05-31 00:00:00'),
 (19,'2025-05-10',10,11,23,4,3,'2025-05-05 00:00:00'),
 (20,'2025-05-10',10,11,23,4,3,'2025-11-20 00:00:00'),
 (21,'2025-05-10',10,11,23,4,3,'2025-05-28 00:00:00'),
 (22,'2025-05-10',10,11,23,4,3,'2026-01-01 00:00:00'),
 (23,'2025-05-10',10,11,23,4,3,'2027-01-19 00:00:00'),
-(24,'2025-05-11',10,12,24,5,3,'2025-05-28 00:00:00');
+(24,'2025-05-11',10,12,24,5,3,'2025-05-28 00:00:00'),
+(25,'2025-05-11',10,11,1,1,1,'2025-05-12 00:00:00'),
+(26,'2025-05-11',10,11,1,1,1,'2025-05-20 00:00:00'),
+(28,'2025-05-13',10,11,24,4,2,'2025-10-28 00:00:00'),
+(30,'2025-05-14',10,25,27,9,3,'2025-05-01 00:00:00'),
+(31,'2025-05-14',10,11,23,4,3,'2025-05-06 00:00:00'),
+(32,'2025-05-14',10,11,23,4,2,'2025-05-29 00:00:00'),
+(33,'2025-05-14',10,11,23,4,3,'2025-05-22 00:00:00');
 /*!40000 ALTER TABLE `Reserva` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -1326,7 +1419,7 @@ CREATE TABLE `Tipo_Alerta` (
   `ID_tipo_alerta` int(10) NOT NULL AUTO_INCREMENT,
   `Descricao` varchar(10) DEFAULT NULL,
   PRIMARY KEY (`ID_tipo_alerta`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1336,7 +1429,8 @@ CREATE TABLE `Tipo_Alerta` (
 LOCK TABLES `Tipo_Alerta` WRITE;
 /*!40000 ALTER TABLE `Tipo_Alerta` DISABLE KEYS */;
 INSERT INTO `Tipo_Alerta` VALUES
-(1,'Aviso');
+(1,'Pendente'),
+(2,'Lido');
 /*!40000 ALTER TABLE `Tipo_Alerta` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -1504,7 +1598,7 @@ CREATE TABLE `Utilizador` (
   CONSTRAINT `FKUtilizador142159` FOREIGN KEY (`Estado_CivilID_estado_civil`) REFERENCES `Estado_Civil` (`ID_estado_civil`),
   CONSTRAINT `FKUtilizador55567` FOREIGN KEY (`GrupoID_grupo`) REFERENCES `Grupo` (`ID_grupo`),
   CONSTRAINT `FKUtilizador714821` FOREIGN KEY (`NacionalidadeID_nacionalidade`) REFERENCES `Nacionalidade` (`ID_nacionalidade`)
-) ENGINE=InnoDB AUTO_INCREMENT=27 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=28 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1520,7 +1614,7 @@ INSERT INTO `Utilizador` VALUES
 (8,'João','Silva','1990-01-01','M',123456789,'2025-04-09',1,1,1,'pbkdf2_sha256$870000$tiRxGVjWpKQpEtvekPlZhz$ReYYlYT5h9tAm2F8l55vzSN4PYybE+ATz4f5v6Y0lsE=',NULL,0,1,0,'jsilva@email.com'),
 (9,'João','Silva','1990-01-01','M',123456789,NULL,1,1,1,'123456',NULL,0,1,0,'silva@email.com'),
 (10,'João','Silva','1990-01-01','M',123456789,NULL,1,1,1,'pbkdf2_sha256$870000$tRWJnR0PU1c4gIMy3ZZqdc$sGKCYBNULuMwQFfMCEfX88x6Xv/mzvOgRnzAo7RHc0k=',NULL,0,1,0,'joao@email.com'),
-(11,'João2','Silva2','1985-02-05','M',7,NULL,1,1,1,'pbkdf2_sha256$870000$gpEiIs37WfuOzrxhp1Gkrl$m3zbzybI6mql6Z7SGGsnKMtvfWYaAJeC7E7kjy9zdRs=','2025-04-27 20:43:01',1,1,1,'joao2@email.com'),
+(11,'João2','Silva2','1985-02-05','M',7,NULL,1,1,1,'pbkdf2_sha256$870000$ZhoedpGxYVx5yqfyOUhhSh$SaSF0hk+rtNmgTqrt0JueI6WsgW9JVRLHJVnnvVFf4I=','2025-04-27 20:43:01',1,1,1,'joao2@email.com'),
 (12,'2','2','1985-02-05','M',7,'2025-04-18',1,1,1,'pbkdf2_sha256$870000$A84beYBuonvwYUacOKK107$Ee1u1VQBdvJnSDLoGTRd8jRFp3Ym5vQCI6/tBYR7458=',NULL,0,1,0,'2@2.com'),
 (15,'5','5','1985-02-05','M',7,'2025-04-19',1,1,1,'pbkdf2_sha256$870000$6WBPGIaL5yDreMOevuVwyZ$JLYv4zA8MUl9mRsNNtuM3hbgssfOgzDUjhQg9YcgH7Y=',NULL,0,1,0,'3@3.com'),
 (16,'6','6','1985-02-05','M',7,'2025-04-19',1,1,1,'pbkdf2_sha256$870000$Z7cK2X9dpedz8TFqyMhH2Q$El3R3t4CxoHOFJgaAq0jm1Kqv5Xf3cdZnYgNGn5+pGY=',NULL,0,1,0,'4@4.com'),
@@ -1530,8 +1624,9 @@ INSERT INTO `Utilizador` VALUES
 (22,'Jane','Doe','1995-05-05','F',987654321,'2025-05-08',1,1,1,'pbkdf2_sha256$870000$05q6mpd0W7GuSEgqIzoTXT$EmOZ0hjQRbSzzjK0alnBaPHaydI3wmYyzlY7YQBJKaY=',NULL,0,1,0,'jane.doe@example.com'),
 (23,'Jane2','Doe2','1995-05-05','F',987654321,'2025-05-08',1,1,1,'pbkdf2_sha256$870000$hPh1mYT2TUVr3lY6Nhpoz7$SzzbsP9+IrMB5Pv8aLoQbP62VWW5LnPm4mOvMCuk2nM=',NULL,0,1,0,'jane2.doe2@example.com'),
 (24,'Jane3','Doe3','1995-05-05','F',987654321,'2025-05-08',1,1,1,'pbkdf2_sha256$870000$6uhgp1h2TCDYYl8orcSEWF$YCwd09LrjUi5qhmFCh0VeukOw8qvpiRgkCvUxFszviU=',NULL,0,1,0,'jane3.doe3@example.com'),
-(25,'um','dois','1999-11-11','M',0,'2025-05-09',9,1,1,'pbkdf2_sha256$870000$L0f98kNGAWGyVWLP5OOAw5$en6Mj7V1uxhwIK+BAVffm43I8yT3bauoGmtU35MzYCo=',NULL,0,1,0,'um@dois.com'),
-(26,'aassdad','dsad','1999-11-11','M',0,'2025-05-09',10,1,1,'pbkdf2_sha256$870000$W6roRRVTa9P1kw0iqEZ7MY$raslKGLcq1u+KTLNd38zzth0S/uLE70jYJjs9wRMfb0=',NULL,0,1,0,'11@11.com');
+(25,'um','dois','1999-11-11','M',0,'2025-05-09',1,1,1,'pbkdf2_sha256$870000$L0f98kNGAWGyVWLP5OOAw5$en6Mj7V1uxhwIK+BAVffm43I8yT3bauoGmtU35MzYCo=',NULL,0,1,0,'um@dois.com'),
+(26,'aassdad','dsad','1999-11-11','M',0,'2025-05-09',10,1,1,'pbkdf2_sha256$870000$W6roRRVTa9P1kw0iqEZ7MY$raslKGLcq1u+KTLNd38zzth0S/uLE70jYJjs9wRMfb0=',NULL,0,1,0,'11@11.com'),
+(27,'yyyq','yyyq','2025-05-07','M',0,'2025-05-13',11,1,1,'pbkdf2_sha256$870000$VIkuNoP4OKx6i6RxOkxm4e$wsk0SPajDSnD7BaaMb2SezKOJlqWgh4Mn3DhtczRmv8=',NULL,0,1,0,'yyyq@yyyq.com');
 /*!40000 ALTER TABLE `Utilizador` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -1592,7 +1687,7 @@ CREATE TABLE `Viagem` (
   KEY `fk_condutor` (`CondutorID_condutor`),
   CONSTRAINT `FKViagem597327` FOREIGN KEY (`Status_ViagemID_status_viagem`) REFERENCES `Status_Viagem` (`ID_status_viagem`),
   CONSTRAINT `fk_condutor` FOREIGN KEY (`CondutorID_condutor`) REFERENCES `Condutor` (`ID_condutor`)
-) ENGINE=InnoDB AUTO_INCREMENT=14 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=17 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1603,18 +1698,21 @@ LOCK TABLES `Viagem` WRITE;
 /*!40000 ALTER TABLE `Viagem` DISABLE KEYS */;
 INSERT INTO `Viagem` VALUES
 (1,NULL,NULL,1,NULL),
-(2,'2025-05-15 00:00:00',0,1,23),
-(3,'2025-05-25 00:00:00',0,1,23),
+(2,'2025-05-15 00:00:00',10,3,23),
+(3,'2025-05-25 00:00:00',0,2,23),
 (4,'2025-05-05 00:00:00',100,3,23),
 (5,'2025-10-10 00:00:00',0,1,23),
 (6,'2025-05-01 00:00:00',0,1,1),
 (7,'2025-05-22 00:00:00',0,1,1),
 (8,'2025-05-05 00:00:00',0,1,23),
-(9,'2025-11-20 00:00:00',0,1,23),
+(9,'2025-11-20 00:00:00',0,2,23),
 (10,'2025-05-28 00:00:00',1000,3,23),
-(11,'2026-01-01 00:00:00',0,1,23),
-(12,'2027-01-19 00:00:00',0,1,23),
-(13,'2025-05-28 00:00:00',50,3,24);
+(11,'2026-01-01 00:00:00',0,2,23),
+(12,'2027-01-19 00:00:00',500,3,23),
+(13,'2025-05-28 00:00:00',50,3,24),
+(14,'2025-05-01 00:00:00',0,1,27),
+(15,'2025-05-06 00:00:00',100,1,23),
+(16,'2025-05-22 00:00:00',0,1,23);
 /*!40000 ALTER TABLE `Viagem` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -2689,4 +2787,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*M!100616 SET NOTE_VERBOSITY=@OLD_NOTE_VERBOSITY */;
 
--- Dump completed on 2025-05-11 19:25:43
+-- Dump completed on 2025-05-14 18:59:48

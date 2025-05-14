@@ -48,6 +48,61 @@ class CondutorView(APIView):
     permission_classes = [IsAuthenticated]
 
     
+    """
+    def post(self, request):
+        user = request.user
+        serializer = CondutorCreateSerializer(data=request.data)
+
+        # Verifica quantos condutores existem
+        total_condutores = Condutor.objects.filter(utilizadorid_utilizador=user).count()
+
+        if serializer.is_valid() & total_condutores == 0:
+            serializer.save(utilizadorid_utilizador=user, data_criacao=timezone.now().date(), reputacao=0)
+            return JsonResponse("Condutor adicionado com sucesso.", safe=False)
+        return JsonResponse(serializer.errors, safe=False, status=400)
+
+    def get(self, request):
+        user = request.user
+
+        condutores = Condutor.objects.filter(utilizadorid_utilizador=user)
+        serializer = CondutorSerializer(condutores, many=True)
+        return Response(serializer.data)
+
+    def put(self, request):
+        user = request.user
+
+        try:
+            condutor = Condutor.objects.get(utilizadorid_utilizador=user.id_utilizador)
+        except Condutor.DoesNotExist:
+            return Response({"erro": "Condutor não encontrado."}, status=status.HTTP_404_NOT_FOUND)
+       
+        serializer = CondutorEditSerializer(condutor, data=request.data, partial=True)
+
+        if serializer.is_valid():
+            serializer.save()
+            return Response({
+                "mensagem": "Dados atualizados com sucesso.",
+                "condutor": serializer.data
+            }, status=status.HTTP_200_OK)
+
+        user = request.user
+        serializer = CondutorEditSerializer(condutor, data=request.data, partial=True)
+
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def delete(self, request):
+        user = request.user
+
+        try:
+            condutor = Condutor.objects.get(utilizadorid_utilizador=user.id_utilizador)
+        except Condutor.DoesNotExist:
+            return Response({"erro": "Condutor não encontrado."}, status=status.HTTP_404_NOT_FOUND)
+
+        condutor.delete()
+        return JsonResponse("Condutor deletado com sucesso.", safe=False)
+
+    """
+    
     def post(self, request):
         user = request.user
         serializer = CondutorCreateSerializer(data=request.data, partial=True)
@@ -108,6 +163,50 @@ class CondutorView(APIView):
         return JsonResponse("Condutor deletado com sucesso.", safe=False)
 
 
+class AdminCondutorView(APIView):
+    permission_classes = [IsAuthenticated] 
+
+    def get(self, request):
+        user = request.user
+        if not CheckAdminView.check_admin(request.user):
+            return Response(
+                {"detail": "Permissão Negada."},
+                status=status.HTTP_403_FORBIDDEN
+            )
+
+        condutores = Condutor.objects.all()
+        serializer = CondutorSerializer(condutores, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    def put(self, request):
+        id_utilizador = request.data.get("id_utilizador")
+
+        if not id_utilizador:
+            return Response(
+                {"erro": "O campo 'id_utilizador' é obrigatório."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        try:
+            condutor = Condutor.objects.get(utilizadorid_utilizador__id_utilizador=id_utilizador)
+        except Condutor.DoesNotExist:
+            return Response(
+                {"erro": "Condutor não encontrado para o id_utilizador fornecido."},
+                status=status.HTTP_404_NOT_FOUND
+            )
+
+        condutor.reputacao = 0 if condutor.reputacao == 1 else 1
+        condutor.save()
+
+        return Response(
+            {
+                "mensagem": f"Reputação do condutor com id_utilizador {id_utilizador} atualizada com sucesso.",
+                "nova_reputacao": condutor.reputacao
+            },
+            status=status.HTTP_200_OK
+        )
+
+
 """
 VEICULO e CONDUTOR_VEICULO - CRUD do Veículo
  
@@ -149,6 +248,28 @@ VEICULO e CONDUTOR_VEICULO - CRUD do Veículo
 
 """
 
+"""
+class VeiculoView(APIView):
+    permission_classes = [IsAuthenticated]
+
+
+    def post(self, request):
+        user = request.user
+        condutor = Condutor.objects.get(utilizadorid_utilizador=user.id_utilizador)
+        veiculo = VeiculoSerializer(data=request.data)
+
+        if veiculo.is_valid():
+            veiculo.save(utilizadorid_utilizador=user)
+        else:
+            return JsonResponse(veiculo.errors, safe=False, status=400)
+        
+        condutor_veiculo = CondutorVeiculo.objects.get(condutorid_condutor=condutor.id_condutor, veiculoid_veiculo=veiculo.id_veiculo)
+
+        if condutor_veiculo.is_valid():
+            condutor_veiculo.save()
+            return JsonResponse("Condutor adicionado com sucesso.", safe=False)
+        return JsonResponse(condutor_veiculo.errors, safe=False, status=400)
+"""
 class VeiculoView(APIView):
     permission_classes = [IsAuthenticated]
 
@@ -189,6 +310,7 @@ class VeiculoView(APIView):
             veiculo.delete()
             return JsonResponse(condutor_veiculo_serializer.errors, safe=False, status=400)
 
+    # Listar Todos Veiculos percententes ao Grupo do Utilizador Logado
     def get(self, request):
         user = request.user
         if not CheckCondutorView.check_condutor(request.user):
@@ -286,7 +408,56 @@ class VeiculoView(APIView):
         return Response({
             "mensagem": "CondutorVeiculo deletado com sucesso. O veículo ainda está associado a outros condutores."
         }, status=status.HTTP_200_OK)
-    
+
+
+    """
+    def put(self, request, pk):
+        user = request.user
+
+        # 1. Buscar o condutor pelo utilizador autenticado
+        try:
+            condutor = Condutor.objects.get(utilizadorid_utilizador=user.id_utilizador)
+        except Condutor.DoesNotExist:
+            return Response({"erro": "Condutor não encontrado."}, status=status.HTTP_404_NOT_FOUND)
+
+        # 2. Verificar se o CondutorVeiculo pertence ao condutor
+        try:
+            condutor_veiculo = CondutorVeiculo.objects.get(
+                id_condutor_veiculo=pk,
+                condutorid_condutor=condutor
+            )
+        except CondutorVeiculo.DoesNotExist:
+            return Response({"erro": "CondutorVeiculo não pertence ao condutor autenticado."},
+                            status=status.HTTP_403_FORBIDDEN)
+
+        veiculo = condutor_veiculo.veiculoid_veiculo
+
+        # 3. Atualizar CondutorVeiculo
+        cv_serializer = CreateCondutorVeiculoSerializer(
+            condutor_veiculo, data=request.data.get("condutor_veiculo", {}), partial=True
+        )
+
+        # 4. Atualizar Veiculo
+        veiculo_serializer = CreateVeiculoSerializer(
+            veiculo, data=request.data.get("veiculo", {}), partial=True
+        )
+
+        if cv_serializer.is_valid() and veiculo_serializer.is_valid():
+            cv_serializer.save()
+            veiculo_serializer.save()
+
+            return Response({
+                "mensagem": "Dados atualizados com sucesso.",
+                "condutor_veiculo": cv_serializer.data,
+                "veiculo": veiculo_serializer.data
+            }, status=status.HTTP_200_OK)
+
+        return Response({
+            "condutor_veiculo_erros": cv_serializer.errors,
+            "veiculo_erros": veiculo_serializer.errors
+        }, status=status.HTTP_400_BAD_REQUEST)
+    """
+
 
 class CondutorVeiculoView(APIView):
     permission_classes = [IsAuthenticated]
@@ -308,6 +479,15 @@ class CondutorVeiculoView(APIView):
 
         serializer = CondutorVeiculoSerializer(condutor_veiculos, many=True, context={"request": request})
         return Response(serializer.data, status=200)
+
+    """
+    def get(self, request):
+        user = request.user
+
+        condutores = Condutor.objects.filter(utilizadorid_utilizador=user)
+        serializer = CondutorSerializer(condutores, many=True, context={"request": request})
+        return Response(serializer.data)
+    """
 
 
 """

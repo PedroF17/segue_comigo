@@ -10,6 +10,7 @@ from django.conf.urls.static import static
 urlpatterns = [
     path('condutor/create/', CondutorView.as_view()), #requer autenticacao
     path('condutor/create/<int:pk>/', CondutorView.as_view()), #requer autenticacao
+    path('condutor/list/', AdminCondutorView.as_view()), #requer autenticacao
     path('condutor/marca_veiculo/', MarcaVeiculoView.as_view()),
     path('condutor/marca_veiculo/<int:pk>/', MarcaVeiculoView.as_view()),
     path('condutor/cor_veiculo/', CorVeiculoView.as_view()),

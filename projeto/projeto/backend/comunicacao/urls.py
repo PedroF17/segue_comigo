@@ -17,6 +17,8 @@ urlpatterns = [
     path('comunicacao/alerta/<int:pk>/', AlertaView.as_view()), #requer autenticacao
     path('comunicacao/utilizador_alerta/', UtilizadorAlertaView.as_view()), #requer autenticacao
     path('comunicacao/utilizador_alerta/<int:pk>/', UtilizadorAlertaView.as_view()), #requer autenticacao
+    path('comunicacao/utilizador_alerta/count/', UtilizadorContarAlertaView.as_view()), #requer autenticacao
+    #path('comunicacao/mensagem/', MensagemView.as_view()),
 ]
 
 

@@ -87,7 +87,21 @@ class ChatViagem(models.Model):
         managed = True
         db_table = 'Chat_Viagem'
 
+"""
+class Condutor(models.Model):
+    id_condutor = models.AutoField(db_column='ID_condutor', primary_key=True)  # Field name made lowercase. 
+    doc_reg_criminal = models.CharField(db_column='Doc_reg_criminal', max_length=255, blank=True, null=True)
+    doc_comprov_residencia = models.CharField(db_column='Doc_comprov_residencia', max_length=255, blank=True, null=True)
+    #documento_reg_criminal = models.CharField(db_column='Documento_reg_criminal', max_length=255, blank=True, null=True)  # Field name made lowercase.
+    #documento_comprov_residencia = models.CharField(db_column='Documento_comprov_residencia', max_length=255, blank=True, null=True)  # Field name made lowercase.
+    reputacao = models.IntegerField(db_column='Reputacao', blank=True, null=True)  # Field name made lowercase.
+    data_criacao = models.DateField(db_column='Data_criacao', blank=True, null=True)  # Field name made lowercase.
+    utilizadorid_utilizador = models.ForeignKey('Utilizador', models.DO_NOTHING, db_column='UtilizadorID_utilizador')  # Field name made lowercase.
 
+    class Meta:
+        managed = False
+        db_table = 'Condutor'
+"""
 class Condutor(models.Model):
     id_condutor = models.AutoField(db_column='ID_condutor', primary_key=True)
     doc_reg_criminal = models.FileField(upload_to='docs/condutores/', db_column='Doc_reg_criminal', blank=True, null=True)
@@ -199,6 +213,7 @@ class Grupo(models.Model):
     id_grupo = models.AutoField(db_column='ID_grupo', primary_key=True)  # Field name made lowercase.
     nome = models.CharField(db_column='Nome', max_length=50, blank=True, null=True)  # Field name made lowercase.
     data_criacao = models.DateField(db_column='Data_criacao', blank=True, null=True)  # Field name made lowercase.
+    utilizadorid_utilizador = models.IntegerField(db_column='utilizadorid_utilizador', blank=True, null=True)
 
     class Meta:
         managed = True

@@ -12,6 +12,8 @@ urlpatterns = [
     path('utilizador/new_password/', ChangePasswordView.as_view(), name='change_password'), #requer autenticacao
     path('utilizador/view/', AccountView.as_view(), name='account_view'), #requer autenticacao
     path('utilizador/grupo/view/', GrupoView.as_view(), name='grupo_view'), #requer autenticacao
+    path('utilizador/grupo/view/code/', CodigoGrupoView.as_view(), name='codigo_grupo_view'), #requer autenticacao
+    path('utilizador/grupo/view/code/<int:pk>/', CodigoGrupoView.as_view(), name='codigo_grupo_view'), #requer autenticacao
     path('utilizador/contacto/', ContactoView.as_view(), name='contacto_view'), #requer autenticacao
     path('utilizador/contacto/<int:pk>/', ContactoView.as_view(), name='contacto_view'), #requer autenticacao
     path('utilizador/morada/', MoradaView.as_view(), name='morada_view'), #requer autenticacao
@@ -30,10 +32,9 @@ urlpatterns = [
     path('utilizador/conselho/<int:pk>/', ConselhoView.as_view(), name='conselho_view'),
     path('utilizador/freguesia/', FreguesiaView.as_view(), name='freguesia_view'),
     path('utilizador/freguesia/<int:pk>/', FreguesiaView.as_view(), name='freguesia_view'),
-
-    path('check_admin/', CheckAdminView.as_view(), name='check_admin'),
-    path('check_condutor/', CheckCondutorView.as_view(), name='check_condutor'),
-    path('check_passageiro/', CheckPassageiroView.as_view(), name='check_passageiro'),
+    path('utilizador/check_admin/', CheckAdminView.as_view(), name='check_admin'),
+    path('utilizador/check_condutor/', CheckCondutorView.as_view(), name='check_condutor'),
+    path('utilizador/check_passageiro/', CheckPassageiroView.as_view(), name='check_passageiro'),
 ]
 
 

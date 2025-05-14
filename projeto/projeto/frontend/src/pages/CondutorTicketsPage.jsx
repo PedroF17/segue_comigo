@@ -44,7 +44,6 @@ function CondutorTicketsPage() {
       //fetchRideTickets();
       fetchReservas(token);
       fetchViagensCondutor(token);
-      buscarPontos(setPontos, setLoading);
     };
 
     /*
