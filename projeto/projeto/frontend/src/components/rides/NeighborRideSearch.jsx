@@ -131,8 +131,8 @@ function NeighborRideSearch() {
           />
         </div>
 
-        <div className="form-group">
-          <label>Data da Viagem:</label>
+        <div className="form-group-date">
+          <label>Data da Viagem: </label>
           <input
             type="date"
             value={date}

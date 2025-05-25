@@ -56,12 +56,12 @@ body{
 .hero {
     background-image: url('src/assets/images/Home_images/passenger-back-seat-modern-businessman-trying-his-new-car-automobile-salon.jpg'); /* Replace with your actual image path */
     background-size: cover; /* Scale the image to cover the entire container */
-    background-position: center; /* Center the image within the container */
+    background-position: bottom; /* Center the image within the container */
     background-repeat: no-repeat; /* Prevent the image from repeating */
     color: #fff;
     padding: 0; /* Remove default padding that might cause extra space */
     margin: 0; /* Remove default margin that might cause extra space */
-    height: 100vh; /* Set the height of the hero section to 100% of the viewport height */
+    height: 86vh; /* Set the height of the hero section to 100% of the viewport height */
     width: 100vw; /* Set the width of the hero section to 100% of the viewport width */
     text-align: center; /* Keep text centering if needed */
     display: flex; /* Use flexbox for centering content within .hero if needed */
@@ -71,7 +71,7 @@ body{
 }
 
 .hero-content {
-    width: 40%;
+    width: 30%;
     margin-top: 0%;
     margin-left: auto;
     margin-right: auto;
