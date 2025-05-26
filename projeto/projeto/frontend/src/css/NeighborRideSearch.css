@@ -4,7 +4,9 @@
 }
 
 .form-group-date{
-    margin-bottom: 15px;
+    color: #000; /* Black text */
+    padding: 0.4rem;
+    border-radius: 4px;
 }
 
 .neighbor-ride-search {

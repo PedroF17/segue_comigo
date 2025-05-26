@@ -1,159 +1,103 @@
-import React, { useState, useEffect } from 'react';
-import Select from 'react-select';
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useEffect, useCallback } from 'react';
+import '../css/RateRidesPage.css';
+import RateRideTicket from '../components/rides/RateRideTicket.jsx'; // Corrected import path
 
-function OcorrenciasPage() {
-  const [descricao, setDescricao] = useState('');
-  const [viagens, setViagens] = useState([]);
-  const [tiposOcorrencia, setTiposOcorrencia] = useState([]);
-  const [viagemSelecionada, setViagemSelecionada] = useState(null);
-  const [tipoOcorrenciaSelecionado, setTipoOcorrenciaSelecionado] = useState(null);
-  const [loading, setLoading] = useState(false);
-  const navigate = useNavigate();
+function RateRidesPage() {
+  const [ridesToRate, setRidesToRate] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  useEffect(() => {
-    const token = localStorage.getItem('accessToken');
-    if (!token) {
-      navigate('/login');
-      return;
-    }
 
-    fetchViagens(token);
-    fetchTiposOcorrencia(token);
-  }, [navigate]);
-
-  const fetchViagens = async (token) => {
-    try {
-      const response = await fetch('http://127.0.0.1:8000/viagem/viagem/list/', {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
-      if (!response.ok) throw new Error('Erro ao buscar viagens');
-      const data = await response.json();
-
-      const formatted = data.map((viagem) => ({
-        value: viagem.id_viagem,
-        label: `Viagem #${viagem.id_viagem} - ${new Date(viagem.data_viagem).toLocaleString()}`,
-      }));
-
-      setViagens(formatted);
-    } catch (err) {
-      console.error('Erro ao buscar viagens:', err);
-      setViagens([]);
-    }
-  };
-
-  const fetchTiposOcorrencia = async (token) => {
-    try {
-      const response = await fetch('http://127.0.0.1:8000/comunicacao/tipo_ocorrencia/', {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
-      if (!response.ok) throw new Error('Erro ao buscar tipos de ocorrência');
-      const data = await response.json();
-
-      const formatted = data.map((tipo) => ({
-        value: tipo.id_tipo_ocorrencia,
-        label: tipo.descricao,
-      }));
-
-      setTiposOcorrencia(formatted);
-    } catch (err) {
-      console.error('Erro ao buscar tipos de ocorrência:', err);
-      setTiposOcorrencia([]);
-    }
-  };
-
-  const handleSubmit = async () => {
-    const token = localStorage.getItem('accessToken');
-
-    if (!descricao || !viagemSelecionada || !tipoOcorrenciaSelecionado) {
-      alert('Por favor, preencha todos os campos.');
-      return;
-    }
-
+  const fetchRidesToRate = useCallback(async () => {
     setLoading(true);
-
+    setError(null);
     try {
-      const response = await fetch('http://127.0.0.1:8000/comunicacao/ocorrencia/', {
-        method: 'POST',
+      const accessToken = localStorage.getItem('accessToken'); // Get the access token
+      if (!accessToken) {
+        setError('Não está autenticado. Por favor, faça login.');
+        setLoading(false);
+        return;
+      }
+
+
+      const response = await fetch('http://127.0.0.1:8000/viagem/viagem/list/', { // Adjust this endpoint to your actual API for completed trips
+        method: 'GET',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
+          'Authorization': `Bearer ${accessToken}`,
         },
-        body: JSON.stringify({
-          descricao: descricao,
-          viagemid_viagem: viagemSelecionada.value,
-          tipo_ocorrenciaid_tipo_ocorrencia: tipoOcorrenciaSelecionado.value,
-        }),
       });
 
       if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || 'Erro ao enviar ocorrência.');
-      }
+        if (response.status === 401) {
+          setError('Sessão expirada ou não autorizado. Por favor, faça login novamente.');
+        } else {
+          const errorData = await response.json();
+          setError(errorData.detail || `Erro ao carregar as viagens: Status ${response.status}`);
+        }
+      } else {
+        const data = await response.json();
 
-      alert('Ocorrência enviada com sucesso!');
-      setDescricao('');
-      setViagemSelecionada(null);
-      setTipoOcorrenciaSelecionado(null);
+        const formatted = data.map((viagem) => ({
+            value: viagem.id_viagem,
+            label: `Viagem #${viagem.id_viagem} - ${new Date(viagem.data_viagem).toLocaleString()}`,
+            }));
+
+        setRidesToRate(formatted);
+      }
     } catch (err) {
-      console.error('Erro ao enviar ocorrência:', err);
-      alert(err.message || 'Erro ao enviar ocorrência.');
+      setError('Falha ao carregar as viagens para avaliação. Verifique sua conexão.');
+      console.error('Erro ao buscar viagens para avaliar:', err);
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    fetchRidesToRate();
+  }, [fetchRidesToRate]);
+  const handleRideActionCompleted = useCallback((rideId) => {
+
+    setRidesToRate(currentRides => currentRides.filter(ride => ride.id !== rideId));
+
+  }, []);
+
+
+  if (loading) {
+    return <p className="loading-message">A carregar as viagens para avaliação...</p>;
+  }
+
+  if (error) {
+    return <p className="error-message">Erro ao carregar as viagens: {error}</p>;
+  }
+
+  if (ridesToRate.length === 0) {
+    return <p className="no-rides-message">Não há viagens para avaliar no momento.</p>;
+  }
 
   return (
-    <div className="ride-tickets-page" style={{ display: 'flex', justifyContent: 'center' }}>
-      <div style={{ width: '80%', maxWidth: '800px' }}>
-        <h1>Feedback</h1>
+    <div className="rate-rides-page">
+      <h1>Avalie As Suas Viagens Concluídas</h1>
+      {ridesToRate.map((ride) => (
+        <RateRideTicket
+          key={ride.id}
+          ride={ride}
+          onFeedbackSubmitted={handleRideActionCompleted} // Pass this handler to remove the ride
+          onAnomalySubmitted={handleRideActionCompleted}   // Pass this handler to remove the ride
+        />
+      ))}
 
-        <div className="tab-content">
-
-          <div style={{ marginBottom: '1rem' }}>
-            <label>Descrição da Ocorrência:</label>
-            <textarea
-              value={descricao}
-              onChange={(e) => setDescricao(e.target.value)}
-              rows={6}
-              style={{ width: '100%', resize: 'vertical', padding: '0.5rem' }}
-              placeholder="Descreva o que aconteceu..."
-            />
-          </div>
-
-          <div style={{ marginBottom: '1rem' }}>
-            <label>Selecione a Viagem:</label>
-            <Select
-              options={viagens}
-              value={viagemSelecionada}
-              onChange={setViagemSelecionada}
-              placeholder="Escolha uma viagem..."
-            />
-          </div>
-
-          <div style={{ marginBottom: '1rem' }}>
-            <label>Tipo de Ocorrência:</label>
-            <Select
-              options={tiposOcorrencia}
-              value={tipoOcorrenciaSelecionado}
-              onChange={setTipoOcorrenciaSelecionado}
-              placeholder="Escolha um tipo..."
-            />
-          </div>
-
-          <button onClick={handleSubmit} disabled={loading} style={{ padding: '0.5rem 1rem' }}>
-            {loading ? 'Enviando...' : 'Enviar Ocorrência'}
-          </button>
-        </div>
+      <div className="terms-and-conditions">
+        <h2>Termos e Condições</h2>
+        <p>Pagamentos:</p>
+        <ul>
+          <li>Ao Adquirir o Seu Bilhete Utilizando um Cartão de Débito ou Crédito Através do Website, Processaremos Estes Pagamentos Através do Gateway de Pagamento Comum Seguro Autorizado Que Estará Sujeito a Fins de Verificação de Fraude.</li>
+          <li>Se Não Fornecer o Endereço de Faturação do Cartão Correto e/ou Informações do Titular do Cartão, a Sua Reserva Não Será Confirmada e a Transação Geral Poderá Ser Recusada. Se Não Fornecer o Endereço de Faturação do Cartão Correto e/ou Informações do Titular do Cartão, Isso Poderá Resultar no Cancelamento do Seu Bilhete e Poderá Ser Tratado Como Um Não Comparecimento. Se Fornecer Informações de Cartão de Crédito/Débito Incorretas, Se Tornar Evidente Ou For Notificada Qualquer Atividade Fraudulenta Ou Ilegal Associada ao Pagamento da Reserva, a Empresa Emissora de Bilhetes Reserva-se o Direito de Cancelar a Sua Reserva Sem Mais Notificação. A Empresa Emissora de Bilhetes Reserva-se o Direito de Iniciar Qualquer Ação Que Possa Ser Tomada Contra Si.</li>
+          <li>Alguns Bancos Podem Exigir Que o Titular do Cartão Forneça Verificação de Pagamento Adicional Mediante Solicitação da Companhia Aérea Ou da Nossa Empresa Emissora de Bilhetes. Isso Poderá Ocorrer no Aeroporto no Momento do Check-In. A Companhia Aérea Reserva-se o Direito de Recusar o Embarque Ou de Cobrar Uma Garantia (Pagamento em Dinheiro Ou de Outro Cartão de Crédito) Se o Cartão Originalmente Usado Para a Compra Não Puder Ser Apresentado Pelo Titular do Cartão. O Cartão de Crédito Fornecido no Momento da Reserva Deve Ser Portado Pelo Passageiro Nomeado e Apresentado Para Verificação no Momento do Check-In. O Não Cumprimento Poderá Resultar na Recusa de Embarque ao Titular do Bilhete. Os Detalhes do Cartão de Crédito São Mantidos Num Ambiente Seguro e Transferidos Através de Um Sistema Aceito Internacionalmente.</li>
+        </ul>
       </div>
     </div>
   );
 }
 
-export default OcorrenciasPage;
+export default RateRidesPage;

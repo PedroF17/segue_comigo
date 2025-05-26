@@ -20,7 +20,7 @@
   color: #555;
 }
 
-.airline {
+.segue-comigo {
   font-weight: bold;
   color: #333;
   margin-right: 15px;
@@ -151,4 +151,76 @@
 .feedback-input button:hover,
 .anomaly-input button:hover {
   background-color: #0056b3;
+}
+
+.feedback-input,
+.anomaly-input {
+  margin-bottom: 15px;
+}
+
+.feedback-input label,
+.anomaly-input label {
+  display: block;
+  margin-bottom: 5px;
+  color: #555;
+  font-weight: bold;
+}
+
+.feedback-input textarea,
+.anomaly-input textarea {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  margin-bottom: 10px;
+  resize: vertical;
+  min-height: 60px; /* Give some initial height */
+}
+
+.feedback-input button,
+.anomaly-input button {
+  background-color: #007bff; /* Primary blue for action */
+  color: white;
+  border: none;
+  padding: 10px 15px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.9em;
+  transition: background-color 0.3s ease;
+}
+
+.feedback-input button:hover,
+.anomaly-input button:hover {
+  background-color: #0056b3;
+}
+
+.feedback-input button:disabled,
+.anomaly-input button:disabled {
+  background-color: #cccccc;
+  cursor: not-allowed;
+}
+
+.error-message {
+  color: red;
+  font-size: 0.85em;
+  margin-top: -8px; /* Adjust spacing */
+  margin-bottom: 10px;
+}
+
+.success-message {
+  color: green;
+  font-weight: bold;
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+
+/* Optional styling for submitted cards */
+.rate-ride-ticket.submitted-partially {
+    opacity: 0.8; /* Make it slightly transparent */
+    border-color: #a3d900; /* Subtle green border */
+}
+
+.rate-ride-ticket.submitted-fully {
+    opacity: 0.6; /* More transparent if both are done */
+    background-color: #e9ffe9; /* Light green background */
 }
