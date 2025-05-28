@@ -1,226 +1,171 @@
+/* css/RateRideTicket.css */
+
 .rate-ride-ticket {
-  background-color: #fff;
-  border: 1px solid #ddd;
-  border-radius: 6px;
-  margin-bottom: 15px;
-  padding: 15px;
-  display: flex;
-  flex-direction: column;
+    background-color: #fff;
+    border: 1px solid #e0e0e0;
+    border-radius: 10px;
+    padding: 20px;
+    margin-top: 30px;
+    margin-bottom: 20px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
 }
 
-.ticket-header {
-  display: flex;
-  align-items: center;
-  margin-bottom: 10px;
+.rate-ride-ticket:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
 }
 
-.ride-icon {
-  font-size: 1.2em;
-  margin-right: 10px;
-  color: #555;
+.ticket-status-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+    border-bottom: 1px solid #f0f0f0;
+    padding-bottom: 10px;
 }
 
-.segue-comigo {
-  font-weight: bold;
-  color: #333;
-  margin-right: 15px;
+.status-pill {
+    padding: 5px 12px;
+    border-radius: 20px;
+    font-size: 0.85em;
+    font-weight: bold;
+    color: #fff;
+    text-transform: capitalize;
 }
 
-.remaining-places {
-  font-size: 0.9em;
-  color: #777;
+.status-pill.finalizada {
+    background-color: #28a745; /* Verde */
 }
 
-.ticket-details {
-  display: grid;
-  grid-template-columns: 1fr 1fr 1fr 1fr auto; /* Adicionamos uma coluna para os botões */
-  gap: 10px;
-  align-items: center; /* Alinhar verticalmente os itens */
+.status-pill.pendente {
+    background-color: #ffc107; /* Amarelo */
+    color: #333;
 }
 
-.ticket-details .label {
-  font-size: 0.8em;
-  color: #777;
-  margin-bottom: 5px;
+.status-pill.em-andamento {
+    background-color: #17a2b8; /* Azul claro */
 }
 
-.ticket-details .location {
-  font-weight: bold;
-  color: #333;
+.status-pill.cancelada,
+.status-pill.rejeitada {
+    background-color: #dc3545; /* Vermelho */
 }
 
-.ticket-details .airport {
-  font-size: 0.9em;
-  color: #555;
+.ticket-id {
+    font-size: 0.9em;
+    color: #777;
+    font-weight: 600;
 }
 
-.ticket-details .date-time {
-  font-size: 0.9em;
-  color: #555;
+.ticket-details-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px 25px;
+    margin-bottom: 20px;
 }
 
-.status-section {
-  text-align: center;
+.detail-item .label {
+    font-size: 0.8em;
+    color: #888;
+    margin-bottom: 3px;
+    text-transform: uppercase;
+    font-weight: 500;
 }
 
-.status-section .status {
-  padding: 8px 12px;
-  border-radius: 4px;
-  color: white;
-  font-weight: bold;
-  display: inline-block;
+.detail-item .value {
+    font-size: 1em;
+    color: #333;
+    font-weight: 600;
 }
 
-.actions-section {
-  display: flex;
-  gap: 10px;
-  justify-content: flex-end; /* Alinhar os botões à direita */
+.detail-item.location {
+    font-size: 1.1em;
+    color: #007bff;
+    font-weight: bold;
 }
 
-.feedback-button,
-.cancel-button {
-  padding: 8px 12px;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 0.9em;
+.feedback-section,
+.anomaly-section {
+    margin-top: 25px;
+    padding-top: 15px;
+    border-top: 1px dashed #e0e0e0;
 }
 
-.feedback-button {
-  background-color: #4CAF50; /* Cor verde para feedback */
-  color: white;
+.feedback-section h3,
+.anomaly-section h3 {
+    color: #333;
+    font-size: 1.1em;
+    margin-bottom: 15px;
+    font-weight: 600;
 }
 
-.cancel-button {
-  background-color: #f44336; /* Cor vermelha para cancelar */
-  color: white;
+.feedback-input-group,
+.anomaly-input-group {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
 }
 
-.feedback-button:hover,
-.cancel-button:hover {
-  opacity: 0.8;
+textarea {
+    width: 100%;
+    min-height: 80px;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    font-family: inherit;
+    font-size: 0.9em;
+    resize: vertical;
+    box-sizing: border-box;
 }
 
-.feedback-section {
-  margin-top: 20px;
-  padding-top: 15px;
-  border-top: 1px solid #eee;
+textarea:focus {
+    outline: none;
+    border-color: #007bff;
+    box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.25);
 }
 
-.feedback-section h3 {
-  margin-top: 0;
-  margin-bottom: 10px;
-  color: #333;
+button {
+    padding: 10px 15px;
+    border: none;
+    border-radius: 5px;
+    background-color: #007bff;
+    color: white;
+    font-size: 0.9em;
+    cursor: pointer;
+    transition: background-color 0.2s ease-in-out;
 }
 
-.feedback-input,
-.anomaly-input {
-  margin-bottom: 15px;
+button:hover:not(:disabled) {
+    background-color: #0056b3;
 }
 
-.feedback-input label,
-.anomaly-input label {
-  display: block;
-  margin-bottom: 5px;
-  color: #555;
-  font-weight: bold;
-}
-
-.feedback-input textarea,
-.anomaly-input textarea {
-  width: 100%;
-  padding: 8px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  margin-bottom: 10px;
-  resize: vertical; /* Permite redimensionar verticalmente */
-}
-
-.feedback-input button,
-.anomaly-input button {
-  background-color: #007bff; /* Cor primária para os botões */
-  color: white;
-  border: none;
-  padding: 10px 15px;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 0.9em;
-  transition: background-color 0.3s ease;
-}
-
-.feedback-input button:hover,
-.anomaly-input button:hover {
-  background-color: #0056b3;
-}
-
-.feedback-input,
-.anomaly-input {
-  margin-bottom: 15px;
-}
-
-.feedback-input label,
-.anomaly-input label {
-  display: block;
-  margin-bottom: 5px;
-  color: #555;
-  font-weight: bold;
-}
-
-.feedback-input textarea,
-.anomaly-input textarea {
-  width: 100%;
-  padding: 8px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  margin-bottom: 10px;
-  resize: vertical;
-  min-height: 60px; /* Give some initial height */
-}
-
-.feedback-input button,
-.anomaly-input button {
-  background-color: #007bff; /* Primary blue for action */
-  color: white;
-  border: none;
-  padding: 10px 15px;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 0.9em;
-  transition: background-color 0.3s ease;
-}
-
-.feedback-input button:hover,
-.anomaly-input button:hover {
-  background-color: #0056b3;
-}
-
-.feedback-input button:disabled,
-.anomaly-input button:disabled {
-  background-color: #cccccc;
-  cursor: not-allowed;
+button:disabled {
+    background-color: #cccccc;
+    cursor: not-allowed;
 }
 
 .error-message {
-  color: red;
-  font-size: 0.85em;
-  margin-top: -8px; /* Adjust spacing */
-  margin-bottom: 10px;
+    color: #dc3545;
+    font-size: 0.85em;
+    margin-top: -5px;
+    margin-bottom: 5px;
 }
 
 .success-message {
-  color: green;
-  font-weight: bold;
-  margin-top: 10px;
-  margin-bottom: 10px;
+    color: #28a745;
+    font-size: 0.9em;
+    font-weight: 600;
+    text-align: center;
+    padding: 10px;
+    border: 1px solid #28a745;
+    border-radius: 5px;
+    background-color: #e6ffed;
 }
 
-/* Optional styling for submitted cards */
-.rate-ride-ticket.submitted-partially {
-    opacity: 0.8; /* Make it slightly transparent */
-    border-color: #a3d900; /* Subtle green border */
-}
-
-.rate-ride-ticket.submitted-fully {
-    opacity: 0.6; /* More transparent if both are done */
-    background-color: #e9ffe9; /* Light green background */
+@media (max-width: 768px) {
+    .ticket-details-grid {
+        grid-template-columns: 1fr;
+    }
 }
