@@ -1,0 +1,144 @@
+/* General Layout */
+.profile-page {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 2rem;
+  background-color: #ffffff;
+  color: #333;
+}
+
+/* Headings */
+.profile-page h1,
+.profile-page h2,
+.profile-page h3 {
+  color: #333;
+}
+
+/* Messages */
+.profile-page p {
+  margin-top: 1rem;
+  color: #333;
+}
+
+/* Buttons */
+.btn,
+.profile-page button {
+  padding: 10px 15px;
+  background-color: #3498db;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.btn:hover,
+.profile-page button:hover {
+  background-color: #2980b9;
+}
+
+/* Form */
+.form-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.form-container label {
+  display: flex;
+  flex-direction: column;
+  font-weight: bold;
+  margin-bottom: 5px;
+}
+
+.form-container input,
+.form-container select {
+  padding: 8px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  font-size: 16px;
+}
+
+/* Table Styling */
+.table-container {
+  margin-top: 20px;
+  overflow-x: auto;
+}
+
+.profile-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 10px;
+}
+
+.profile-table th,
+.profile-table td {
+  padding: 10px;
+  text-align: left;
+  border: 1px solid #ddd;
+}
+
+.profile-table th {
+  background-color: #f5f5f5;
+  font-weight: bold;
+}
+
+/* Group input sections */
+.profile-page input[readonly] {
+  background-color: #eaeaea;
+  cursor: not-allowed;
+}
+
+.profile-page input[type="text"],
+.profile-page input[type="number"],
+.profile-page input[type="email"],
+.profile-page input[type="date"],
+.profile-page input[type="password"],
+.profile-page select {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.profile-page .group-section {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.profile-page .group-section input {
+  flex: 1;
+}
+
+/* Responsive Design */
+@media (max-width: 600px) {
+  .form-container {
+    gap: 0.5rem;
+  }
+
+  .form-container label {
+    font-size: 14px;
+  }
+
+  .btn,
+  .profile-page button {
+    font-size: 14px;
+    padding: 8px 12px;
+  }
+
+  .profile-page {
+    padding: 1rem;
+  }
+}
+
+/* Group two fields side by side */
+.profile-nome {
+  display: flex;
+  gap: 1rem;
+}
+
+.profile-nome label {
+  flex: 1;
+}
+

@@ -1,5 +1,5 @@
 import '../css/NavBar.css';
-import '../css/Admin.css';
+import '../css/Profile.css';
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
@@ -152,7 +152,7 @@ function Profile() {
 
       if (!response.ok) throw new Error('Erro ao atualizar dados.');
       const data = await response.json();
-      setMensagem('Perfil atualizado com sucesso.');
+      alert('Perfil atualizado com sucesso.');
       setUtilizador(data.utilizador);
     } catch (error) {
       console.error(error);
@@ -255,27 +255,28 @@ function Profile() {
     }
   };
 
-  const handleLogout = () => {
-    localStorage.removeItem('accessToken');
-    localStorage.removeItem('refreshToken');
-    navigate('/login');
-    window.location.reload();
-  };
+  // const handleLogout = () => {
+  //   localStorage.removeItem('accessToken');
+  //   localStorage.removeItem('refreshToken');
+  //   navigate('/login');
+  //   window.location.reload();
+  // };
 
 
   if (loading) return <p>Carregando perfil...</p>;
 
   return (
-    <div className="admin-page">
+    <div className="profile-page">
       <h1>Meu Perfil</h1>
 
-      <button onClick={handleLogout} className="btn" style={{ marginBottom: '20px' }}>
+      {/* <button onClick={handleLogout} className="btn" style={{ marginBottom: '20px' }}>
         Logout
-      </button>
+      </button> */}
 
       {mensagem && <p>{mensagem}</p>}
 
       <form onSubmit={handleSubmit} className="form-container">
+      <div className="profile-nome">
         <label>
           Primeiro Nome:
           <input
@@ -295,6 +296,7 @@ function Profile() {
             onChange={handleChange}
           />
         </label>
+        </div>
 
         <label>
           Email:
@@ -335,17 +337,17 @@ function Profile() {
             onChange={handleChange}
           />
         </label>
-
+        <div className="grupo-id">
         <label>
           ID Grupo:
           <input
             type="number"
             name="grupoid_grupo"
             value={formData.grupoid_grupo || ''}
-            onChange={handleChange}
+            readOnly
           />
         </label>
-
+        </div>
         <label>
           Estado Civil:
           <select
@@ -399,7 +401,7 @@ function Profile() {
         )}
 
         {!isCondutor && (
-          <button onClick={tornarCondutor} className="btn" style={{ marginLeft: '10px' }}>
+          <button onClick={tornarCondutor} className="btn">
             Tornar-se Condutor
           </button>
         )}
@@ -411,7 +413,7 @@ function Profile() {
           <p>Nenhum outro utilizador no grupo.</p>
         ) : (
           <div className="table-container">
-            <table className="admin-table">
+            <table className="profile-table">
               <thead>
                 <tr>
                   <th>ID</th>
