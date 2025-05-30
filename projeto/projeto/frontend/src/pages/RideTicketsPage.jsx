@@ -2,8 +2,8 @@
 import React, { useState, useEffect } from 'react';
 import '../css/RideTicketsPage.css';
 import RateRideTicket from '../components/rides/RateRideTicket.jsx';
-//import PassengerManagementSection from '../components/rides/PassengerManagementSection.jsx';
-//import DeviationManagementSection from '../components/rides/DeviationManagementSection.jsx';
+import PassengerManagementSection from '../components/rides/PassengerManagementSection.jsx';
+import DeviationManagementSection from '../components/rides/DeviationManagementSection.jsx';
 import { useNavigate } from 'react-router-dom';
 import { checkPassageiro } from '../services/auth';
 import Select from 'react-select';
@@ -373,7 +373,14 @@ function RideTicketsPage() {
                             Se 'condutorid_condutor' for um objeto completo,
                             adicione '?.nome_primeiro' ou '?.nome_completo'
                         */}
-                        <td>{reserva.condutorid_condutor || '-'}</td>
+                        {/* <td>{reserva.condutorid_condutor || '-'}</td> */}
+                        <td>
+                          {reserva.condutorid_condutor
+                            ? reserva.condutorid_condutor.nome_primeiro
+                              ? `${reserva.condutorid_condutor.nome_primeiro} ${reserva.condutorid_condutor.nome_ultimo}`
+                              : reserva.condutorid_condutor.id_condutor // fallback to ID if name not present
+                            : '-'}
+                        </td>
                         <td>{origem}</td>
                         <td>{destino}</td>
                         <td>{status}</td>
