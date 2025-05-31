@@ -60,7 +60,11 @@ class OcorrenciaView(APIView):
     permission_classes = [IsAuthenticated]
 
 
-    def post(self, request):
+    def post(self, request, pk=None):
+        if pk:
+            # Either handle the PK case or reject it
+            return Response({'error': 'Use PUT for updates'}, status=405)
+
         user = request.user
 
         descricao = request.data.get('descricao')
@@ -276,7 +280,7 @@ class AlertaView(APIView):
     permission_classes = [IsAuthenticated]
 
     # Criar alerta, função exclusiva para Admin
-    def post(self, request):
+    def post(self, request, pk=None):
         user = request.user  
         if not CheckAdminView.check_admin(request.user):
             return Response(

@@ -27,7 +27,6 @@ function RideTicket({ ticket }) {
         {ticket.remainingPlaces && <span className="remaining-places">Remaining Places: {ticket.remainingPlaces}</span>}
       </div>
       <div className="ticket-details">
-        <div className="from-section">
           <p className="label">From</p>
           <p className="location">{ticket.departureLocation}</p>
           <p className="airport">{ticket.departureAirport}</p>
@@ -50,8 +49,7 @@ function RideTicket({ ticket }) {
           </p>
         </div>
       </div>
-    </div>
-  );
+      );
 }
 
 export default RideTicket;

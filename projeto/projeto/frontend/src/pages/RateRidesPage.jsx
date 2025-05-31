@@ -7,33 +7,45 @@ function RateRidesPage() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
-    useEffect(() => {
-        const fetchViagens = async () => {
-            try {
-                const accessToken = localStorage.getItem('accessToken');
-                const response = await fetch('http://127.0.0.1:8000/viagem/viagem/list/', {
-                    headers: {
-                        'Authorization': `Bearer ${accessToken}`,
-                        'Content-Type': 'application/json',
-                    },
-                });
+useEffect(() => {
+    const fetchViagens = async () => {
+        try {
+            const accessToken = localStorage.getItem('accessToken');
 
-                if (!response.ok) {
-                    throw new Error('Erro ao buscar as viagens');
-                }
-
-                const data = await response.json();
-                setViagens(Array.isArray(data) ? data : []);
-            } catch (err) {
-                console.error(err);
-                setError('Erro ao carregar viagens.');
-            } finally {
-                setLoading(false);
+            // Verifica se o token existe
+            if (!accessToken) {
+                throw new Error('Token de acesso não encontrado. Faça login novamente.');
             }
-        };
 
-        fetchViagens();
-    }, []);
+            const response = await fetch('http://127.0.0.1:8000/viagem/viagem/list/', {
+                headers: {
+                    'Authorization': `Bearer ${accessToken}`,
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json', // Garante que o servidor saiba que você quer JSON
+                },
+            });
+
+            // Verifica se a resposta é JSON válido
+            const responseText = await response.text();
+            if (!response.ok) {
+                // Se a resposta for HTML (ex.: página de erro), mostra o conteúdo para debug
+                console.error('Resposta do servidor (HTML/erro):', responseText);
+                throw new Error(`Erro HTTP: ${response.status} - ${response.statusText}`);
+            }
+
+            // Tenta parsear o JSON só se a resposta for válida
+            const data = JSON.parse(responseText);
+            setViagens(Array.isArray(data) ? data : []);
+        } catch (err) {
+            console.error('Erro na requisição:', err);
+            setError(err.message || 'Erro ao carregar viagens.');
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    fetchViagens();
+}, []);
 
     const handleFeedbackSubmitted = (viagemId) => {
         console.log(`Feedback enviado para a viagem ${viagemId}`);
