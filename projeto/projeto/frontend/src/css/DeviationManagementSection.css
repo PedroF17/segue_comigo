@@ -1,0 +1,31 @@
+.new-deviation-controls h4,
+.new-deviation-controls h5 {
+  color: #333;
+}
+
+.select-item {
+    margin: 10px 0;
+}
+
+.deviation-select-group button {
+  display: inline-block;
+  padding: 10px 15px;
+  margin-right: 10px;
+  font-weight: bold;
+}
+
+.deviation-management-section h4{
+    color: #333;
+}
+
+.deviation-management-section h5 {
+    color: #333;
+}
+.deviation-management-section {
+    color: #333;
+}
+.deviation-table {
+    width: auto;
+
+    color: #fff;
+}

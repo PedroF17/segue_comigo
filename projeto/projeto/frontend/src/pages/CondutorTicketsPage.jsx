@@ -348,52 +348,61 @@ function CondutorTicketsPage() {
             {reservasFiltradas.length === 0 ? (
               <p>Nenhuma reserva disponível.</p>
             ) : (
-              <table className="admin-table">
-                <thead>
-                  <tr>
-                    <th>ID</th>
-                    <th>Data de Emissão</th>
-                    <th>Data da Viagem</th>
-                    <th>Valor</th>
-                    <th>Passageiro</th>
-                    <th>Origem</th>
-                    <th>Destino</th>
-                    <th>Status</th>
-                    <th>Ações</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {reservasFiltradas.map((reserva) => {
-                    const origem = reserva.pontos_reserva.find(p => p.destino === 0)?.pontoid_ponto.descricao || '-';
-                    const destino = reserva.pontos_reserva.find(p => p.destino === 1)?.pontoid_ponto.descricao || '-';
-                    const status = reserva.status_reservaid_status_reserva?.descricao || '-';
-                    const statusId = reserva.status_reservaid_status_reserva?.id_status_reserva;
+              <div className="ride-tickets-grid">
+        {reservasFiltradas.map((reserva) => {
+          const origem = reserva.pontos_reserva.find(p => p.destino === 0)?.pontoid_ponto.descricao || '-';
+          const destino = reserva.pontos_reserva.find(p => p.destino === 1)?.pontoid_ponto.descricao || '-';
+          const status = reserva.status_reservaid_status_reserva?.descricao || '-';
+          const statusId = reserva.status_reservaid_status_reserva?.id_status_reserva;
 
-                    return (
-                      <tr key={reserva.id_reserva}>
-                        <td>{reserva.id_reserva}</td>
-                        <td>{reserva.data_emissao}</td>
-                        <td>{new Date(reserva.data_viagem).toLocaleDateString()}</td>
-                        <td>{reserva.valor}€</td>
-                        <td>{reserva.utilizadorid_utilizador || '-'}</td>
-                        <td>{origem}</td>
-                        <td>{destino}</td>
-                        <td>{status}</td>
-                        <td>
-                          <div style={{ display: 'flex', gap: '8px' }}>
-                            {(statusId === 1) && (
-                              <button onClick={() => handleAcceptReserva(reserva.id_reserva)}>Aceitar</button>
-                            )}
-                            {(statusId === 2) && (
-                              <button onClick={() => handleCancelReserva(reserva.id_reserva)}>Cancelar</button>
-                            )}
-                          </div>
-                        </td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
+          return (
+            <div key={reserva.id_reserva} className="rate-ride-ticket">
+              <div className="ticket-status-header">
+                <span className={`status-pill ${status.toLowerCase().replace(/\s/g, '-')}`}>{status}</span>
+                <span className="ticket-id">Reserva #{reserva.id_reserva}</span>
+              </div>
+              <div className="ticket-details-grid">
+                <div className="detail-item">
+                  <div className="label">Data de Emissão</div>
+                  <div className="value">{new Date(reserva.data_emissao).toLocaleDateString()}</div>
+                </div>
+                <div className="detail-item">
+                  <div className="label">Data da Viagem</div>
+                  <div className="value">{new Date(reserva.data_viagem).toLocaleDateString()}</div>
+                </div>
+                <div className="detail-item">
+                  <div className="label">Valor</div>
+                  <div className="value">{reserva.valor}€</div>
+                </div>
+                <div className="detail-item">
+                  <div className="label">Passageiro</div>
+                  <div className="value">
+                    {typeof reserva.utilizadorid_utilizador === 'object'
+                      ? `${reserva.utilizadorid_utilizador.nome_primeiro} ${reserva.utilizadorid_utilizador.nome_ultimo}`
+                      : reserva.utilizadorid_utilizador || '-'}
+                  </div>
+                </div>
+                <div className="detail-item">
+                  <div className="label">Origem</div>
+                  <div className="value">{origem}</div>
+                </div>
+                <div className="detail-item">
+                  <div className="label">Destino</div>
+                  <div className="value">{destino}</div>
+                </div>
+              </div>
+              <div className="ticket-actions">
+                {statusId === 1 && (
+                  <button className="aceitar" onClick={() => handleAcceptReserva(reserva.id_reserva)}>Aceitar</button>
+                )}
+                {statusId === 2 && (
+                  <button className="cancelar" onClick={() => handleCancelReserva(reserva.id_reserva)}>Cancelar</button>
+                )}
+              </div>
+            </div>
+          );
+        })}
+      </div>
             )}
           </>
         )}
@@ -434,113 +443,112 @@ function CondutorTicketsPage() {
             {viagensOrdenadas.length === 0 ? (
                   <p>Nenhuma viagem encontrada.</p>
                 ) : (
-                  <table className="admin-table">
-                    <thead>
-                      <tr>
-                        <th>ID</th>
-                        <th>Data da Viagem</th>
-                        <th>Distância Percorrida (km)</th>
-                        <th>Condutor</th>
-                        <th>Origem</th>
-                        <th>Destino</th>
-                        <th>Status</th>
-                        <th>Ações</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {viagensOrdenadas.map((viagem) => (
-
-                        <React.Fragment key={viagem.id_viagem}>
-                          <tr>
-                            <td>{viagem.id_viagem}</td>
-                            <td>{new Date(viagem.data_viagem).toLocaleDateString()}</td>
-                            <td>{viagem.distancia_percorrida}</td>
-                            <td>{viagem.condutorid_condutor}</td>
-                            <td>{viagem.pontos_viagem.find(p => p.destino === 0)?.pontoid_ponto.descricao}</td>
-                            <td>{viagem.pontos_viagem.find(p => p.destino === 1)?.pontoid_ponto.descricao}</td>
-                            <td>{viagem.status_viagemid_status_viagem?.descricao}</td>
-                            <td>
-                                <button onClick={() => {
-                                setViagemSelecionada(prev => prev?.id_viagem === viagem.id_viagem ? null : viagem);
-                              }}>
-                                Desvios
-                              </button>
-                            </td>
-                          </tr>
-                          {viagemSelecionada?.id_viagem === viagem.id_viagem && (
-                          <tr>
-                            <td colSpan="8">
-
-                              <label>Desvios da Viagem</label>
-                              {viagem.desvios && viagem.desvios.length > 0 ? (
-                                <table className="admin-table">
-                                  <thead>
-                                    <tr>
-                                      <th>ID Desvio</th>
-                                      <th>Data de Emissão</th>
-                                      <th>Origem</th>
-                                      <th>Destino</th>
-                                      <th>Nova Origem</th>
-                                      <th>Novo Destino</th>
-                                      <th>Status</th>
-                                      <th>Ações</th>
-                                    </tr>
-                                  </thead>
-                                  <tbody>
-                                    {viagem.desvios
-                                      .slice()
-                                      .sort((a, b) => {
-                                        const prioridade = (status) => {
-                                          if (status === "Pendente") return 0;
-                                          if (status === "Ativo") return 1;
-                                          return 2;
-                                        };
-                                        return prioridade(a.status_desvio) - prioridade(b.status_desvio);
-                                      })
-                                      .map((desvio, idx) => {
-                                        const origem = desvio.pontos_desvio.find(p => p.original === "1" && p.destino === "0");
-                                        const destino = desvio.pontos_desvio.find(p => p.original === "1" && p.destino === "1");
-                                        const novaOrigem = desvio.pontos_desvio.find(p => p.original === "0" && p.destino === "0");
-                                        const novoDestino = desvio.pontos_desvio.find(p => p.original === "0" && p.destino === "1");
-
-                                        return (
-                                          <tr key={idx}>
-                                            <td>{desvio.id_desvio}</td>
-                                            <td>{new Date(desvio.data_emissao).toLocaleDateString()}</td>
-                                            <td>{origem?.descricao_ponto || '—'}</td>
-                                            <td>{destino?.descricao_ponto || '—'}</td>
-                                            <td>{novaOrigem?.descricao_ponto || '—'}</td>
-                                            <td>{novoDestino?.descricao_ponto || '—'}</td>
-                                            <td>{desvio.status_desvio}</td>
-                                            <td>
-                                              <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-                                              {desvio.status_desvio === "Pendente" && (
-                                                <button onClick={() => aceitarDesvio(viagem.id_viagem)}>
-                                                  Aceitar
-                                                </button>
-                                              )}
-                                              {desvio.status_desvio === "Pendente" && (
-                                                <button onClick={() => recusarDesvio(viagem.id_viagem)}>
-                                                  Rejeitar
-                                                </button>
-                                              )}
-                                              </div>
-                                            </td>
-                                          </tr>
-                                        );
-                                      })}
-                                  </tbody>
-                                </table>
-                              ) : (
-                                <p>Nenhum desvio registrado para esta viagem.</p>
+                  <div className="ride-tickets-grid">
+        {viagensOrdenadas.map((viagem) => (
+          <div key={viagem.id_viagem} className="rate-ride-ticket">
+            <div className="ticket-status-header">
+              <span className={`status-pill ${viagem.status_viagemid_status_viagem?.descricao?.toLowerCase().replace(/\s/g, '-')}`}>
+                {viagem.status_viagemid_status_viagem?.descricao}
+              </span>
+              <span className="ticket-id">Viagem #{viagem.id_viagem}</span>
+            </div>
+            <div className="ticket-details-grid">
+              <div className="detail-item">
+                <div className="label">Data da Viagem</div>
+                <div className="value">{new Date(viagem.data_viagem).toLocaleDateString()}</div>
+              </div>
+              <div className="detail-item">
+                <div className="label">Distância Percorrida (km)</div>
+                <div className="value">{viagem.distancia_percorrida}</div>
+              </div>
+              <div className="detail-item">
+                <div className="label">Condutor</div>
+                <div className="value">{viagem.condutorid_condutor}</div>
+              </div>
+              <div className="detail-item">
+                <div className="label">Origem</div>
+                <div className="value">{viagem.pontos_viagem.find(p => p.destino === 0)?.pontoid_ponto?.descricao || '-'}</div>
+              </div>
+              <div className="detail-item">
+                <div className="label">Destino</div>
+                <div className="value">{viagem.pontos_viagem.find(p => p.destino === 1)?.pontoid_ponto?.descricao || '-'}</div>
+              </div>
+            </div>
+            <div className="ticket-actions">
+              <button onClick={() => setViagemSelecionada(viagemSelecionada?.id_viagem === viagem.id_viagem ? null : viagem)}>
+                Desvios
+              </button>
+            </div>
+            {viagemSelecionada?.id_viagem === viagem.id_viagem && (
+              <div style={{ marginTop: '1rem' }}>
+                <label>Desvios da Viagem</label>
+                {viagem.desvios && viagem.desvios.length > 0 ? (
+                  <div>
+                    {viagem.desvios
+                      .slice()
+                      .sort((a, b) => {
+                        const prioridade = (status) => {
+                          if (status === "Pendente") return 0;
+                          if (status === "Ativo") return 1;
+                          return 2;
+                        };
+                        return prioridade(a.status_desvio) - prioridade(b.status_desvio);
+                      })
+                      .map((desvio, idx) => {
+                        const origem = desvio.pontos_desvio.find(p => p.original === "1" && p.destino === "0");
+                        const destino = desvio.pontos_desvio.find(p => p.original === "1" && p.destino === "1");
+                        const novaOrigem = desvio.pontos_desvio.find(p => p.original === "0" && p.destino === "0");
+                        const novoDestino = desvio.pontos_desvio.find(p => p.original === "0" && p.destino === "1");
+                        return (
+                          <div key={idx} className="rate-ride-ticket" style={{ margin: '1rem 0', background: '#f9f9f9' }}>
+                            <div className="ticket-status-header">
+                              <span className={`status-pill ${desvio.status_desvio?.toLowerCase().replace(/\s/g, '-')}`}>
+                                {desvio.status_desvio}
+                              </span>
+                              <span className="ticket-id">Desvio #{desvio.id_desvio}</span>
+                            </div>
+                            <div className="ticket-details-grid">
+                              <div className="detail-item">
+                                <div className="label">Data de Emissão</div>
+                                <div className="value">{new Date(desvio.data_emissao).toLocaleDateString()}</div>
+                              </div>
+                              <div className="detail-item">
+                                <div className="label">Origem</div>
+                                <div className="value">{origem?.descricao_ponto || '—'}</div>
+                              </div>
+                              <div className="detail-item">
+                                <div className="label">Destino</div>
+                                <div className="value">{destino?.descricao_ponto || '—'}</div>
+                              </div>
+                              <div className="detail-item">
+                                <div className="label">Nova Origem</div>
+                                <div className="value">{novaOrigem?.descricao_ponto || '—'}</div>
+                              </div>
+                              <div className="detail-item">
+                                <div className="label">Novo Destino</div>
+                                <div className="value">{novoDestino?.descricao_ponto || '—'}</div>
+                              </div>
+                            </div>
+                            <div className="ticket-actions">
+                              {desvio.status_desvio === "Pendente" && (
+                                <>
+                                  <button onClick={() => aceitarDesvio(viagem.id_viagem)}>Aceitar</button>
+                                  <button onClick={() => recusarDesvio(viagem.id_viagem)}>Rejeitar</button>
+                                </>
                               )}
-                            </td>
-                          </tr>
-                        )}
-                        </React.Fragment>
-                      ))}
-                    </tbody>
-                  </table>
+                            </div>
+                          </div>
+                        );
+                      })}
+                  </div>
+                ) : (
+                  <p>Nenhum desvio registrado para esta viagem.</p>
+                )}
+              </div>
+            )}
+          </div>
+        ))}
+      </div>
                 )}
             </div>
         )}
@@ -581,87 +589,71 @@ function CondutorTicketsPage() {
             {viagens.length === 0 ? (
               <p>Nenhuma viagem encontrada.</p>
             ) : (
-              <table className="admin-table">
-                <thead>
-                  <tr>
-                    <th>ID</th>
-                    <th>Data da Viagem</th>
-                    <th>Distância Percorrida (km)</th>
-                    <th>Condutor</th>
-                    <th>Origem</th>
-                    <th>Destino</th>
-                    <th>Status</th>
-                    <th>Ações</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  
-                {viagensOrdenadas.map((viagem) => {
-                  const origem = viagem.pontos_viagem.find(p => p.destino === 0)?.pontoid_ponto?.descricao || '-';
-                  const destino = viagem.pontos_viagem.find(p => p.destino === 1)?.pontoid_ponto?.descricao || '-';
-
-                  return (
-                    <React.Fragment key={viagem.id_viagem}>
-                      <tr>
-                        <td>{viagem.id_viagem}</td>
-                        <td>{new Date(viagem.data_viagem).toLocaleDateString()}</td>
-                        <td>{viagem.distancia_percorrida}</td>
-                        <td>{viagem.condutorid_condutor}</td>
-                        <td>{origem}</td>
-                        <td>{destino}</td>
-                        <td>{viagem.status_viagemid_status_viagem?.descricao}</td>
-                        <td>
-                          <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-                            <button onClick={() => setViagemSelecionada(viagemSelecionada?.id_viagem === viagem.id_viagem ? null : viagem)}>
-                              Passageiros
-                            </button>
-
-                            {viagem.status_viagemid_status_viagem?.id_status_viagem === 1 && (
-                              <button onClick={() => iniciarViagem(viagem.id_viagem)}>Iniciar</button>
-                            )}
-
-                            {viagem.status_viagemid_status_viagem?.id_status_viagem === 2 && (
-                              <button onClick={() => finalizarViagem(viagem.id_viagem)}>Finalizar</button>
-                            )}
-                          </div>
-                        </td>
-                      </tr>
-
-                      {viagemSelecionada?.id_viagem === viagem.id_viagem && (
-                        <tr>
-                          <td colSpan="8">
-                            <label>Passageiros da Viagem</label>
-                            {viagem.passageiros?.length > 0 ? (
-                              <table className="admin-table">
-                                <thead>
-                                  <tr>
-                                    <th>ID</th>
-                                    <th>Nome</th>
-                                    <th>Sobrenome</th>
-                                  </tr>
-                                </thead>
-                                <tbody>
-                                  {viagem.passageiros.map((p, i) => (
-                                    <tr key={i}>
-                                      <td>{p.utilizadorid_utilizador?.id_utilizador}</td>
-                                      <td>{p.utilizadorid_utilizador?.nome_primeiro}</td>
-                                      <td>{p.utilizadorid_utilizador?.nome_ultimo}</td>
-                                    </tr>
-                                  ))}
-                                </tbody>
-                              </table>
-                            ) : (
-                              <p>Nenhum passageiro associado.</p>
-                            )}
-                          </td>
-                        </tr>
-                      )}
-                    </React.Fragment>
-                  );
-                })}
-
-        </tbody>
-      </table>
+              <div className="ride-tickets-grid">
+        {viagensOrdenadas.map((viagem) => {
+          const origem = viagem.pontos_viagem.find(p => p.destino === 0)?.pontoid_ponto?.descricao || '-';
+          const destino = viagem.pontos_viagem.find(p => p.destino === 1)?.pontoid_ponto?.descricao || '-';
+          return (
+            <div key={viagem.id_viagem} className="rate-ride-ticket">
+              <div className="ticket-status-header">
+                <span className={`status-pill ${viagem.status_viagemid_status_viagem?.descricao?.toLowerCase().replace(/\s/g, '-')}`}>
+                  {viagem.status_viagemid_status_viagem?.descricao}
+                </span>
+                <span className="ticket-id">Viagem #{viagem.id_viagem}</span>
+              </div>
+              <div className="ticket-details-grid">
+                <div className="detail-item">
+                  <div className="label">Data da Viagem</div>
+                  <div className="value">{new Date(viagem.data_viagem).toLocaleDateString()}</div>
+                </div>
+                <div className="detail-item">
+                  <div className="label">Distância Percorrida (km)</div>
+                  <div className="value">{viagem.distancia_percorrida}</div>
+                </div>
+                <div className="detail-item">
+                  <div className="label">Condutor</div>
+                  <div className="value">{viagem.condutorid_condutor}</div>
+                </div>
+                <div className="detail-item">
+                  <div className="label">Origem</div>
+                  <div className="value">{origem}</div>
+                </div>
+                <div className="detail-item">
+                  <div className="label">Destino</div>
+                  <div className="value">{destino}</div>
+                </div>
+              </div>
+              <div className="ticket-actions" style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                <button onClick={() => setViagemSelecionada(viagemSelecionada?.id_viagem === viagem.id_viagem ? null : viagem)}>
+                  Passageiros
+                </button>
+                {viagem.status_viagemid_status_viagem?.id_status_viagem === 1 && (
+                  <button onClick={() => iniciarViagem(viagem.id_viagem)}>Iniciar</button>
+                )}
+                {viagem.status_viagemid_status_viagem?.id_status_viagem === 2 && (
+                  <button onClick={() => finalizarViagem(viagem.id_viagem)}>Finalizar</button>
+                )}
+              </div>
+              {viagemSelecionada?.id_viagem === viagem.id_viagem && (
+                <div style={{ marginTop: '1rem' }}>
+                  <label>Passageiros da Viagem</label>
+                  {viagem.passageiros?.length > 0 ? (
+                    <div>
+                      {viagem.passageiros.map((p, i) => (
+                        <div key={i} className="detail-item">
+                          <span>{p.utilizadorid_utilizador?.id_utilizador} - {p.utilizadorid_utilizador?.nome_primeiro} {p.utilizadorid_utilizador?.nome_ultimo}</span>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <p>Nenhum passageiro associado.</p>
+                  )}
+                </div>
+              )}
+            </div>
+          );
+        })}
+      </div>
     )}
   </div>
 )}

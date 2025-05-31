@@ -35,17 +35,6 @@
   margin-bottom: 10px;
 }
 
-.ride-icon {
-  font-size: 1.2em;
-  margin-right: 10px;
-  color: #555;
-}
-
-.remaining-places {
-  font-size: 0.9em;
-  color: #777;
-}
-
 .ticket-details {
   display: grid;
   grid-template-columns: 1fr 1fr 1fr 1fr;
@@ -58,24 +47,33 @@
   margin-bottom: 5px;
 }
 
-.ticket-details .location {
-  font-weight: bold;
-  color: #333;
-}
-
-.ticket-details .airport {
-  font-size: 0.9em;
-  color: #555;
-}
-
-.ticket-details .date-time {
-  font-size: 0.9em;
-  color: #555;
-}
-
 .status-section {
   text-align: center;
 }
+
+.ticket-actions button{
+  display: 'flex';
+  gap: '8px';
+  margin-right: 10px;
+}
+
+.ticket-actions button.cancelar {
+  background-color: red; /* Red */
+  color: white;
+}
+.ticket-actions button.cancelar:hover {
+  background-color: darkred; /* Darker red on hover */
+}
+
+.ticket-actions button.aceitar {
+  background-color: #28a745; /* Green */
+  color: white;
+}
+.ticket-actions button.aceitar:hover {
+  background-color: #218838; /* Darker green on hover */
+}
+
+
 
 .status-section .status {
   padding: 8px 12px;

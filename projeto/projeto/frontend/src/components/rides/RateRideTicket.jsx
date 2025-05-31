@@ -168,7 +168,7 @@ function RateRideTicket({ viagem, onFeedbackSubmitted, onAnomalySubmitted }) {
                         <textarea
                             value={feedbackText}
                             onChange={handleFeedbackChange}
-                            placeholder="Compartilhe sua experiência..."
+                            placeholder="Compartilhe a sua experiência..."
                             disabled={isSubmittingFeedback}
                         />
                         {feedbackError && <p className="error-message">{feedbackError}</p>}
@@ -188,7 +188,7 @@ function RateRideTicket({ viagem, onFeedbackSubmitted, onAnomalySubmitted }) {
                         <textarea
                             value={anomalyDescription}
                             onChange={handleAnomalyChange}
-                            placeholder="Descreva qualquer problema ocorrido..."
+                            placeholder="Descreva o problema ocorrido..."
                             disabled={isSubmittingAnomaly}
                         />
                         {anomalyError && <p className="error-message">{anomalyError}</p>}

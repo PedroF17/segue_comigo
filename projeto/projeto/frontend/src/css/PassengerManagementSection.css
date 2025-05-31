@@ -9,3 +9,15 @@
   margin-right: 10px;
   font-weight: bold;
 }
+
+.add-passenger-select {
+  margin: 10px 0;
+}
+
+.add-passenger-select button {
+  margin: 10px 10px 10px 0px;
+}
+
+.add-passenger-select options {
+  color: #333;
+}

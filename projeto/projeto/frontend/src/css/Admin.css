@@ -103,3 +103,69 @@ h1 {
 .admin-table td button:last-child:hover {
   background-color: darkred;
 }
+
+
+
+
+.admin-card-list {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  margin-top: 20px;
+}
+
+.admin-card {
+  background: #fff;
+  border: 1px solid #e0e0e0;
+  border-radius: 12px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.07);
+  padding: 24px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  transition: box-shadow 0.2s;
+}
+
+.admin-card:hover {
+  box-shadow: 0 8px 16px rgba(0,0,0,0.13);
+}
+
+.admin-card-row {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.admin-card .label {
+  font-size: 0.95em;
+  color: #888;
+  min-width: 120px;
+  font-weight: 500;
+}
+
+.admin-card .value {
+  font-size: 1.05em;
+  color: #333;
+  font-weight: 600;
+}
+
+.admin-card-actions {
+  margin-top: 10px;
+  display: flex;
+  gap: 10px;
+}
+
+.admin-card-actions button {
+  padding: 8px 14px;
+  border-radius: 6px;
+  background: #07689F;
+  color: #fff;
+  border: none;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.admin-card-actions button:hover {
+  background: #02489F;
+}

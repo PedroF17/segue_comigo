@@ -1,7 +1,7 @@
 // components/rides/DeviationManagementSection.jsx
 import React from 'react';
 import Select from 'react-select';
-//import '../../css/DeviationManagementSection.css';
+import '../../css/DeviationManagementSection.css';
 
 function DeviationManagementSection({
   viagem,
@@ -49,12 +49,15 @@ function DeviationManagementSection({
             />
           </div>
           <button
-            onClick={() => solicitarDesvio(
-              viagem.id_viagem,
-              pontoInicial?.value,
-              pontoFinal?.value,
-              limparSelecaoPontos
-            )}
+            onClick={e => {
+              e.stopPropagation();
+              solicitarDesvio(
+                viagem.id_viagem,
+                pontoInicial?.value,
+                pontoFinal?.value,
+                limparSelecaoPontos
+            );
+          }}
             disabled={!pontoInicial || !pontoFinal}
           >
             Solicitar Desvio
@@ -120,9 +123,6 @@ function DeviationManagementSection({
       ) : (
         <p>Nenhum desvio registrado para esta viagem.</p>
       )}
-      <button onClick={onClose} className="close-section-button">
-        Fechar Gerenciamento de Desvios
-      </button>
     </div>
   );
 }

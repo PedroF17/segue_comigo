@@ -132,39 +132,36 @@ function Admin() {
         <h2>{activeTab}</h2>
 
         {activeTab === 'Condutores' && (
-          <>
-            <table className="admin-table">
-              <thead>
-                <tr>
-                  <th>ID Utilizador</th>
-                  <th>ID Condutor</th>
-                  <th>Nome</th>
-                  <th>Apelido</th>
-                  <th>Reputação</th>
-                  <th>Ações</th>
-                </tr>
-              </thead>
-              <tbody>
-                {condutores.map((c) => (
-                  <tr key={c.id_condutor}>
-                    <td>{c.utilizadorid_utilizador?.id_utilizador}</td>
-                    <td>{c.id_condutor}</td>
-                    <td>{c.utilizadorid_utilizador?.nome_primeiro}</td>
-                    <td>{c.utilizadorid_utilizador?.nome_ultimo}</td>
-                    <td>{c.reputacao === 1 ? 'Validado' : 'Invalidado'}</td>
-                    <td>
-                      <button
-                        onClick={() => handleAtualizarCondutor(c.utilizadorid_utilizador?.id_utilizador)}
-                      >
-                        Atualizar
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </>
-        )}
+  <div className="admin-card-list">
+    {condutores.map((c) => (
+      <div className="admin-card" key={c.id_condutor}>
+        <div className="admin-card-row">
+          <span className="label">ID Utilizador: </span>
+          <span className="value">{c.utilizadorid_utilizador?.id_utilizador}</span>
+        </div>
+        <div className="admin-card-row">
+          <span className="label">ID Condutor: </span>
+          <span className="value">{c.id_condutor}</span>
+        </div>
+        <div className="admin-card-row">
+          <span className="label">Nome: </span>
+          <span className="value">{c.utilizadorid_utilizador?.nome_primeiro} {c.utilizadorid_utilizador?.nome_ultimo}</span>
+        </div>
+        <div className="admin-card-row">
+          <span className="label">Conta Condutor: </span>
+          <span className="value">{c.reputacao === 1 ? 'Validado' : 'Invalidado'}</span>
+        </div>
+        <div className="admin-card-actions">
+          <button
+            onClick={() => handleAtualizarCondutor(c.utilizadorid_utilizador?.id_utilizador)}
+          >
+            Atualizar
+          </button>
+        </div>
+      </div>
+    ))}
+  </div>
+)}
 
         {activeTab === 'Ocorrências' && (
           <>
@@ -185,37 +182,41 @@ function Admin() {
               </label>
             </div>
 
-            <table className="admin-table">
-              <thead>
-                <tr>
-                  <th>ID</th>
-                  <th>Data de Envio</th>
-                  <th>Descrição</th>
-                  <th>Viagem</th>
-                  <th>Utilizador</th>
-                </tr>
-              </thead>
-              <tbody>
-                {sortOcorrencias(ocorrencias).map((o) => (
-                  <tr key={o.id_ocorrencia}>
-                    <td>{o.id_ocorrencia}</td>
-                    <td>{new Date(o.data_envio).toLocaleDateString()}</td>
-                    <td>{o.descricao}</td>
-                    <td>
-                      #{o.viagemid_viagem?.id_viagem}{' '}
-                      {o.viagemid_viagem?.data_viagem
-                        ? `- ${new Date(o.viagemid_viagem.data_viagem).toLocaleDateString()}`
-                        : ''}
-                    </td>
-                    <td>
-                      #{o.utilizadorid_utilizador?.id_utilizador} -{' '}
-                      {o.utilizadorid_utilizador?.nome_primeiro}{' '}
-                      {o.utilizadorid_utilizador?.nome_ultimo}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+            <div className="admin-card-list">
+      {sortOcorrencias(ocorrencias).map((o) => (
+        <div className="admin-card" key={o.id_ocorrencia}>
+          <div className="admin-card-row">
+            <span className="label">ID:</span>
+            <span className="value">{o.id_ocorrencia}</span>
+          </div>
+          <div className="admin-card-row">
+            <span className="label">Data de Envio:</span>
+            <span className="value">{new Date(o.data_envio).toLocaleDateString()}</span>
+          </div>
+          <div className="admin-card-row">
+            <span className="label">Descrição:</span>
+            <span className="value">{o.descricao}</span>
+          </div>
+          <div className="admin-card-row">
+            <span className="label">Viagem:</span>
+            <span className="value">
+              #{o.viagemid_viagem?.id_viagem}
+              {o.viagemid_viagem?.data_viagem
+                ? ` - ${new Date(o.viagemid_viagem.data_viagem).toLocaleDateString()}`
+                : ''}
+            </span>
+          </div>
+          <div className="admin-card-row">
+            <span className="label">Utilizador:</span>
+            <span className="value">
+              #{o.utilizadorid_utilizador?.id_utilizador} -{' '}
+              {o.utilizadorid_utilizador?.nome_primeiro}{' '}
+              {o.utilizadorid_utilizador?.nome_ultimo}
+            </span>
+          </div>
+        </div>
+      ))}
+    </div>
           </>
         )}
       </div>
