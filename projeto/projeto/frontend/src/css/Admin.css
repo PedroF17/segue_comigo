@@ -1,13 +1,16 @@
 .admin-page {
   font-family: sans-serif;
-  padding: 2%;
-  max-width: 1000px;
-  margin: 0 auto;
+  padding: 20px;
+  max-width: 960px;
+  margin: 20px auto;
+  background-color: #f9f9f9;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
 
-h1 {
+.admin-page h1 {
   text-align: center;
-  margin-bottom: 20px;
+  margin-bottom: 10px;
   color: #333;
 }
 
@@ -45,67 +48,10 @@ h1 {
   box-shadow: 0 2px 6px rgba(0,0,0,0.05);
 }
 
-.search-input {
-  margin-bottom: 15px;
-  padding: 8px;
-  width: 100%;
-  max-width: 400px;
-  border-radius: 5px;
-  border: 1px solid #ccc;
-}
-
-.admin-table {
-  width: 100%;
-  border-collapse: collapse;
-}
-
 .filters{
   padding: 0.5rem;
   width: auto;  
 }
-
-.admin-table th, .admin-table td {
-  border: 1px solid #333;
-  padding: 10px;
-  text-align: left;
-}
-
-.admin-table th {
-  background-color: #333;
-}
-
-.admin-table td{
-  padding: 1%;
-  background-color: #ddd;
-  cursor: text;
-  color: black;
-}
-
-.admin-table td button {
-  margin-right: 5px;
-  padding: 5px 8px;
-  background-color: #07689F;
-  border: none;
-  border-radius: 3px;
-  font-weight: bold;
-  color: #fff;
-  cursor: pointer;
-}
-
-.admin-table td button:hover {
-  background-color: #02489F;
-}
-
-.admin-table td button:last-child  {
-  background-color: red;
-}
-
-.admin-table td button:last-child:hover {
-  background-color: darkred;
-}
-
-
-
 
 .admin-card-list {
   display: flex;
