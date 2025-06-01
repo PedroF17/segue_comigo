@@ -67,9 +67,6 @@ function NavBar() {
                 {isCondutor && (
                     <Link to="/condutor-tickets" className="navbar-link">Painel Condutor</Link>
                 )}
-                {(isCondutor || isPassageiro) && (
-                    <Link to="/feedback-boleias" className="navbar-link">Feedback</Link>
-                )}
                 {isAuthenticated && (
                     <Link to="/profile" className="navbar-link">Perfil</Link>
                 )}

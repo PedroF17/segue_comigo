@@ -107,118 +107,126 @@ function RegisterForm() {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="register-form">
-      <h2>Register</h2>
-      {error && <p className="error-message">{error}</p>}
-      {successMessage && <p className="success-message">{successMessage}</p>}
+      <div className="main-container">
+        <div className="register-card">
+          <div className="register-image">
+            <img src="src/assets/images/login_images/mediumshothappywomencar.jpg" alt="Boleia com amigos"/>
+          </div>
+          <form onSubmit={handleSubmit} className="register-form">
+            <h2>Registe-se</h2>
+            <p>Faça o registo para obter uma conta Segue Comigo</p>
+            {error && <p className="error-message">{error}</p>}
+            {successMessage && <p className="success-message">{successMessage}</p>}
 
-      <div className="form-group">
-        <label htmlFor="firstName">First Name:</label>
-        <input
-          type="text"
-          id="firstName"
-          className="form-control"
-          value={firstName}
-          onChange={(e) => setFirstName(e.target.value)}
-          required
-        />
+            <div className="form-group">
+              <label htmlFor="firstName">Primeiro Nome:</label>
+              <input
+                  type="text"
+                  id="firstName"
+                  className="form-control"
+                  value={firstName}
+                  onChange={(e) => setFirstName(e.target.value)}
+                  required
+              />
+            </div>
+
+            <div className="form-group">
+              <label htmlFor="lastName">Último nome:</label>
+              <input
+                  type="text"
+                  id="lastName"
+                  className="form-control"
+                  value={lastName}
+                  onChange={(e) => setLastName(e.target.value)}
+                  required
+              />
+            </div>
+
+            <div className="form-group">
+              <label htmlFor="birthDate">Data de nascimento:</label>
+              <input
+                  type="date"
+                  id="birthDate"
+                  className="form-control"
+                  value={birthDate}
+                  onChange={(e) => setBirthDate(e.target.value)}
+                  required
+              />
+            </div>
+
+            <div className="form-group">
+              <label htmlFor="gender">Género (M/F):</label>
+              <select
+                  id="gender"
+                  className="form-control"
+                  value={gender}
+                  onChange={(e) => setGender(e.target.value)}
+                  required
+              >
+                <option value="">Selecione</option>
+                <option value="M">Masculino (M)</option>
+                <option value="F">Femenino (F)</option>
+              </select>
+            </div>
+
+            <div className="form-group">
+              <label htmlFor="email">Email:</label>
+              <input
+                  type="email"
+                  id="email"
+                  className="form-control"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  required
+              />
+            </div>
+
+            <div className="form-group">
+              <label htmlFor="password">Palavra passe:</label>
+              <input
+                  type="password"
+                  id="password"
+                  className="form-control"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+              />
+            </div>
+
+            <div className="form-group">
+              <label htmlFor="confirmPassword">Confirme a  Palavra passe :</label>
+              <input
+                  type="password"
+                  id="confirmPassword"
+                  className="form-control"
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  required
+              />
+            </div>
+
+            <div className="form-group">
+              <label htmlFor="agreeTerms">
+              <input
+                  type="checkbox"
+                  id="agreeTerms"
+                  className="form-checkbox"
+                  checked={agreeTerms}
+                  onChange={(e) => setAgreeTerms(e.target.checked)}
+                  required
+              />
+                Eu concordo com os  <a href="/terms" target="_blank" rel="noopener noreferrer">Termos e condições</a>
+              </label>
+            </div>
+
+            <button type="submit" className="register-button">Registe-se agora </button>
+            <p className="register-link">
+              Já possui conta? <a href="/login">Log in</a>
+            </p>
+          </form>
+        </div>
       </div>
+          );
+          }
 
-      <div className="form-group">
-        <label htmlFor="lastName">Last Name:</label>
-        <input
-          type="text"
-          id="lastName"
-          className="form-control"
-          value={lastName}
-          onChange={(e) => setLastName(e.target.value)}
-          required
-        />
-      </div>
-
-      <div className="form-group">
-        <label htmlFor="birthDate">Date of Birth:</label>
-        <input
-          type="date"
-          id="birthDate"
-          className="form-control"
-          value={birthDate}
-          onChange={(e) => setBirthDate(e.target.value)}
-          required
-        />
-      </div>
-
-      <div className="form-group">
-        <label htmlFor="gender">Gender (M/F):</label>
-        <select
-          id="gender"
-          className="form-control"
-          value={gender}
-          onChange={(e) => setGender(e.target.value)}
-          required
-        >
-          <option value="">Select</option>
-          <option value="M">Male (M)</option>
-          <option value="F">Female (F)</option>
-        </select>
-      </div>
-
-      <div className="form-group">
-        <label htmlFor="email">Email:</label>
-        <input
-          type="email"
-          id="email"
-          className="form-control"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          required
-        />
-      </div>
-
-      <div className="form-group">
-        <label htmlFor="password">Password:</label>
-        <input
-          type="password"
-          id="password"
-          className="form-control"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          required
-        />
-      </div>
-
-      <div className="form-group">
-        <label htmlFor="confirmPassword">Confirm Password:</label>
-        <input
-          type="password"
-          id="confirmPassword"
-          className="form-control"
-          value={confirmPassword}
-          onChange={(e) => setConfirmPassword(e.target.value)}
-          required
-        />
-      </div>
-
-      <div className="form-group">
-        <input
-          type="checkbox"
-          id="agreeTerms"
-          className="form-checkbox"
-          checked={agreeTerms}
-          onChange={(e) => setAgreeTerms(e.target.checked)}
-          required
-        />
-        <label htmlFor="agreeTerms" className="form-label-checkbox">
-          I agree to the <a href="/terms" target="_blank" rel="noopener noreferrer">Terms and Conditions</a>
-        </label>
-      </div>
-
-      <button type="submit" className="register-button">Register Now</button>
-      <p className="login-link">
-        Already have an account? <a href="/login">Log in</a>
-      </p>
-    </form>
-  );
-}
-
-export default RegisterForm;
+          export default RegisterForm;

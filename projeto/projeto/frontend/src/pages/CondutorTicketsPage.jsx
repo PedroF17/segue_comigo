@@ -1,12 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import '../css/RideTicketsPage.css';
-import RideTicket from '../components/rides/RideTicket.jsx';
 import { useNavigate } from 'react-router-dom';
 import { checkCondutor } from '../services/auth';
 
 function CondutorTicketsPage() {
   const [activeTab, setActiveTab] = useState('Reservas');
-  const [tickets, setTickets] = useState([]);
   const [reservas, setReservas] = useState([]);
   const [viagens, setViagens] = useState([]);
   const [viagemSelecionada, setViagemSelecionada] = useState(null);
@@ -19,12 +16,6 @@ function CondutorTicketsPage() {
   const navigate = useNavigate();
 
   const tabs = ['Reservas', 'Desvios', 'Viagens'];
-
-  const [pontos, setPontos] = useState([]);
-  const [pontoSelecionado, setPontoSelecionado] = useState(null);
-  const [loading, setLoading] = useState(false);
-  const [pontoInicial, setPontoInicial] = useState(null);
-  const [pontoFinal, setPontoFinal] = useState(null);
 
   useEffect(() => {
     const verifyAccess = async () => {

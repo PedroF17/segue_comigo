@@ -21,7 +21,7 @@ body {
     border-radius: 10px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     margin-top: 10%;
-    margin-bottom: 50%;
+    margin-bottom: 5%;
     display: flex;
     max-width: 90%;
     width: 100%;
@@ -81,7 +81,6 @@ input[type="password"] {
     border: 1px solid #ccc;
     border-radius: 4px;
     font-size: 1em;
-    width: 96%;
 }
 
 .password-input {
